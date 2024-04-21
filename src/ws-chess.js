@@ -13,6 +13,7 @@ const removePlayerBySocketId = (socketId) => {
 };
 
 const onUserConnected = (socket) => (data) => {
+  console.log("user connected: ",data);
   players.push({ username: data.userName, socketId: socket.id });
   socketIO.emit("players", players);  // Broadcast the updated list of players
 };
@@ -41,6 +42,7 @@ const onMove = (data) => {
 };
 
 const onConnect = (socket) => {
+  console.log("onconnect");
   socket.on("userConnected", onUserConnected(socket));
   socket.on("disconnect", onDisconnect(socket));  // Handle player disconnection
   socket.on("challenge", onChallenge);
