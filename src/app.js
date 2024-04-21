@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 app.use("/api", (_req, res) => res.send({ text: "Hello World" }));
 
 const server = http.createServer(app);
-server.listen(PORT, () => console.log(`Application started on port ${PORT}`));
+server.listen(PORT, () => console.log(`Application started DEEon port ${PORT}`));
 
 // WebSocket setup for chess game
 wsChess(server);
