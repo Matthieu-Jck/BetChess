@@ -51,6 +51,7 @@ const onConnect = (socket) => {
 
 const wsChess = (server) => {
   socketIO = new Server(server);
+  console.log("server: ",server, "/ socketIO: ",socketIO);
   socketIO.on("connection", onConnect);
 };
 
