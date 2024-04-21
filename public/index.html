@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Chess</title>
+
+    <link rel="stylesheet" href="/public/css/chessboard-1.0.0.min.css" />
+    <link rel="stylesheet" href="/public/css/node-chess.css" />
+  </head>
+  <body>
+    <div id="players" class="players">
+      <div>Players online</div>
+    </div>
+    <div id="chess-board" class="chess-board"></div>
+
+    <script src="/public/lib/jquery-3.6.4.min.js"></script>
+    <script src="/public/lib/chessboard-1.0.0.min.js"></script>
+    <script src="/public/lib/chess.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script src="/public/js/players.js"></script>
+    <script src="/public/js/board.js"></script>
+    <script src="/public/js/ws.js"></script>
+    <script src="/public/js/game.js"></script>
+    <script src="/public/ws-chess.js"></script>
+  </body>
+</html>
