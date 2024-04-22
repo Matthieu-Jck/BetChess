@@ -1,5 +1,5 @@
 const connectWs = (userName, onPlayersFn) => {
-  const socket = io(process.env.SOCKET_URL);
+  const socket = io(window.SOCKET_URL);
 
   let onGameStartFn = null;
   let onMoveFn = null;
