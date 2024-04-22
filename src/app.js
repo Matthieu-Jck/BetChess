@@ -12,19 +12,24 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
-
-// Serve static files from the public directory
-app.use('/public', express.static(path.join(__dirname, 'public')));
-
-// Main route to serve the index.html file
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
+  next();
 });
 
-app.use("/api", (_req, res) => res.send({ text: "Hello World" }));
+app.use('/public', express.static(path.join(__dirname, 'public')));
+
+app.get('/', (req, res) => {
+  console.log("Serving index.html");
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.use("/api", (_req, res) => {
+  console.log("API request to /api");
+  res.send({ text: "Hello World" });
+});
 
 const server = http.createServer(app);
-server.listen(PORT, () => console.log(`Application started DEEon port ${PORT}`));
+server.listen(PORT, () => console.log(`Application started on port ${PORT}`));
 
-// WebSocket setup for chess game
 wsChess(server);
