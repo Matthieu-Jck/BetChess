@@ -1,19 +1,28 @@
 import { Server } from "socket.io";
+import { v4 as uuidv4 } from "uuid";
 
 let socketIO = null;
 const players = [];
 
+const findPlayer = (name) => players.find((player) => player.username === name);
+const removePlayerBySocketId = (socketId) => {
+  const index = players.findIndex(player => player.socketId === socketId);
+  if (index !== -1) {
+    players.splice(index, 1);
+  }
+};
+
 const onUserConnected = (socket) => (data) => {
   console.log("User connected:", data.userName, "Socket ID:", socket.id);
   players.push({ username: data.userName, socketId: socket.id });
-  socketIO.emit("players", players);  // Broadcast the updated list of players
+  socketIO.emit("players", players);
   console.log("Current players:", players);
 };
 
 const onDisconnect = (socket) => () => {
   console.log("User disconnected, Socket ID:", socket.id);
   removePlayerBySocketId(socket.id);
-  socketIO.emit("players", players);  // Broadcast the updated list of players
+  socketIO.emit("players", players);
   console.log("Updated players after disconnection:", players);
 };
 
