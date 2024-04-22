@@ -1,5 +1,5 @@
 const connectWs = (userName, onPlayersFn) => {
-  const socket = io("http://localhost:10000");
+  const socket = io(process.env.SOCKET_URL);
 
   let onGameStartFn = null;
   let onMoveFn = null;
