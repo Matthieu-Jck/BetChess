@@ -4,6 +4,8 @@ import cors from "cors";
 import http from "http";
 import wsChess from "./ws-chess.js";
 
+require('dotenv').config();
+
 const __dirname = path.resolve();
 const PORT = process.env.PORT || 10000;
 
