@@ -47,13 +47,7 @@ const onConnect = (socket) => {
 };
 
 const wsChess = (server) => {
-  socketIO = new Server(server, {
-    cors: {
-      origin: "https://betchess.onrender.com",
-      methods: ["GET", "POST"]
-    },
-    transports: ['websocket', 'polling']
-  });
+  socketIO = new Server(server);
   
   socketIO.on("connection", socket => {
     console.log("Client connected");
