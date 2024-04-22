@@ -13,21 +13,16 @@ const removePlayerBySocketId = (socketId) => {
 };
 
 const onUserConnected = (socket) => (data) => {
-  console.log("User connected:", data.userName, "Socket ID:", socket.id);
   players.push({ username: data.userName, socketId: socket.id });
   socketIO.emit("players", players);
-  console.log("Current players:", players);
 };
 
 const onDisconnect = (socket) => () => {
-  console.log("User disconnected, Socket ID:", socket.id);
   removePlayerBySocketId(socket.id);
   socketIO.emit("players", players);
-  console.log("Updated players after disconnection:", players);
 };
 
 const onChallenge = (data) => {
-  console.log("Challenge received:", data);
   const challenger = findPlayer(data.from);
   const challengee = findPlayer(data.to);
   const message = {
@@ -38,17 +33,14 @@ const onChallenge = (data) => {
   };
   socketIO.to(challenger.socketId).emit("gameStart", message);
   socketIO.to(challengee.socketId).emit("gameStart", message);
-  console.log("Game started between", challenger.username, "and", challengee.username);
 };
 
 const onMove = (data) => {
-  console.log("Move received:", data);
   const player = findPlayer(data.to);
   socketIO.to(player.socketId).emit("move", data.fen);
 };
 
 const onConnect = (socket) => {
-  console.log("New WebSocket connection, Socket ID:", socket.id);
   socket.on("userConnected", onUserConnected(socket));
   socket.on("disconnect", onDisconnect(socket));
   socket.on("challenge", onChallenge);

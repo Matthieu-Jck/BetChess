@@ -25,7 +25,6 @@ app.get('/', (req, res) => {
 });
 
 app.use("/api", (_req, res) => {
-  console.log("API request to /api");
   res.send({ text: "Hello World" });
 });
 
