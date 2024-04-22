@@ -17,7 +17,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/public', express.static(path.join(__dirname, '..', 'public')));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
   console.log("Serving index.html");
