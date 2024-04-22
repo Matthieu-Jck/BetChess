@@ -48,14 +48,7 @@ const onConnect = (socket) => {
 
 const wsChess = (server) => {
   socketIO = new Server(server);
-  
-  socketIO.on("connection", socket => {
-    console.log("Client connected");
-    socket.on('error', (error) => {
-      console.error('Socket error:', error);
-    });
-  });  
-  console.log("WebSocket server initialized.");
+  socketIO.on("connection", onConnect);
 };
 
 export default wsChess;
