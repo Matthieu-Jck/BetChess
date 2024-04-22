@@ -1,27 +1,71 @@
 body {
+  margin: 0;
+  padding: 0;
   overflow-y: auto;
   display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
+  background-color: #f0f4f8; /* Updated to a soothing light blue-gray */
+  font-family: 'Poppins', sans-serif; /* Modern and clean font */
+  height: 100vh;
+}
+
+.game-header {
+  width: 100%;
+  background-color: #263238; /* Deep charcoal blue */
+  color: #FFFFFF; /* Crisp white text for high contrast */
+  padding: 12px 24px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+}
+
+.game-title {
+  font-size: 28px; /* Slightly larger to stand out */
+  font-weight: 600; /* Medium weight for better visibility */
+}
+
+.main-content {
+  display: flex;
   justify-content: center;
-  background-color: #2a2438;
+  align-items: stretch;
+  width: auto;
+}
+
+.board-container {
+  position: relative;
+  width: 600px; /* Fixed width for consistency */
+  height: 600px; /* Square aspect ratio */
+  margin-top: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow for depth */
 }
 
 .chess-board {
-  width: 40%;
-  margin-top: 50px;
+  width: 100%;
+  height: 100%;
+  position: relative;
 }
 
-ul {
-  padding-left: 0;
-  list-style-type: none;
-}
-
-ul li {
-  padding-left: 0;
+.chessboard-svg-overlay {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
 }
 
 .players {
-  margin: 50px;
-  padding: 20px 50px;
-  background-color: white;
+  height: 100vh;
+  width: 250px; /* Wider to accommodate names and statuses */
+  margin: 0;
+  padding: 20px;
+  background-color: #37474F; /* Subtle grayish-blue */
+  box-shadow: -3px 0 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  position: absolute;
+  right: 0;
+  top: 0;
 }

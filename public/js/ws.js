@@ -1,5 +1,5 @@
 const connectWs = (userName, onPlayersFn) => {
-  const socket = io('wss://betchess.onrender.com');
+  const socket = io("http://localhost:10000");
 
   let onGameStartFn = null;
   let onMoveFn = null;

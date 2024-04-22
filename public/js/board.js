@@ -3,86 +3,152 @@ let initBoard = (username) => {
   let engine = new Chess();
   let fn = null;
   let gameData = null;
-  let turn = null;
-  let currentBet = null;
+  let turn = true;  // Initially true if the player starts the game
+  let actionCount = 0;
 
   let gameOver = () => engine.game_over();
-  let illegalWhiteMove = (piece) => gameData.color === "white" && piece.search(/^b/) !== -1;
-  let illegalBlackMove = (piece) => gameData.color === "black" && piece.search(/^w/) !== -1;
 
-  function onDragStart(_source, piece, _position, _orientation) {
-    if (gameOver() || turn === -1 || illegalWhiteMove(piece) || illegalBlackMove(piece)) {
+  let illegalMove = (piece, color) => {
+    let illegal = gameData.color === color && piece.search(new RegExp(`^${color === "white" ? 'b' : 'w'}`)) !== -1;
+    return illegal;
+  };
+
+  function onDragStart(source, piece, position, orientation) {
+    if (gameOver() || !turn) {
+      console.log(`Drag start denied: game over or not player's turn.`);
       return false;
+    }
+
+    if (actionCount === 1) {  // Betting phase
+      return gameData.color !== (piece.charAt(0) === 'w' ? 'white' : 'black');  // Simulate only opponent's potential moves
+    } else {
+      return !illegalMove(piece, gameData.color);
     }
   }
 
   function onDrop(source, target) {
+    if (actionCount === 1) {  // Betting phase
+      let move = engine.move({
+        from: source,
+        to: target,
+        promotion: 'q'  // Assumes queen promotion for simplicity
+      }, { dryRun: true });  // Check the move legality without making the move
+
+      if (!move) {
+        console.log(`Illegal bet attempted from ${source} to ${target}`);
+        return 'snapback';
+      }
+
+      drawBetArrow(source, target, gameData.color);
+      engine.undo();  // Undo the dry run move
+      endTurn();
+      return 'snapback';
+    }
+
     let move = engine.move({
       from: source,
       to: target,
-      promotion: "q", // always promote to a queen for example simplicity
+      promotion: 'q'
     });
 
-    // illegal move
-    if (move === null) return "snapback";
+    if (move === null) return 'snapback';
 
-    turn = -1;
-    // After move, prompt for the bet
-    promptForBet();
+    actionCount++;
+    if (actionCount === 1) {
+      prepareForBetting();  // Prepare for betting after the move
+    }
+    return;
+  }
 
+  function prepareForBetting() {
+    console.log("Preparing for betting phase.");
+    actionCount = 1;
+  }
+
+  function endTurn() {
+    actionCount = 0;
+    turn = false;
+    proceedToOpponentTurn();
+  }
+
+  function drawBetArrow(from, to, color) {
+    console.log(`Drawing bet arrow from ${from} to ${to} for ${color}`);
+    const fromPos = notationToPosition(from, color);
+    const toPos = notationToPosition(to, color);
+
+    const svg = document.querySelector('.chessboard-svg-overlay');
+    if (!svg) {
+        console.error("SVG overlay not found. Ensure your chessboard has a corresponding SVG overlay for drawing.");
+        return;
+    }
+
+    const arrow = document.createElementNS("http://www.w3.org/2000/svg", 'line');
+    arrow.setAttribute('x1', fromPos.x);
+    arrow.setAttribute('y1', fromPos.y);
+    arrow.setAttribute('x2', toPos.x);
+    arrow.setAttribute('y2', toPos.y);
+    arrow.setAttribute('stroke', 'blue');
+    arrow.setAttribute('stroke-width', 2);
+    arrow.setAttribute('marker-end', 'url(#arrowhead)');
+    svg.appendChild(arrow);
+  }
+
+  function notationToPosition(notation, color) {
+    let file = notation.charCodeAt(0) - 'a'.charCodeAt(0); // 'a' -> 0, 'b' -> 1, ..., 'h' -> 7
+    let rank;
+
+    if (color === 'white') {
+      rank = '8' - notation[1]; // '1' -> 7, '2' -> 6, ..., '8' -> 0
+    } else {
+      // Flip both file and rank for black's perspective
+      file = 7 - file; // Reverse file position: 'h' -> 0, 'g' -> 1, ..., 'a' -> 7
+      rank = notation[1] - '1'; // '1' -> 0, '2' -> 1, ..., '8' -> 7
+    }
+
+    const squareSize = $('#chess-board .square-55d63').width(); // Use your actual square class
+
+    return {
+      x: file * squareSize + squareSize / 2, // Center of the square horizontally
+      y: rank * squareSize + squareSize / 2  // Center of the square vertically
+    };
+  }
+
+  function proceedToOpponentTurn() {
+    console.log(`Switching to opponent's turn.`);
+    // Logic to notify the opponent or switch the turn
     fn({
       fen: engine.fen(),
       from: username,
       to: gameData.player1 === username ? gameData.player2 : gameData.player1
     });
+    turn = false; // It's now the opponent's turn
   }
 
-  // update the board position after the piece snap
-  // for castling, en passant, pawn promotion
-  function onSnapEnd() {
-    board.position(engine.fen());
-    notifyGameOver();
-  }
 
-  const notifyGameOver = () => {
-    if (gameOver()) {
-      alert("Game is over");
-    }
-  }
-
-  const initiate = (cb) => {
-    fn = cb;
+  const initiate = (callback) => {
+    fn = callback;
   };
 
   const startGame = (data) => {
-    const color = (username === data.white) ? "white" : "black";
-    turn = color === "white" ? 1 : -1;
-
     gameData = {
       ...data,
-      color,
+      color: (username === data.white) ? 'white' : 'black',
     };
-
-    // configure the board with start position
     let config = {
-      position: "start",
-      orientation: color,
+      position: 'start',
+      orientation: gameData.color,
       draggable: true,
       onDragStart,
       onDrop,
-      onSnapEnd,
-      pieceTheme: "/public/images/pieces/{piece}.svg",
+      pieceTheme: '/public/images/pieces/{piece}.svg',
     };
+    board = Chessboard('chess-board', config);
+  };
 
-    board = Chessboard("chess-board", config);
-  }
-
-  // listen to opponent's move, makesure to update both board and the engine.
-  const onMove = (data) => {
-    board.position(data);
-    engine.load(data);
-    turn = 1;
-    notifyGameOver();
+  const onMove = (fen) => {
+    board.position(fen);
+    engine.load(fen);
+    turn = true;  // It's now this player's turn
   };
 
   return {
@@ -90,23 +156,4 @@ let initBoard = (username) => {
     startGame,
     onMove
   };
-
-  function drawBetArrow(bet) {
-    // This function would use the chessboard.js API or custom drawing to display an arrow
-    console.log(`Draw arrow from ${bet.from} to ${bet.to}`);
-    // Implement drawing logic here
-  }
-  
-  function promptForBet() {
-    let betMove = prompt("Enter your bet for the opponent's move (e.g., e2 to e4)");
-    // Validate and parse the input
-    if (betMove) {
-      let parts = betMove.split(' to ');
-      if (parts.length === 2) {
-        currentBet = { from: parts[0], to: parts[1] };
-        drawBetArrow(currentBet);
-      }
-    }
-  }
-  
 };
