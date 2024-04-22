@@ -4,6 +4,7 @@ let initBoard = (username) => {
   let fn = null;
   let gameData = null;
   let turn = null;
+  let currentBet = null;
 
   let gameOver = () => engine.game_over();
   let illegalWhiteMove = (piece) => gameData.color === "white" && piece.search(/^b/) !== -1;
@@ -19,14 +20,16 @@ let initBoard = (username) => {
     let move = engine.move({
       from: source,
       to: target,
-      promotion: "q", // NOTE: always promote to a queen for example simplicity
+      promotion: "q", // always promote to a queen for example simplicity
     });
 
     // illegal move
     if (move === null) return "snapback";
 
     turn = -1;
-    // notify the opponent with the move, uses fen to communicate the position.
+    // After move, prompt for the bet
+    promptForBet();
+
     fn({
       fen: engine.fen(),
       from: username,
@@ -70,7 +73,7 @@ let initBoard = (username) => {
       onSnapEnd,
       pieceTheme: "/public/images/pieces/{piece}.svg",
     };
-  
+
     board = Chessboard("chess-board", config);
   }
 
@@ -87,4 +90,23 @@ let initBoard = (username) => {
     startGame,
     onMove
   };
+
+  function drawBetArrow(bet) {
+    // This function would use the chessboard.js API or custom drawing to display an arrow
+    console.log(`Draw arrow from ${bet.from} to ${bet.to}`);
+    // Implement drawing logic here
+  }
+  
+  function promptForBet() {
+    let betMove = prompt("Enter your bet for the opponent's move (e.g., e2 to e4)");
+    // Validate and parse the input
+    if (betMove) {
+      let parts = betMove.split(' to ');
+      if (parts.length === 2) {
+        currentBet = { from: parts[0], to: parts[1] };
+        drawBetArrow(currentBet);
+      }
+    }
+  }
+  
 };
