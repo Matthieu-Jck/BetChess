@@ -47,8 +47,20 @@ const onConnect = (socket) => {
 };
 
 const wsChess = (server) => {
-  socketIO = new Server(server);
-  socketIO.on("connection", onConnect);
+  socketIO = new Server(server, {
+    cors: {
+      origin: "https://betchess.onrender.com",
+      methods: ["GET", "POST"]
+    },
+    transports: ['websocket', 'polling']
+  });
+  
+  socketIO.on("connection", socket => {
+    console.log("Client connected");
+    socket.on('error', (error) => {
+      console.error('Socket error:', error);
+    });
+  });  
   console.log("WebSocket server initialized.");
 };
 
