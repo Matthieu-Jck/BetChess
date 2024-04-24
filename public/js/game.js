@@ -8,12 +8,3 @@ const game = (ws, board) => {
   ws.initiate(onGameStart, onMove);
   board.initiate(onPlayerMove);
 };
-
-document.getElementById('toggle-players').addEventListener('click', function() {
-  var playersDiv = document.getElementById('players');
-  if (playersDiv.classList.contains('show')) {
-    playersDiv.classList.remove('show');
-  } else {
-    playersDiv.classList.add('show');
-  }
-});

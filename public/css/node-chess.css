@@ -52,10 +52,6 @@ body {
   justify-content: flex-start;
   position: fixed;
   right: 0px;
-  transition: right 0.3s;
+  transition: right 0.3s, display 1s;
   z-index: 1;
-}
-
-.players.show {
-  right: 0;
 }

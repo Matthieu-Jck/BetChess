@@ -6,8 +6,8 @@
     padding: 12px 24px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
     display: flex;
-    align-items: center; /* Ensures vertical center alignment of all children */
-    justify-content: flex-start; /* Aligns children at the start of the header */
+    align-items: center;
+    justify-content: flex-start;
     position: relative;
     z-index: 2;
 }
