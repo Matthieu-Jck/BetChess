@@ -5,12 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BetChess</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/public/css/chessboard-1.0.0.min.css" />
+  <link rel="stylesheet" href="/public/css/chessboard.css" />
   <link rel="stylesheet" href="/public/css/node-chess.css" />
+  <link rel="stylesheet" href="/public/css/header.css" />
 </head>
 <body>
   <header class="game-header">
-    <div class="game-title">BetChess</div>
+    <img class="game-icon" src="/public/images/icons/BetChess.png" alt="BetChess Icon">
+    <div class="game-title">
+      BetChess
+    </div>
+    <button class="toggle-players">&#9776;</button>
   </header>
 
   <div class="main-content">
@@ -25,7 +30,6 @@
         </defs>
       </svg>
     </div>
-
     <div id="players" class="players">
       <div>Players online</div>
     </div>
@@ -41,5 +45,12 @@
   <script src="/public/js/ws.js"></script>
   <script src="/public/js/game.js"></script>
   <script src="/public/ws-chess.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('#toggle-players').on('click', function() {
+        $('#players').toggleClass('show');
+      });
+    });
+  </script>
 </body>
 </html>
