@@ -3,9 +3,15 @@ let initBoard = (username) => {
   let engine = new Chess();
   let fn = null;
   let gameData = null;
-  let turn = true;  // Initially true if the player starts the game
+
+  let turn = true;
   let actionCount = 0;
-  let predictedMove = null;  // To store the predicted move
+  let firstMove = null;
+  let secondMove = null;
+  let predictedMove = null;
+
+  let turnCounter = 0;
+  let correctBet = false;
 
   let gameOver = () => engine.game_over();
 
@@ -37,57 +43,100 @@ let initBoard = (username) => {
       return false;
     }
 
-    if (actionCount === 1) {  // Betting phase
-      return gameData.color !== (piece.charAt(0) === 'w' ? 'white' : 'black');  // Simulate only opponent's potential moves
-    } else {
+    // If it's the first action, play a move
+    if (actionCount === 0) {
+      return !illegalMove(piece, gameData.color);
+    }
+    // If it's your second action and your bet wasn't correct, bet
+    if (actionCount === 1 && !correctBet) {
+      return gameData.color !== (piece.charAt(0) === 'w' ? 'white' : 'black');
+    }
+    // If it's your second action and your bet was correct, play a move
+    if (actionCount === 1 && correctBet) {
       return !illegalMove(piece, gameData.color);
     }
   }
 
   function onDrop(source, target) {
-    if (actionCount === 1) {  // Betting phase
-      predictedMove = { from: source, to: target };  // Store predicted move
-      drawBetArrow(source, target, gameData.color);
-      endTurn();
-      return 'snapback';
+    if (actionCount === 0){
+      firstMove = engine.move({
+        from: source,
+        to: target,
+        promotion: 'q'
+      });
     }
+    
+    if (actionCount === 1) {
+      if (correctBet) {
+        //doesn't work. I think the engine doesn't want to create a second move
+        secondMove = engine.move({
+          from: source,
+          to: target,
+          promotion: 'q'
+        })
+      }
+      else {
+        predictedMove = { from: source, to: target };
+        console.log("prediction of the following move: ", predictedMove);
+        drawBetArrow(source, target, gameData.color);
+        endTurn();
+        return 'snapback';
+      }
+    }
+    if (firstMove === null && secondMove === null) return 'snapback';
 
-    let move = engine.move({
-      from: source,
-      to: target,
-      promotion: 'q'
-    });
-
-    if (move === null) return 'snapback';
     actionCount++;
     if (actionCount === 2) {
-      endTurn();  // End turn after move phase if no extra turn granted
+      endTurn();
     }
     return;
   }
 
   function verifyPrediction(opponentMove) {
+    console.log("opponent move: ", opponentMove, " / predicted move: ", predictedMove);
     if (opponentMove && predictedMove && opponentMove.from === predictedMove.from && opponentMove.to === predictedMove.to) {
-      turn = true;  // Grant extra turn
+      correctBet = true;
       console.log(`Prediction correct! Extra turn granted.`);
     } else {
+      correctBet = false;
       console.log(`Prediction incorrect or move details not provided.`);
     }
-    actionCount = 0;  // Reset action count for new phase
-    turn = false;  // Ensuring the turn is ended if the prediction was incorrect or not provided
   }
 
   function proceedToOpponentTurn() {
-    console.log(`Switching to opponent's turn.`);
-    fn({
+    // Determine the opponent's username
+    const opponent = gameData.player1 === username ? gameData.player2 : gameData.player1;
+    
+    // Build the data payload for the first move
+    let movesData = {
       fen: engine.fen(),
       from: username,
-      to: gameData.player1 === username ? gameData.player2 : gameData.player1,
-      predictedMove: predictedMove  // Send predicted move to opponent
-    });
-    predictedMove = null;  // Reset predictedMove after sending to opponent
-    turn = false; // It's now the opponent's turn
+      to: opponent,
+      moves: [{
+        from: firstMove.from,
+        to: firstMove.to,
+        promotion: firstMove.promotion
+      }]
+    };
+  
+    // Check if there was a second move made after a successful prediction
+    console.log(secondMove, (" isNull?"))
+    if (secondMove !== null) {
+      // Add the second move to the moves array in the payload
+      movesData.moves.push({
+        from: secondMove.from,
+        to: secondMove.to,
+        promotion: secondMove.promotion
+      });
+    }
+  
+    // Send the moves to the opponent
+    fn(movesData);
+    
+    // Reset the turn control
+    turn = false;
   }
+  
 
   function endTurn() {
     proceedToOpponentTurn();
@@ -97,20 +146,21 @@ let initBoard = (username) => {
     fn = callback;
   };
 
-
-  const onMove = (fen, predictedMove) => {
+  // This function handles the arrival of the opponent's move data
+  const onMove = (fen) => {
     board.position(fen);
     engine.load(fen);
-    if (predictedMove) {
+    turnCounter++;
+    if (turnCounter == 1 && predictedMove) {
       verifyPrediction(predictedMove);
-    } else {
-      console.log("No predicted move data received.");
-      turn = true;  // It's now this player's turn if no prediction to verify
     }
+    actionCount = 0;
+    turn = true;
+    firstMove = null;
+    secondMove = null;
   };
 
   function drawBetArrow(from, to, color) {
-    console.log(`Drawing bet arrow from ${from} to ${to} for ${color}`);
     const fromPos = notationToPosition(from, color);
     const toPos = notationToPosition(to, color);
 
