@@ -11,7 +11,10 @@ const connectWs = (userName, onPlayersFn) => {
 
   const onChallenge = (players) => socket.emit("challenge", players);
 
-  const onMove = (data) => socket.emit("move", data);
+  const onMove = (data) => {
+    console.log("Emitting move to server", data);
+    socket.emit("move", data);
+  };
 
   socket.on("connect", () => socket.emit("userConnected", { userName }));
 
@@ -19,7 +22,10 @@ const connectWs = (userName, onPlayersFn) => {
 
   socket.on("gameStart", (data) => onGameStartFn(data));
 
-  socket.on("move", (data) => onMoveFn(data));
+  socket.on("move", (data) => {
+    console.log("Move received from server", data);
+    onMoveFn(data);
+  });
 
   return { initiate, onMove };
 };

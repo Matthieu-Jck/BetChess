@@ -37,14 +37,19 @@ const onChallenge = (data) => {
 
 const onMove = (data) => {
   const player = findPlayer(data.to);
-  socketIO.to(player.socketId).emit("move", data.fen);
+  console.log("Sending move to other player", data);
+  if (player && player.socketId) {
+    socketIO.to(player.socketId).emit("move", data); // Send entire data object
+  } else {
+    console.log("Player not found or invalid socket ID", data);
+  }
 };
 
 const onConnect = (socket) => {
   socket.on("userConnected", onUserConnected(socket));
   socket.on("disconnect", onDisconnect(socket));
   socket.on("challenge", onChallenge);
-  socket.on("move", onMove);
+  socket.on("move", (data) => onMove(data));
 };
 
 const wsChess = (server) => {

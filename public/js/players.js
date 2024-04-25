@@ -6,10 +6,11 @@ const displayPlayers = (me, players, fn) => {
     const listItem = document.createElement("li");
   
     if (player.username === me) {
-      listItem.textContent = player.username + " (you)";
+      return
+      //listItem.textContent = player.username + " (you)";
     } else {
       const button = document.createElement("button");
-      button.textContent = "Play";
+      button.textContent = "Invite to play";
       button.onclick = function () {
         fn({ from: me, to: player.username });
       };
