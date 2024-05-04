@@ -13,6 +13,8 @@ let initBoard = (username) => {
   let turnCounter = 0;
   let correctBet = false;
 
+  let possibleMoves = [];
+
   let gameOver = () => engine.game_over();
 
   let illegalMove = (piece, color) => {
@@ -58,32 +60,58 @@ let initBoard = (username) => {
   }
 
   function onDrop(source, target) {
-    if (actionCount === 0){
+    if (actionCount === 0) {
+      possibleMoves = engine.moves({ verbose: true });
+      if (correctBet) {
+        firstMove = ({
+          from: source,
+          to: target
+        })
+        drawArrow(source,target,gameData.color,gameData.color);
+        actionCount++;
+        return 'snapback';
+      }
       firstMove = engine.move({
         from: source,
         to: target,
         promotion: 'q'
       });
+
+      if (firstMove === null) {
+        return 'snapback';
+      }
     }
-    
+
     if (actionCount === 1) {
       if (correctBet) {
-        //doesn't work. I think the engine doesn't want to create a second move
-        secondMove = engine.move({
-          from: source,
-          to: target,
-          promotion: 'q'
-        })
+        let valid = false;
+        for (let m of possibleMoves) {
+          if (m.from === source && m.to === target && m) {
+            valid = true;
+          }
+        }
+        if (!valid) {
+          return 'snapback';
+        }
+        console.log("O");
+        secondPieceToMove = engine.get(source);
+        engine.remove(source);
+        engine.put(secondPieceToMove, target);
+        console.log("U");
+        firstPieceToMove = engine.get(firstMove.from);
+        console.log("fm.s: ",firstMove.from," / firstPieceToMove: ",firstPieceToMove);
+        engine.remove(firstMove.from);
+        engine.put(firstPieceToMove, firstMove.to);
+        correctBet = false;
       }
       else {
         predictedMove = { from: source, to: target };
-        console.log("prediction of the following move: ", predictedMove);
-        drawBetArrow(source, target, gameData.color);
+        let arrowColor = gameData.color === 'white' ? 'black' : 'white';
+        drawArrow(source, target, gameData.color, arrowColor);        
         endTurn();
         return 'snapback';
       }
     }
-    if (firstMove === null && secondMove === null) return 'snapback';
 
     actionCount++;
     if (actionCount === 2) {
@@ -92,21 +120,22 @@ let initBoard = (username) => {
     return;
   }
 
-  function verifyPrediction(opponentMove) {
-    console.log("opponent move: ", opponentMove, " / predicted move: ", predictedMove);
-    if (opponentMove && predictedMove && opponentMove.from === predictedMove.from && opponentMove.to === predictedMove.to) {
-      correctBet = true;
-      console.log(`Prediction correct! Extra turn granted.`);
-    } else {
-      correctBet = false;
-      console.log(`Prediction incorrect or move details not provided.`);
+  function verifyPrediction(opponentMoves) {
+    for (let opponentMove of opponentMoves) {
+      if (opponentMove && predictedMove && opponentMove.from === predictedMove.from && opponentMove.to === predictedMove.to) {
+        correctBet = true;
+        console.log(`Prediction correct! Extra turn granted.`);
+      } else {
+        correctBet = false;
+        console.log(`Prediction incorrect or move details not provided.`);
+      }
     }
   }
 
   function proceedToOpponentTurn() {
     // Determine the opponent's username
     const opponent = gameData.player1 === username ? gameData.player2 : gameData.player1;
-    
+
     // Build the data payload for the first move
     let movesData = {
       fen: engine.fen(),
@@ -118,9 +147,7 @@ let initBoard = (username) => {
         promotion: firstMove.promotion
       }]
     };
-  
-    // Check if there was a second move made after a successful prediction
-    console.log(secondMove, (" isNull?"))
+
     if (secondMove !== null) {
       // Add the second move to the moves array in the payload
       movesData.moves.push({
@@ -129,14 +156,10 @@ let initBoard = (username) => {
         promotion: secondMove.promotion
       });
     }
-  
-    // Send the moves to the opponent
     fn(movesData);
-    
-    // Reset the turn control
     turn = false;
   }
-  
+
 
   function endTurn() {
     proceedToOpponentTurn();
@@ -147,38 +170,59 @@ let initBoard = (username) => {
   };
 
   // This function handles the arrival of the opponent's move data
-  const onMove = (fen) => {
-    board.position(fen);
-    engine.load(fen);
+  const onMove = (data) => {
+    // Remove all existing arrows
+    const svg = document.querySelector('.chessboard-svg-overlay');
+    const existingArrows = svg.querySelectorAll('line');
+    existingArrows.forEach((arrow) => arrow.remove());
+  
+    // Rest of the onMove function
+    board.position(data.fen);
+    engine.load(data.fen);
     turnCounter++;
-    if (turnCounter == 1 && predictedMove) {
-      verifyPrediction(predictedMove);
+    if (turnCounter >= 1 && predictedMove) {
+      verifyPrediction(data.moves);
     }
     actionCount = 0;
     turn = true;
     firstMove = null;
     secondMove = null;
-  };
+  };  
 
-  function drawBetArrow(from, to, color) {
+  function drawArrow(from, to, color, arrowColor) {
     const fromPos = notationToPosition(from, color);
     const toPos = notationToPosition(to, color);
-
     const svg = document.querySelector('.chessboard-svg-overlay');
-    if (!svg) {
-      console.error("SVG overlay not found. Ensure your chessboard has a corresponding SVG overlay for drawing.");
-      return;
-    }
+    const defs = svg.querySelector('defs') || document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    svg.appendChild(defs);
 
-    const arrow = document.createElementNS("http://www.w3.org/2000/svg", 'line');
-    arrow.setAttribute('x1', fromPos.x);
-    arrow.setAttribute('y1', fromPos.y);
-    arrow.setAttribute('x2', toPos.x);
-    arrow.setAttribute('y2', toPos.y);
-    arrow.setAttribute('stroke', 'blue');
-    arrow.setAttribute('stroke-width', 2);
-    arrow.setAttribute('marker-end', 'url(#arrowhead)');
-    svg.appendChild(arrow);
+    // Define the arrow marker
+    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+    marker.setAttribute('id', 'arrowhead');
+    marker.setAttribute('viewBox', '0 0 10 10');
+    marker.setAttribute('refX', '0');
+    marker.setAttribute('refY', '5');
+    marker.setAttribute('orient', 'auto');
+    marker.setAttribute('markerWidth', '3');
+    marker.setAttribute('markerHeight', '3');
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', 'M 0 0 L 10 5 L 0 10 z');
+    path.setAttribute('fill', arrowColor);
+    marker.appendChild(path);
+    defs.appendChild(marker);
+
+    // Draw the arrow
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', fromPos.x);
+    line.setAttribute('y1', fromPos.y);
+    line.setAttribute('x2', toPos.x);
+    line.setAttribute('y2', toPos.y);
+    line.setAttribute('stroke', arrowColor);
+    line.setAttribute('stroke-width', '10');
+    line.setAttribute('marker-end', 'url(#arrowhead)');
+
+    svg.appendChild(line);
   }
 
   function notationToPosition(notation, color) {
