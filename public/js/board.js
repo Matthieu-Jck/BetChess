@@ -60,6 +60,10 @@ let initBoard = (username) => {
   }
 
   function onDrop(source, target) {
+    if (source === target){
+      return 'snapback';
+    }
+    
     if (actionCount === 0) {
       possibleMoves = engine.moves({ verbose: true });
 
