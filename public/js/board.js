@@ -62,15 +62,24 @@ let initBoard = (username) => {
   function onDrop(source, target) {
     if (actionCount === 0) {
       possibleMoves = engine.moves({ verbose: true });
+
       if (correctBet) {
+        console.log("MOVE_1 | CORRECT BET");
         firstMove = ({
           from: source,
-          to: target
+          to: target,
+          promotion: 'q'
         })
-        drawArrow(source,target,gameData.color,gameData.color);
+        firstPieceToMove = engine.get(firstMove.from);
+        engine.remove(firstMove.from);
+        engine.put(firstPieceToMove, firstMove.to);
+        drawArrow(source, target, gameData.color, gameData.color);
         actionCount++;
         return 'snapback';
       }
+
+      console.log("MOVE_1 | INCORRECT BET");
+
       firstMove = engine.move({
         from: source,
         to: target,
@@ -84,6 +93,7 @@ let initBoard = (username) => {
 
     if (actionCount === 1) {
       if (correctBet) {
+        console.log("MOVE_2 | CORRECT BET");
         let valid = false;
         for (let m of possibleMoves) {
           if (m.from === source && m.to === target && m) {
@@ -91,23 +101,26 @@ let initBoard = (username) => {
           }
         }
         if (!valid) {
+          console.log("INVALID MOVE. Possible moves: ", possibleMoves, " | Move: ", source, "/", target);
           return 'snapback';
         }
-        console.log("O");
+        secondMove = engine.move({
+          from: source,
+          to: target,
+          promotion: 'q'
+        });
+        drawArrow(source, target, gameData.color, gameData.color);
         secondPieceToMove = engine.get(source);
-        engine.remove(source);
-        engine.put(secondPieceToMove, target);
-        console.log("U");
-        firstPieceToMove = engine.get(firstMove.from);
-        console.log("fm.s: ",firstMove.from," / firstPieceToMove: ",firstPieceToMove);
-        engine.remove(firstMove.from);
-        engine.put(firstPieceToMove, firstMove.to);
-        correctBet = false;
+        board.position(engine.fen());
+        setTimeout(() => {
+          removeArrows();
+        }, 500);
       }
       else {
+        console.log("MOVE_2 | INCORRECT BET");
         predictedMove = { from: source, to: target };
         let arrowColor = gameData.color === 'white' ? 'black' : 'white';
-        drawArrow(source, target, gameData.color, arrowColor);        
+        drawArrow(source, target, gameData.color, arrowColor);
         endTurn();
         return 'snapback';
       }
@@ -121,14 +134,16 @@ let initBoard = (username) => {
   }
 
   function verifyPrediction(opponentMoves) {
+    correctBet = false;
     for (let opponentMove of opponentMoves) {
       if (opponentMove && predictedMove && opponentMove.from === predictedMove.from && opponentMove.to === predictedMove.to) {
         correctBet = true;
         console.log(`Prediction correct! Extra turn granted.`);
-      } else {
-        correctBet = false;
-        console.log(`Prediction incorrect or move details not provided.`);
+        break;
       }
+    }
+    if (!correctBet) {
+      console.log(`Prediction incorrect or move details not provided.`);
     }
   }
 
@@ -136,7 +151,8 @@ let initBoard = (username) => {
     // Determine the opponent's username
     const opponent = gameData.player1 === username ? gameData.player2 : gameData.player1;
 
-    // Build the data payload for the first move
+    // Build the data payload
+    // Give moves to verify prediction
     let movesData = {
       fen: engine.fen(),
       from: username,
@@ -157,6 +173,7 @@ let initBoard = (username) => {
       });
     }
     fn(movesData);
+    correctBet = false;
     turn = false;
   }
 
@@ -171,12 +188,8 @@ let initBoard = (username) => {
 
   // This function handles the arrival of the opponent's move data
   const onMove = (data) => {
-    // Remove all existing arrows
-    const svg = document.querySelector('.chessboard-svg-overlay');
-    const existingArrows = svg.querySelectorAll('line');
-    existingArrows.forEach((arrow) => arrow.remove());
-  
-    // Rest of the onMove function
+    removeArrows();
+
     board.position(data.fen);
     engine.load(data.fen);
     turnCounter++;
@@ -187,18 +200,25 @@ let initBoard = (username) => {
     turn = true;
     firstMove = null;
     secondMove = null;
-  };  
+  };
 
   function drawArrow(from, to, color, arrowColor) {
     const fromPos = notationToPosition(from, color);
     const toPos = notationToPosition(to, color);
     const svg = document.querySelector('.chessboard-svg-overlay');
-    const defs = svg.querySelector('defs') || document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+
+    // Remove existing defs and marker
+    const existingDefs = svg.querySelector('defs');
+    if (existingDefs) {
+      existingDefs.parentNode.removeChild(existingDefs);
+    }
+
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     svg.appendChild(defs);
 
     // Define the arrow marker
     const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
-    marker.setAttribute('id', 'arrowhead');
+    marker.setAttribute('id', `arrowhead-${color}`);
     marker.setAttribute('viewBox', '0 0 10 10');
     marker.setAttribute('refX', '0');
     marker.setAttribute('refY', '5');
@@ -220,7 +240,7 @@ let initBoard = (username) => {
     line.setAttribute('y2', toPos.y);
     line.setAttribute('stroke', arrowColor);
     line.setAttribute('stroke-width', '10');
-    line.setAttribute('marker-end', 'url(#arrowhead)');
+    line.setAttribute('marker-end', `url(#arrowhead-${color})`);
 
     svg.appendChild(line);
   }
@@ -243,6 +263,12 @@ let initBoard = (username) => {
       x: file * squareSize + squareSize / 2, // Center of the square horizontally
       y: rank * squareSize + squareSize / 2  // Center of the square vertically
     };
+  }
+
+  function removeArrows() {
+    const svg = document.querySelector('.chessboard-svg-overlay');
+    const existingArrows = svg.querySelectorAll('line');
+    existingArrows.forEach((arrow) => arrow.remove());
   }
 
   return {
