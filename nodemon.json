@@ -1,0 +1,7 @@
+{
+    "watch": ["src", "config", "public", "public/index.html", "src/app.js"],
+    "ext": "js,json,html,css",
+    "ignore": ["node_modules"],
+    "exec": "node src/app.js"
+  }
+  

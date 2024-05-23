@@ -1,4 +1,4 @@
-const game = (ws, board) => {
+export const game = (ws, board) => {
   const onGameStart = (data) => board.startGame(data);
 
   const onMove = (data) => {
@@ -12,3 +12,5 @@ const game = (ws, board) => {
   ws.initiate(onGameStart, onMove);
   board.initiate(onPlayerMove);
 };
+
+export default game;

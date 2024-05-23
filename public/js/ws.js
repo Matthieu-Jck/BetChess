@@ -1,4 +1,4 @@
-const connectWs = (userName, onPlayersFn) => {
+export const connectWs = (userName, onPlayersFn) => {
   const socket = io(window.SOCKET_URL);
 
   let onGameStartFn = null;
@@ -29,3 +29,5 @@ const connectWs = (userName, onPlayersFn) => {
 
   return { initiate, onMove };
 };
+
+export default connectWs;

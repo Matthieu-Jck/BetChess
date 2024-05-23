@@ -4,7 +4,7 @@
 }
 
 .board-b72b1 {
-    border: 2px solid #404040;
+    border: 3px solid #404040;
     box-sizing: content-box
 }
 
@@ -43,7 +43,6 @@
 
 .alpha-d2270 {
     bottom: 1px;
-    right: 3px
 }
 
 .numeric-fc462 {

@@ -1,4 +1,4 @@
-const displayPlayers = (me, players, fn) => {
+export const displayPlayers = (me, players, fn) => {
   const playerList = document.createElement("ul");
   playerList.setAttribute('id', 'players-ul');
 
@@ -27,3 +27,5 @@ const displayPlayers = (me, players, fn) => {
   }
   parent.appendChild(playerList);
 };
+
+export default displayPlayers;

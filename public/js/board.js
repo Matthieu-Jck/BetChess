@@ -1,4 +1,6 @@
-let initBoard = (username) => {
+import { startTimer, switchTimer, setupTimers } from './timer.js';
+
+const initBoard = (username) => {
   let board = null;
   let engine = new Chess();
   let fn = null;
@@ -9,6 +11,8 @@ let initBoard = (username) => {
   let firstMove = null;
   let secondMove = null;
   let predictedMove = null;
+  let firstPieceToMove = null;
+  let secondPieceToMove = null;
 
   let turnCounter = 0;
   let correctBet = false;
@@ -21,7 +25,6 @@ let initBoard = (username) => {
     let illegal = gameData.color === color && piece.search(new RegExp(`^${color === "white" ? 'b' : 'w'}`)) !== -1;
     return illegal;
   };
-
 
   const startGame = (data) => {
     gameData = {
@@ -37,6 +40,12 @@ let initBoard = (username) => {
       pieceTheme: '/public/images/pieces/{piece}.svg',
     };
     board = Chessboard('chess-board', config);
+    setupTimers(gameData.color);
+    if (gameData.color === 'white') {
+      startTimer('my', 'white');
+    } else {
+      startTimer('opponent', 'white');
+    }
   };
 
   function onDragStart(source, piece, position, orientation) {
@@ -60,10 +69,10 @@ let initBoard = (username) => {
   }
 
   function onDrop(source, target) {
-    if (source === target){
+    if (source === target) {
       return 'snapback';
     }
-    
+
     if (actionCount === 0) {
       possibleMoves = engine.moves({ verbose: true });
 
@@ -179,8 +188,8 @@ let initBoard = (username) => {
     fn(movesData);
     correctBet = false;
     turn = false;
+    switchTimer('my');
   }
-
 
   function endTurn() {
     proceedToOpponentTurn();
@@ -204,7 +213,9 @@ let initBoard = (username) => {
     turn = true;
     firstMove = null;
     secondMove = null;
+    switchTimer('opponent');
   };
+
 
   function drawArrow(from, to, color, arrowColor) {
     const fromPos = notationToPosition(from, color);
@@ -280,4 +291,7 @@ let initBoard = (username) => {
     startGame,
     onMove
   };
+
 };
+
+export default initBoard;

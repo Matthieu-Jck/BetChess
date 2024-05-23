@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="/public/css/chessboard.css" />
   <link rel="stylesheet" href="/public/css/main.css" />
   <link rel="stylesheet" href="/public/css/header.css" />
+  <link rel="stylesheet" href="/public/css/timer.css" />
 </head>
 <body>
   <header class="game-header">
@@ -21,9 +22,11 @@
 
   <div class="main-content">
     <div class="board-container">
+      <div id="top_timer">10:00</div>
       <div id="chess-board" class="chess-board"></div>
       <svg class="chessboard-svg-overlay">
       </svg>
+      <div id="bottom_timer">10:00</div>
     </div>
     <div id="players" class="players">
       <div id="players-title">Players online</div>
@@ -35,12 +38,14 @@
   <script src="/public/lib/chess.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
 
-  <script src="/public/js/header.js" defer></script>
-  <script src="/public/js/players.js"></script>
-  <script src="/public/js/board.js"></script>
-  <script src="/public/js/ws.js"></script>
-  <script src="/public/js/game.js"></script>
-  <script src="/public/ws-chess.js"></script>
+  <script src="/public/js/header.js" type="module" defer></script>
+  <script src="/public/js/players.js" type="module"></script>
+  <script src="/public/js/board.js" type="module"></script>
+  <script src="/public/js/timer.js" type="module"></script>
+  <script src="/public/js/ws.js" type="module"></script>
+  <script src="/public/js/game.js" type="module"></script>
+  <script src="/public/ws-chess.js" type="module"></script>  
+  
   <script>
     $(document).ready(function() {
       $('#toggle-players').on('click', function() {

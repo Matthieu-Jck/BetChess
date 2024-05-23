@@ -1,0 +1,23 @@
+#top_timer,
+#bottom_timer {
+    background-color: rgb(0, 0, 0);
+    color: white;
+    border-radius: 5px;
+    display: none;
+    /* Hide timers initially */
+    text-align: center;
+    font-size: 1.5em;
+}
+
+#top_timer {
+    margin-bottom: 0.3rem;
+    padding: 0 0.5rem;
+    width: fit-content;
+}
+
+#bottom_timer {
+    margin-top: 0.3rem;
+    padding: 0 0.5rem;
+    width: fit-content;
+    margin-left: auto;
+}
