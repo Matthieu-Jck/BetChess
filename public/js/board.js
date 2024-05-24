@@ -1,5 +1,3 @@
-import { startTimer, switchTimer, setupTimers } from './timer.js';
-
 const initBoard = (username) => {
   let board = null;
   let engine = new Chess();
@@ -40,12 +38,6 @@ const initBoard = (username) => {
       pieceTheme: '/public/images/pieces/{piece}.svg',
     };
     board = Chessboard('chess-board', config);
-    setupTimers(gameData.color);
-    if (gameData.color === 'white') {
-      startTimer('my', 'white');
-    } else {
-      startTimer('opponent', 'white');
-    }
   };
 
   function onDragStart(source, piece, position, orientation) {
@@ -188,7 +180,6 @@ const initBoard = (username) => {
     fn(movesData);
     correctBet = false;
     turn = false;
-    switchTimer('my');
   }
 
   function endTurn() {
@@ -213,7 +204,6 @@ const initBoard = (username) => {
     turn = true;
     firstMove = null;
     secondMove = null;
-    switchTimer('opponent');
   };
 
 

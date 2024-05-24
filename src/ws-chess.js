@@ -1,5 +1,6 @@
 import { Server } from "socket.io";
 import { v4 as uuidv4 } from "uuid";
+import { handleTimerEvents } from "../public/js/timer.js";
 
 let socketIO = null;
 const players = [];
@@ -37,9 +38,8 @@ const onChallenge = (data) => {
 
 const onMove = (data) => {
   const player = findPlayer(data.to);
-  console.log("Sending move to other player", data);
   if (player && player.socketId) {
-    socketIO.to(player.socketId).emit("move", data); // Send entire data object
+    socketIO.to(player.socketId).emit("move", data);
   } else {
     console.log("Player not found or invalid socket ID", data);
   }
@@ -50,6 +50,8 @@ const onConnect = (socket) => {
   socket.on("disconnect", onDisconnect(socket));
   socket.on("challenge", onChallenge);
   socket.on("move", (data) => onMove(data));
+  
+  handleTimerEvents(socket, socketIO);
 };
 
 const wsChess = (server) => {
