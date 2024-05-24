@@ -1,71 +1,67 @@
-let whiteTime = 600; // 10 minutes in seconds
-let blackTime = 600; // 10 minutes in seconds
-let whiteTimerInterval = null;
-let blackTimerInterval = null;
+let whiteTime = 600, blackTime = 600;
+let whiteTimerInterval = null, blackTimerInterval = null;
 let gameEnded = false;
 
-const startTimer = (color, io) => {
-  if (gameEnded) return;
-  if (color === 'white') {
+const clearTimers = () => {
     clearInterval(whiteTimerInterval);
-    whiteTimerInterval = setInterval(() => {
-      whiteTime--;
-      io.emit('timerUpdate', { color: 'white', time: whiteTime });
-      if (whiteTime <= 0 && !gameEnded) {
-        clearInterval(whiteTimerInterval);
-        clearInterval(blackTimerInterval);
-        io.emit('gameEnd', { result: 'White loses on time!' });
-        gameEnded = true;
-      }
-    }, 1000);
-  } else {
     clearInterval(blackTimerInterval);
-    blackTimerInterval = setInterval(() => {
-      blackTime--;
-      io.emit('timerUpdate', { color: 'black', time: blackTime });
-      if (blackTime <= 0 && !gameEnded) {
-        clearInterval(whiteTimerInterval);
-        clearInterval(blackTimerInterval);
-        io.emit('gameEnd', { result: 'Black loses on time!' });
-        gameEnded = true;
-      }
-    }, 1000);
-  }
 };
 
-const switchTimer = (color, io) => {
-  if (color === 'white') {
-    clearInterval(blackTimerInterval);
-    startTimer('white', io); 
-  } else {
-    clearInterval(whiteTimerInterval);
-    startTimer('black', io);
-  }
+const handleTimeUpdate = (color, io) => {
+    if (color === 'white') {
+        whiteTime--;
+        if (whiteTime <= 0) {
+            io.emit('gameEnd', { result: 'White loses on time!' });
+            gameEnded = true;
+        }
+        io.emit('timerUpdate', { color, time: whiteTime });
+    } else {
+        blackTime--;
+        if (blackTime <= 0) {
+            io.emit('gameEnd', { result: 'Black loses on time!' });
+            gameEnded = true;
+        }
+        io.emit('timerUpdate', { color, time: blackTime });
+    }
 };
+
+const startTimer = (color, io) => {
+    if (gameEnded) return;
+    clearTimers();
+    const interval = setInterval(() => {
+        handleTimeUpdate(color, io);
+        if (gameEnded) {
+            clearTimers();
+        }
+    }, 1000);
+    if (color === 'white') {
+        whiteTimerInterval = interval;
+    } else {
+        blackTimerInterval = interval;
+    }
+};
+
+const switchTimer = (color, io) => startTimer(color, io);
 
 export const handleTimerEvents = (socket, io) => {
-  socket.on("startTimer", (data) => startTimer(data.color, io));
-  socket.on("switchTimer", (data) => switchTimer(data.color, io));
+    socket.on("startTimer", ({ color }) => startTimer(color, io));
+    socket.on("switchTimer", ({ color }) => switchTimer(color, io));
 };
 
 export const updateTimerDisplay = (elementId, time) => {
-  const minutes = Math.floor(time / 60);
-  const seconds = time % 60;
-  document.getElementById(elementId).innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    document.getElementById(elementId).innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 };
 
 export const setupTimers = (color) => {
-  document.getElementById('top_timer').style.display = 'block';
-  document.getElementById('bottom_timer').style.display = 'block';
-  if (color === 'white') {
-    document.getElementById('bottom_timer').style.backgroundColor = 'white';
-    document.getElementById('bottom_timer').style.color = 'black';
-    document.getElementById('top_timer').style.backgroundColor = 'rgba(0, 0, 0)';
-    document.getElementById('top_timer').style.color = 'white';
-  } else {
-    document.getElementById('top_timer').style.backgroundColor = 'white';
-    document.getElementById('top_timer').style.color = 'black';
-    document.getElementById('bottom_timer').style.backgroundColor = 'rgba(0, 0, 0)';
-    document.getElementById('bottom_timer').style.color = 'white';
-  }
+    const [topTimer, bottomTimer] = ['top_timer', 'bottom_timer'].map(id => document.getElementById(id));
+    [topTimer, bottomTimer].forEach(timer => {
+        timer.style.display = 'block';
+        updateTimerDisplay(timer.id, timer.id === 'top_timer' ? blackTime : whiteTime);
+    });
+
+    const timerStyles = { white: { backgroundColor: 'white', color: 'black' }, black: { backgroundColor: 'black', color: 'white' } };
+    Object.assign(bottomTimer.style, timerStyles[color]);
+    Object.assign(topTimer.style, timerStyles[color === 'white' ? 'black' : 'white']);
 };
