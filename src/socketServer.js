@@ -36,7 +36,7 @@ const onChallenge = (data) => {
   socketIO.to(challengee.socketId).emit("gameStart", message);
 };
 
-const onMove = (data) => {
+const onMoveSent = (data) => {
   const player = findPlayer(data.to);
   if (player && player.socketId) {
     socketIO.to(player.socketId).emit("move", data);
@@ -49,7 +49,7 @@ const onConnect = (socket) => {
   socket.on("userConnected", onUserConnected(socket));
   socket.on("disconnect", onDisconnect(socket));
   socket.on("challenge", onChallenge);
-  socket.on("move", (data) => onMove(data));
+  socket.on("move", (data) => onMoveSent(data));
   
   handleTimerEvents(socket, socketIO);
 };

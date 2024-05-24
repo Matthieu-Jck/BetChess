@@ -1,22 +1,22 @@
 import { setupTimers } from './timer.js';
 
-export const game = (ws, board) => {
+export const game = (socketClient, board) => {
   const onGameStart = (data) => {
     board.startGame(data);
-    const playerColor = data.white === ws.userName ? 'white' : 'black';
+    const playerColor = data.white === socketClient.userName ? 'white' : 'black';
     setupTimers(playerColor);
   };
 
-  const onMove = (data) => {
-    board.onMove(data);
+  const onMoveReceived = (data) => {
+    board.onMoveReceived(data);
   };
 
-  const onPlayerMove = (data) => {
-    ws.onMove(data);
+  const onMoveSent = (data) => {
+    socketClient.onMoveSent(data);
   };
 
-  ws.initiate(onGameStart, onMove);
-  board.initiate(onPlayerMove);
+  socketClient.initiate(onGameStart, onMoveReceived);
+  board.initiate(onMoveSent);
 };
 
 export default game;

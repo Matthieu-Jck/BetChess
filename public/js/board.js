@@ -191,7 +191,7 @@ const initBoard = (username) => {
   };
 
   // This function handles the arrival of the opponent's move data
-  const onMove = (data) => {
+  const onMoveReceived = (data) => {
     removeArrows();
 
     board.position(data.fen);
@@ -279,7 +279,7 @@ const initBoard = (username) => {
   return {
     initiate,
     startGame,
-    onMove
+    onMoveReceived
   };
 
 };
