@@ -7,7 +7,7 @@ let gameEnded = false;
 let playerColor = null;
 let username = null;
 
-export const connectWs = (userName, onPlayersFn) => {
+export const socketClient = (userName, onPlayersFn) => {
   const socket = io(window.SOCKET_URL);
 
   let onGameStartFn = null;
@@ -50,7 +50,7 @@ export const connectWs = (userName, onPlayersFn) => {
 
   return {
     initiate,
-    onMove: (data) => emitEvent("move", data),
+    onMoveSent: (data) => emitEvent("move", data),
     startTimer: (color) => emitEvent("startTimer", { color }),
     switchTimer: (color) => emitEvent("switchTimer", { color }),
     setupTimers
@@ -63,7 +63,7 @@ const initializeGame = () => {
   }
 
   if (username) {
-    const ws = connectWs(username, displayPlayers);
+    const ws = socketClient(username, displayPlayers);
     const board = initBoard(username);
     game(ws, board);
   }
@@ -73,4 +73,4 @@ if (typeof window !== 'undefined') {
   window.addEventListener('load', initializeGame);
 }
 
-export default connectWs;
+export default socketClient;
