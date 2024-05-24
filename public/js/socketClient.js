@@ -8,35 +8,38 @@ let playerColor = null;
 let username = null;
 
 export const socketClient = (userName, onPlayersFn) => {
-  const socket = io(window.SOCKET_URL);
 
   let onGameStartFn = null;
   let onMoveFn = null;
-
-  const initiate = (startFn, moveFn) => {
-    onGameStartFn = startFn;
-    onMoveFn = moveFn;
-  };
-
+  const socket = io(window.SOCKET_URL);
   const emitEvent = (event, data) => socket.emit(event, data);
+  const initiate = (startFn, moveFn) => {onGameStartFn = startFn; onMoveFn = moveFn;};
 
   socket.on("connect", () => emitEvent("userConnected", { userName }));
+
   socket.on("players", (data) => onPlayersFn(userName, data, (players) => emitEvent("challenge", players)));
-  
-  socket.on("gameStart", (data) => {
-    onGameStartFn(data);
-    playerColor = data.white === userName ? 'white' : 'black';
-    setupTimers(playerColor);
-    if (playerColor === 'white') emitEvent("startTimer", { color: 'white' });
+
+  socket.on("gameStart", (gameData) => {
+    console.log("Game started:", gameData);
+    onGameStartFn(gameData);
+    playerColor = gameData.white === userName ? 'white' : 'black';
+    setupTimers(userName, playerColor);
+    if (playerColor === 'white') {
+      console.log("Emitting startTimer for white player:", userName);
+      emitEvent("startTimer", { color: 'white', userName: userName });
+    }
   });
 
   socket.on("move", (data) => {
+    console.log("Move received:", data);
     onMoveFn(data);
-    emitEvent("switchTimer", { color: playerColor });
+    emitEvent("switchTimer", { color: playerColor, userName });
   });
 
   socket.on('timerUpdate', (data) => {
+    console.log('Timer update received:', data);
     const timerId = data.color === playerColor ? 'bottom_timer' : 'top_timer';
+    console.log(`Updating timer display for ${timerId} with time: ${data.time}`);
     updateTimerDisplay(timerId, data.time);
   });
 
@@ -48,7 +51,7 @@ export const socketClient = (userName, onPlayersFn) => {
   return {
     initiate,
     onMoveSent: (data) => emitEvent("move", data),
-    startTimer: (color) => emitEvent("startTimer", { color }),
+    startTimer: (color, userName) => emitEvent("startTimer", { color, userName }),
     switchTimer: (color) => emitEvent("switchTimer", { color }),
     setupTimers
   };

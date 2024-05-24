@@ -154,7 +154,7 @@ const initBoard = (username) => {
 
   function proceedToOpponentTurn() {
     // Determine the opponent's username
-    const opponent = gameData.player1 === username ? gameData.player2 : gameData.player1;
+    const opponent = gameData.white === username ? gameData.black : gameData.white;
 
     // Build the data payload
     // Give moves to verify prediction

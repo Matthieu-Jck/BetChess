@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
 import { v4 as uuidv4 } from "uuid";
-import { handleTimerEvents } from "../public/js/timer.js";
+import { startTimer } from "../src/timerServer.js";
 
 let socketIO = null;
 const players = [];
@@ -29,8 +29,7 @@ const onChallenge = (data) => {
   const message = {
     gameId: uuidv4(),
     white: challenger.username,
-    player1: challenger.username,
-    player2: challengee.username,
+    black: challengee.username,
   };
   socketIO.to(challenger.socketId).emit("gameStart", message);
   socketIO.to(challengee.socketId).emit("gameStart", message);
@@ -50,13 +49,15 @@ const onConnect = (socket) => {
   socket.on("disconnect", onDisconnect(socket));
   socket.on("challenge", onChallenge);
   socket.on("move", (data) => onMoveSent(data));
-  
-  handleTimerEvents(socket, socketIO);
+  socket.on("startTimer", ({ color, userName }) => {
+    console.log(`Received startTimer event for ${color} player: ${userName}`);
+    startTimer(color, userName, socket);
+  });
 };
 
-const wsChess = (server) => {
+const socketServer = (server) => {
   socketIO = new Server(server);
   socketIO.on("connection", onConnect);
 };
 
-export default wsChess;
+export default socketServer;

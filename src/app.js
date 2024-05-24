@@ -3,7 +3,7 @@ import express from "express";
 import path from "path";
 import cors from "cors";
 import { createServer } from "http";
-import wsChess from "./socketServer.js";
+import socketServer from "./socketServer.js";
 import { config } from "dotenv";
 
 // Configuring dotenv
@@ -35,4 +35,4 @@ const server = createServer(app);
 server.listen(PORT, () => console.log(`Application started on port ${PORT}`));
 
 // WebSocket setup
-wsChess(server);
+socketServer(server);
