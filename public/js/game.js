@@ -3,8 +3,7 @@ import { setupTimers } from './timer.js';
 export const game = (socketClient, board) => {
   const onGameStart = (data) => {
     board.startGame(data);
-    const playerColor = data.white === socketClient.userName ? 'white' : 'black';
-    setupTimers(playerColor);
+    setupTimers(data.white === socketClient.userName ? 'white' : 'black');
   };
 
   const onMoveReceived = (data) => {

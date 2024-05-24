@@ -21,9 +21,8 @@ export const socketClient = (userName, onPlayersFn) => {
   const emitEvent = (event, data) => socket.emit(event, data);
 
   socket.on("connect", () => emitEvent("userConnected", { userName }));
-
   socket.on("players", (data) => onPlayersFn(userName, data, (players) => emitEvent("challenge", players)));
-
+  
   socket.on("gameStart", (data) => {
     onGameStartFn(data);
     playerColor = data.white === userName ? 'white' : 'black';
@@ -32,18 +31,16 @@ export const socketClient = (userName, onPlayersFn) => {
   });
 
   socket.on("move", (data) => {
-    console.log("Move event received", data);
     onMoveFn(data);
     emitEvent("switchTimer", { color: playerColor });
   });
 
   socket.on('timerUpdate', (data) => {
-    const timerId = (data.color === 'white') === (playerColor === 'white') ? 'bottom_timer' : 'top_timer';
+    const timerId = data.color === playerColor ? 'bottom_timer' : 'top_timer';
     updateTimerDisplay(timerId, data.time);
   });
 
   socket.on("gameEnd", (data) => {
-    console.log("Game end event received", data);
     alert(data.result);
     gameEnded = true;
   });
@@ -58,7 +55,7 @@ export const socketClient = (userName, onPlayersFn) => {
 };
 
 const initializeGame = () => {
-  if (username === null) {
+  if (!username) {
     username = prompt("Enter username");
   }
 
