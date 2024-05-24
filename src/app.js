@@ -3,7 +3,7 @@ import express from "express";
 import path from "path";
 import cors from "cors";
 import { createServer } from "http";
-import wsChess from "./ws-chess.js";
+import wsChess from "./socketServer.js";
 import { config } from "dotenv";
 
 // Configuring dotenv
