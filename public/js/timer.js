@@ -1,5 +1,4 @@
 const updateTimerDisplay = (elementId, time) => {
-    console.log("client updating timer display");
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
     document.getElementById(elementId).innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;

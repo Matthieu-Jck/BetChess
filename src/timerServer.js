@@ -1,49 +1,47 @@
 let playerTimers = {};
 
 const clearPlayerTimers = (userName) => {
-    if (playerTimers[userName]) {
-        clearInterval(playerTimers[userName].whiteTimerInterval);
-        clearInterval(playerTimers[userName].blackTimerInterval);
-        delete playerTimers[userName];
-    }
+  if (playerTimers[userName]) {
+      clearInterval(playerTimers[userName].whiteTimerInterval);
+      clearInterval(playerTimers[userName].blackTimerInterval);
+      delete playerTimers[userName];
+  }
 };
 
-export const handleTimeUpdate = (color, userName, socket) => {
-    console.log(`Updating time for ${color} player: ${userName}`);
-    const timer = playerTimers[userName];
-    if (!timer) return;
-  
-    const time = color === 'white' ? --timer.whiteTime : --timer.blackTime;
-    if (time <= 0) {
-        socket.emit('gameEnd', { result: `${color.charAt(0).toUpperCase() + color.slice(1)} loses on time!`, userName });
-      clearPlayerTimers(userName);
-    }
-    socket.emit('timerUpdate', { color, time, userName });
-  };
-  
-  export const startTimer = (color, userName, socket) => {
-    if (!playerTimers[userName]) {
-        playerTimers[userName] = {
-            whiteTime: 600,
-            blackTime: 600,
-            whiteTimerInterval: null,
-            blackTimerInterval: null,
-            gameEnded: false
-        };
-    }
-    console.log(`Starting timer for ${color} player: ${userName}`);
-    if (!playerTimers[userName] || playerTimers[userName].gameEnded) return;
-  
-    clearInterval(playerTimers[userName].whiteTimerInterval);
-    clearInterval(playerTimers[userName].blackTimerInterval);
-  
-    console.log("about to bust handleTimeUpdate")
-    const interval = setInterval(() => handleTimeUpdate(color, userName, socket), 1000);
-    if (color === 'white') {
-      playerTimers[userName].whiteTimerInterval = interval;
-    } else {
-      playerTimers[userName].blackTimerInterval = interval;
-    }
-  };
+export const handleTimeUpdate = (color, user1, user2, socket1, socket2) => {
+  console.log(`Updating time for ${color} player: ${user1}`);
+  const timer = playerTimers[user1];
+  if (!timer) return;
+
+  const time = color === 'white' ? --timer.whiteTime : --timer.blackTime;
+  if (time <= 0) {
+      socket.emit('gameEnd', { result: `${color.charAt(0).toUpperCase() + color.slice(1)} loses on time!`, user1 });
+      clearPlayerTimers(user1);
+  }
+  socket1.emit('timerUpdate', { color, time });
+  socket2.emit('timerUpdate', { color, time });
+};
+
+export const startTimer = (color, user1, user2, socket1, socket2) => {
+  if (!playerTimers[user1]) {
+      playerTimers[user1] = {
+          whiteTime: 600,
+          blackTime: 600,
+          whiteTimerInterval: null,
+          blackTimerInterval: null,
+          gameEnded: false
+      };
+  }
+  console.log(`Starting timer for ${color} player: ${user1}`);
+  if (playerTimers[user1].gameEnded) return;
+
+  if (color === 'white') {
+      clearInterval(playerTimers[user1].whiteTimerInterval);
+      playerTimers[user1].whiteTimerInterval = setInterval(() => handleTimeUpdate(color, user1, user2, socket1, socket2), 1000);
+  } else {
+      clearInterval(playerTimers[user1].blackTimerInterval);
+      playerTimers[user1].blackTimerInterval = setInterval(() => handleTimeUpdate(color, user1, user2, socket1, socket2), 1000);
+  }
+};
 
 export { clearPlayerTimers };

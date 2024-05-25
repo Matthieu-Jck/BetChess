@@ -13,7 +13,7 @@ export const socketClient = (userName, onPlayersFn) => {
   let onMoveFn = null;
   const socket = io(window.SOCKET_URL);
   const emitEvent = (event, data) => socket.emit(event, data);
-  const initiate = (startFn, moveFn) => {onGameStartFn = startFn; onMoveFn = moveFn;};
+  const initiate = (startFn, moveFn) => { onGameStartFn = startFn; onMoveFn = moveFn; };
 
   socket.on("connect", () => emitEvent("userConnected", { userName }));
 
@@ -26,7 +26,7 @@ export const socketClient = (userName, onPlayersFn) => {
     setupTimers(userName, playerColor);
     if (playerColor === 'white') {
       console.log("Emitting startTimer for white player:", userName);
-      emitEvent("startTimer", { color: 'white', userName: userName });
+      emitEvent("startTimer", { color: 'white', user1: userName, user2: gameData.black });
     }
   });
 
@@ -39,7 +39,6 @@ export const socketClient = (userName, onPlayersFn) => {
   socket.on('timerUpdate', (data) => {
     console.log('Timer update received:', data);
     const timerId = data.color === playerColor ? 'bottom_timer' : 'top_timer';
-    console.log(`Updating timer display for ${timerId} with time: ${data.time}`);
     updateTimerDisplay(timerId, data.time);
   });
 
@@ -51,7 +50,7 @@ export const socketClient = (userName, onPlayersFn) => {
   return {
     initiate,
     onMoveSent: (data) => emitEvent("move", data),
-    startTimer: (color, userName) => emitEvent("startTimer", { color, userName }),
+    startTimer: (color, user1, user2) => emitEvent("startTimer", { color, user1, user2 }),
     switchTimer: (color) => emitEvent("switchTimer", { color }),
     setupTimers
   };
