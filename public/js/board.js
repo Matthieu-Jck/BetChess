@@ -153,11 +153,8 @@ const initBoard = (username) => {
   }
 
   function proceedToOpponentTurn() {
-    // Determine the opponent's username
-    const opponent = gameData.player1 === username ? gameData.player2 : gameData.player1;
-
-    // Build the data payload
-    // Give moves to verify prediction
+    const opponent = gameData.white === username ? gameData.black : gameData.white;
+    
     let movesData = {
       fen: engine.fen(),
       from: username,
@@ -170,7 +167,6 @@ const initBoard = (username) => {
     };
 
     if (secondMove !== null) {
-      // Add the second move to the moves array in the payload
       movesData.moves.push({
         from: secondMove.from,
         to: secondMove.to,
@@ -190,7 +186,6 @@ const initBoard = (username) => {
     fn = callback;
   };
 
-  // This function handles the arrival of the opponent's move data
   const onMoveReceived = (data) => {
     removeArrows();
 
@@ -211,8 +206,6 @@ const initBoard = (username) => {
     const fromPos = notationToPosition(from, color);
     const toPos = notationToPosition(to, color);
     const svg = document.querySelector('.chessboard-svg-overlay');
-
-    // Remove existing defs and marker
     const existingDefs = svg.querySelector('defs');
     if (existingDefs) {
       existingDefs.parentNode.removeChild(existingDefs);
@@ -220,8 +213,6 @@ const initBoard = (username) => {
 
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     svg.appendChild(defs);
-
-    // Define the arrow marker
     const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
     marker.setAttribute('id', `arrowhead-${color}`);
     marker.setAttribute('viewBox', '0 0 10 10');
@@ -236,8 +227,6 @@ const initBoard = (username) => {
     path.setAttribute('fill', arrowColor);
     marker.appendChild(path);
     defs.appendChild(marker);
-
-    // Draw the arrow
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', fromPos.x);
     line.setAttribute('y1', fromPos.y);
