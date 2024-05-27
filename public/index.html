@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="/public/css/main.css" />
   <link rel="stylesheet" href="/public/css/header.css" />
   <link rel="stylesheet" href="/public/css/timer.css" />
+  <link rel="stylesheet" href="/public/css/chester.css" />
 </head>
 <body>
   <header class="game-header">
@@ -21,11 +22,16 @@
   </header>
 
   <div class="main-content">
+    <div id="chester" class="chester">
+      <div class="dialogue-bubble">
+        Hello! Welcome to BetChess.
+      </div>
+      <img src="/public/images/chester/chester_still.png" alt="Chester Character" class="character-image">
+    </div>
     <div class="board-container">
       <div id="top_timer">10:00</div>
       <div id="chess-board" class="chess-board"></div>
-      <svg class="chessboard-svg-overlay">
-      </svg>
+      <svg class="chessboard-svg-overlay"></svg>
       <div id="bottom_timer">10:00</div>
     </div>
     <div id="players" class="players">

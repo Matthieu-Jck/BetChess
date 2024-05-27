@@ -18,8 +18,8 @@ export const handleTimeUpdate = (color, gameId, socket1, socket2) => {
 const initializePlayerTimers = (gameId) => {
   if (!playerTimers[gameId]) {
     playerTimers[gameId] = {
-      whiteTime: 600,
-      blackTime: 600,
+      whiteTime: 1200,
+      blackTime: 1200,
       whiteTimerInterval: null,
       blackTimerInterval: null,
       gameEnded: false

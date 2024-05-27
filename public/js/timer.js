@@ -10,7 +10,7 @@ const setupTimers = (gameData, color) => {
     const [topTimer, bottomTimer] = ['top_timer', 'bottom_timer'].map(id => document.getElementById(id));
     [topTimer, bottomTimer].forEach((timer, index) => {
         timer.style.display = 'block';
-        updateTimerDisplay(timer.id, 600);
+        updateTimerDisplay(timer.id, 1200);
     });
 
     const timerStyles = { white: { backgroundColor: 'white', color: 'black' }, black: { backgroundColor: 'black', color: 'white' } };

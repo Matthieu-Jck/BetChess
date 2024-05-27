@@ -9,7 +9,6 @@ body {
   font-family: 'Poppins', sans-serif;
   height: 100vh;
   overflow: hidden;
-  height: 100%;
   width: 100%;
   position: fixed;
 }
@@ -19,6 +18,7 @@ body {
   justify-content: center;
   align-items: stretch;
   width: 100%;
+  flex-wrap: wrap;
 }
 
 .board-container {
@@ -32,7 +32,6 @@ body {
 
 .chess-board {
   width: 100%;
-  height: 100%;
   position: relative;
   max-width: 700px;
   max-height: 700px;
@@ -60,4 +59,24 @@ body {
   right: 0px;
   transition: right 0.3s, display 1s;
   z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .board-container, .chester {
+    width: 100%;
+    height: auto;
+  }
+
+  .chester {
+    order: 2; /* Ensure it appears below the board-container */
+  }
+
+  .board-container {
+    order: 1;
+  }
 }
