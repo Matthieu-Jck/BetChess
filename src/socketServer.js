@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
 import { v4 as uuidv4 } from "uuid";
-import { startTimer, switchTimer } from "../src/timerServer.js";
+import { startTimer, switchTimer, clearPlayerTimers } from "../src/timerServer.js";
 
 let socketIO = null;
 const players = [];
@@ -8,6 +8,12 @@ const games = [];
 
 const findPlayer = (name) => players.find((player) => player.username === name);
 const findGameById = (gameId) => games.find((game) => game.gameId === gameId);
+const findGameByPlayers = (username1, username2) => {
+  return games.find(game => 
+    (game.white === username1 && game.black === username2) || 
+    (game.white === username2 && game.black === username1)
+  );
+};
 
 const removePlayerBySocketId = (socketId) => {
   const index = players.findIndex(player => player.socketId === socketId);
@@ -55,38 +61,41 @@ const onChallenge = (data) => {
 };
 
 const onMoveSent = (data) => {
-  const playerSender = findPlayer(data.from);
-  const playerReceiver = findPlayer(data.to);
+  let game = findGameByPlayers(data.from,data.to);
+  let playerReceiver = findPlayer(data.to);
   if (playerReceiver && playerReceiver.socketId) {
     socketIO.to(playerReceiver.socketId).emit("move", data);
-    onSwitchTimer({user1: playerSender, user2: playerReceiver});
+    console.log("switching timers for game: ",game);
+    onSwitchTimer({ game });
   } else {
     console.log("Player not found or invalid socket ID", data);
   }
 };
 
-const onStartTimer = ({ color, user1, user2 }) => {
-  const socket1 = getSocketByUsername(user1);
-  const socket2 = getSocketByUsername(user2);
+const onStartTimer = ({ game }) => {
+  let gameId = game.gameId;
+  let socket1 = getSocketByUsername(game.white);
+  let socket2 = getSocketByUsername(game.black);
   if (socket1 && socket2) {
-    startTimer(color, user1, socket1, socket2);
+    startTimer(gameId, socket1, socket2);
   } else {
     console.log('One or both player sockets not found');
   }
 };
 
-const onSwitchTimer = ({ user1, user2 }) => {
-  const socket1 = user1.socketId;
-  const socket2 = user2.socketId;
+const onSwitchTimer = ({ game }) => {
+  let gameId = game.gameId;
+  let socket1 = getSocketByUsername(game.white);
+  let socket2 = getSocketByUsername(game.black);
   if (socket1 && socket2) {
-    switchTimer(user2.username, socket1, socket2);
+    switchTimer(gameId, socket1, socket2);
   } else {
     console.log('One or both player sockets not found');
   }
 };
 
 const getSocketByUsername = (username) => {
-  const player = findPlayer(username);
+  let player = findPlayer(username);
   return player ? socketIO.sockets.sockets.get(player.socketId) : null;
 };
 
