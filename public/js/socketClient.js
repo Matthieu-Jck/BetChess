@@ -3,6 +3,7 @@ import initBoard from './board.js';
 import displayPlayers from './players.js';
 import game from './game.js';
 
+let gameData = null;
 let gameEnded = false;
 let playerColor = null;
 let username = null;
@@ -20,10 +21,9 @@ export const socketClient = (userName, onPlayersFn) => {
   socket.on("players", (data) => onPlayersFn(userName, data, (players) => emitEvent("challenge", players)));
 
   socket.on("gameStart", (gameData) => {
-    console.log("Game started:", gameData);
     onGameStartFn(gameData);
     playerColor = gameData.white === userName ? 'white' : 'black';
-    setupTimers(userName, playerColor);
+    setupTimers(gameData, playerColor);
     if (playerColor === 'white') {
       console.log("Emitting startTimer for white player:", userName);
       emitEvent("startTimer", { color: 'white', user1: userName, user2: gameData.black });
@@ -33,7 +33,6 @@ export const socketClient = (userName, onPlayersFn) => {
   socket.on("move", (data) => {
     console.log("Move received:", data);
     onMoveFn(data);
-    emitEvent("switchTimer", { color: playerColor, userName });
   });
 
   socket.on('timerUpdate', (data) => {
@@ -51,7 +50,6 @@ export const socketClient = (userName, onPlayersFn) => {
     initiate,
     onMoveSent: (data) => emitEvent("move", data),
     startTimer: (color, user1, user2) => emitEvent("startTimer", { color, user1, user2 }),
-    switchTimer: (color) => emitEvent("switchTimer", { color }),
     setupTimers
   };
 };

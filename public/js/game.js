@@ -4,7 +4,6 @@ export const game = (socketClient, board) => {
 
   const onGameStart = (gameData) => {
     board.startGame(gameData);
-    setupTimers(gameData, gameData.white === socketClient.userName ? 'white' : 'black');
   };
 
   const onMoveReceived = (data) => {
