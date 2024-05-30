@@ -1,38 +1,51 @@
 .chester {
-    background-color: #f4a261;
-    padding: 20px;
-    box-shadow: 3px 0 6px rgba(0,0,0,0.1);
-    flex: 1;
-    min-width: 200px; /* Minimum width to ensure it's not too small */
-    max-width: 300px; /* Maximum width for larger screens */
-    margin: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  padding: 20px;
+  width: 30%;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+.character-image {
+  width: 100%;
+  height: auto;
+  max-width: 300px;
+}
+
+.dialogue-bubble {
+  background-color: #fff;
+  border: 2px solid #000;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  position: relative;
+  max-width: 90%;
+}
+
+.dialogue-bubble:after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 20px;
+  border-width: 10px;
+  border-style: solid;
+  border-color: #fff transparent transparent transparent;
+}
+
+@media (max-width: 920px) {
+  .chester {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
   }
-  
+
   .character-image {
     width: 100%;
     height: auto;
-    max-width: 200px; /* Adjust based on your image size */
+    max-width: 200px;
   }
-  
-  .dialogue-bubble {
-    background-color: #fff;
-    border: 2px solid #000;
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 10px;
-    position: relative;
-    max-width: 90%;
-  }
-  
-  .dialogue-bubble:after {
-    content: '';
-    position: absolute;
-    bottom: -10px; /* Adjust based on the bubble position */
-    left: 20px; /* Adjust based on the bubble position */
-    border-width: 10px;
-    border-style: solid;
-    border-color: #fff transparent transparent transparent;
-  }  
+}

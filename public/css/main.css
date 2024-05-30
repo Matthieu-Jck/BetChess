@@ -2,6 +2,7 @@ body {
   margin: 0;
   padding: 0;
   display: flex;
+  box-sizing: border-box;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
@@ -15,26 +16,32 @@ body {
 
 .main-content {
   display: flex;
-  justify-content: center;
   align-items: stretch;
   width: 100%;
   flex-wrap: wrap;
+  height: 100%;
 }
 
 .board-container {
+  justify-content: center;
   position: relative;
-  width: 90vw;
-  height: 90vw;
+  width: 50%;
+  height: auto;
   margin-top: 20px;
-  max-width: 700px;
-  max-height: 800px;
+  box-sizing: border-box;
+}
+
+#chess-display {
+  width: 100%;
+  height: auto;
+  position: relative;
 }
 
 .chess-board {
   width: 100%;
   position: relative;
-  max-width: 700px;
-  max-height: 700px;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .chessboard-svg-overlay {
@@ -44,6 +51,7 @@ body {
   top: 0;
   left: 0;
   pointer-events: none;
+  z-index: 1;
 }
 
 .players {
@@ -61,22 +69,41 @@ body {
   z-index: 1;
 }
 
-@media (max-width: 768px) {
+.icon-in-bubble{
+  height: 1.5em
+}
+
+@media (max-width: 920px) {
   .main-content {
     flex-direction: column;
     align-items: center;
   }
 
-  .board-container, .chester {
+  .board-container{
     width: 100%;
-    height: auto;
-  }
-
-  .chester {
-    order: 2; /* Ensure it appears below the board-container */
+    padding: 1px;
+    margin-top: 5px;
+    margin-bottom: 5px;
   }
 
   .board-container {
     order: 1;
+  }
+
+  .chester {
+    order: 2;
+  }
+}
+
+/* for small laptops */
+@media screen and (max-height: 920px) and (min-width: 1000px) {
+  .board-container{
+    width: 35%;
+  }
+}
+
+@media (max-height: 600px) {
+  .board-container{
+    width: 25%;
   }
 }

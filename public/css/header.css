@@ -12,6 +12,12 @@
     z-index: 2;
 }
 
+.game-header {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
 .game-title {
     font-size: 200%;
     font-weight: 1000;
@@ -23,7 +29,26 @@
     margin-left: 0.3em;
 }
 
+.toggle-help {
+    height: 1.3em;
+    width: 1.3em;
+    position: absolute;
+    right: 60px;
+    background: none;
+    color: #FFFFFF;
+    font-size: 24px;
+    cursor: pointer;
+    border: none;
+    margin-right: 2em;
+    margin-top: 0.2em;
+    display: inline;
+    background-image: url('../images/icons/help.png');
+    background-size: cover;
+}
+
 .toggle-players {
+    height: 1.3em;
+    width: 1.3em;
     position: absolute;
     right: 0px;
     background: none;
@@ -34,4 +59,58 @@
     margin-right: 2em;
     margin-top: 0.2em;
     display: inline;
+    background-image: url('../images/icons/link.png');
+    background-size: cover;
 }
+
+@media (max-width: 920px) {
+    .game-header{
+        height: 2em;
+    }
+
+    .game-icon {
+        height: 4em;
+        margin-left: -0.2em;
+    }
+
+    .game-title {
+        font-size: 150%;
+        font-weight: 1000;
+    }
+
+    .toggle-help {
+        font-size: 18px;
+        margin-right: 2.5em;
+    }
+
+    .toggle-players {
+        font-size: 18px;
+        margin-right: 2.5em;
+    }
+}
+
+@media (max-height: 500px) {
+    .game-header{
+        height: 2em;
+    }
+
+    .game-icon {
+        height: 4em;
+        margin-left: -0.2em;
+    }
+
+    .game-title {
+        font-size: 150%;
+        font-weight: 1000;
+    }
+
+    .toggle-help {
+        font-size: 18px;
+        margin-right: 2.5em;
+    }
+
+    .toggle-players {
+        font-size: 18px;
+        margin-right: 2.5em;
+    }
+  }

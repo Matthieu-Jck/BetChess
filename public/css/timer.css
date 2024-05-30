@@ -4,7 +4,6 @@
     color: white;
     border-radius: 5px;
     display: none;
-    /* Hide timers initially */
     text-align: center;
     font-size: 1.5em;
 }
@@ -20,4 +19,11 @@
     padding: 0 0.5rem;
     width: fit-content;
     margin-left: auto;
+}
+
+@media (max-width: 920px) {
+    #top_timer,
+    #bottom_timer {
+        font-size: 1em;
+    }
 }

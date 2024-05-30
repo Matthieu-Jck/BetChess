@@ -154,7 +154,7 @@ const initBoard = (username) => {
 
   function proceedToOpponentTurn() {
     const opponent = gameData.white === username ? gameData.black : gameData.white;
-    
+
     let movesData = {
       fen: engine.fen(),
       from: username,
@@ -201,7 +201,6 @@ const initBoard = (username) => {
     secondMove = null;
   };
 
-
   function drawArrow(from, to, color, arrowColor) {
     const fromPos = notationToPosition(from, color);
     const toPos = notationToPosition(to, color);
@@ -219,8 +218,23 @@ const initBoard = (username) => {
     marker.setAttribute('refX', '0');
     marker.setAttribute('refY', '5');
     marker.setAttribute('orient', 'auto');
-    marker.setAttribute('markerWidth', '3');
-    marker.setAttribute('markerHeight', '3');
+
+    // Determine the size based on screen width
+    const screenWidth = window.innerWidth;
+    let markerSize, strokeWidth;
+    if (screenWidth < 600) {
+      markerSize = '2.25'; // Smaller size for smaller screens
+      strokeWidth = '7.5';
+    } else if (screenWidth < 1200) {
+      markerSize = '2.75'; // Medium size for medium screens
+      strokeWidth = '8.75';
+    } else {
+      markerSize = '3'; // Default size for larger screens
+      strokeWidth = '9.5';
+    }
+
+    marker.setAttribute('markerWidth', markerSize);
+    marker.setAttribute('markerHeight', markerSize);
 
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     path.setAttribute('d', 'M 0 0 L 10 5 L 0 10 z');
@@ -233,7 +247,7 @@ const initBoard = (username) => {
     line.setAttribute('x2', toPos.x);
     line.setAttribute('y2', toPos.y);
     line.setAttribute('stroke', arrowColor);
-    line.setAttribute('stroke-width', '10');
+    line.setAttribute('stroke-width', strokeWidth);
     line.setAttribute('marker-end', `url(#arrowhead-${color})`);
 
     svg.appendChild(line);

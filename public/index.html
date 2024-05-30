@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,26 +13,29 @@
   <link rel="stylesheet" href="/public/css/timer.css" />
   <link rel="stylesheet" href="/public/css/chester.css" />
 </head>
+
 <body>
   <header class="game-header">
     <img class="game-icon" src="/public/images/icons/BetChess.png" alt="BetChess Icon">
-    <div class="game-title">
-      BetChess
-    </div>
-    <button id="toggle-players" class="toggle-players">&#9776;</button>
+    <div class="game-title">BetChess</div>
+    <button id="toggle-help" class="toggle-help"></button>
+    <button id="toggle-players" class="toggle-players"></button>
   </header>
 
   <div class="main-content">
     <div id="chester" class="chester">
       <div class="dialogue-bubble">
-        Hello! Welcome to BetChess.
+          Hello! Welcome to BetChess. Here, each turn, you must bet on your opponent's next move. Start by inviting someone to play by clicking on the  <img src="/public/images/icons/link.png" alt="Invite Icon" class="icon-in-bubble"> icon.
       </div>
       <img src="/public/images/chester/chester_still.png" alt="Chester Character" class="character-image">
-    </div>
+  </div>  
+
     <div class="board-container">
-      <div id="top_timer">10:00</div>
-      <div id="chess-board" class="chess-board"></div>
-      <svg class="chessboard-svg-overlay"></svg>
+      <div id="top_timer">20:00</div>
+      <div id="chess-display">
+        <div id="chess-board" class="chess-board"></div>
+        <svg class="chessboard-svg-overlay"></svg>
+      </div>
       <div id="bottom_timer">10:00</div>
     </div>
     <div id="players" class="players">
@@ -50,13 +54,14 @@
   <script src="/public/js/timer.js" type="module"></script>
   <script src="/public/js/socketClient.js" type="module"></script>
   <script src="/public/js/game.js" type="module"></script>
-  
+
   <script>
-    $(document).ready(function() {
-      $('#toggle-players').on('click', function() {
+    $(document).ready(function () {
+      $('#toggle-players').on('click', function () {
         $('#players').toggleClass('show');
       });
     });
   </script>
 </body>
+
 </html>
