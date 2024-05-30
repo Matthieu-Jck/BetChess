@@ -4,11 +4,9 @@ const updateTimerDisplay = (elementId, time) => {
     document.getElementById(elementId).innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 };
 
-const setupTimers = (gameData, color) => {
-    console.log("Timer SETUP for ",color," , data: ",gameData);
-
+const setupTimers = (color) => {
     const [topTimer, bottomTimer] = ['top_timer', 'bottom_timer'].map(id => document.getElementById(id));
-    [topTimer, bottomTimer].forEach((timer, index) => {
+    [topTimer, bottomTimer].forEach((timer) => {
         timer.style.display = 'block';
         updateTimerDisplay(timer.id, 1200);
     });

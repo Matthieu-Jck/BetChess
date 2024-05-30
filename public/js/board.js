@@ -1,3 +1,5 @@
+import { sayCorrectBet, sayIncorrectBet } from "./chester.js";
+
 const initBoard = (username) => {
   let board = null;
   let engine = new Chess();
@@ -143,12 +145,12 @@ const initBoard = (username) => {
     for (let opponentMove of opponentMoves) {
       if (opponentMove && predictedMove && opponentMove.from === predictedMove.from && opponentMove.to === predictedMove.to) {
         correctBet = true;
-        console.log(`Prediction correct! Extra turn granted.`);
+        sayCorrectBet();
         break;
       }
     }
     if (!correctBet) {
-      console.log(`Prediction incorrect or move details not provided.`);
+      sayIncorrectBet()
     }
   }
 
@@ -188,7 +190,6 @@ const initBoard = (username) => {
 
   const onMoveReceived = (data) => {
     removeArrows();
-
     board.position(data.fen);
     engine.load(data.fen);
     turnCounter++;

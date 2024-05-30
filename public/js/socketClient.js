@@ -1,4 +1,5 @@
 import { updateTimerDisplay, setupTimers } from './timer.js';
+import { sayBegin } from './chester.js';
 import initBoard from './board.js';
 import displayPlayers from './players.js';
 import game from './game.js';
@@ -20,9 +21,10 @@ export const socketClient = (userName, onPlayersFn) => {
   socket.on("players", (data) => onPlayersFn(userName, data, (players) => emitEvent("challenge", players)));
 
   socket.on("gameStart", (gameData) => {
+    sayBegin();
     onGameStartFn(gameData);
     playerColor = gameData.white === userName ? 'white' : 'black';
-    setupTimers(gameData, playerColor);
+    setupTimers(playerColor);
     if (playerColor === 'white') {
       emitEvent("startTimer", { game: gameData });
     }
