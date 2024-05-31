@@ -1,0 +1,87 @@
+.players {
+    height: 100%;
+    width: 20em;
+    background-color: #2a9d8f;
+    box-shadow: -3px 0 6px rgba(0, 0, 0, 0.1);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    position: fixed;
+    right: 0;
+    transition: right 0.3s, display 1s;
+    z-index: 1;
+    padding-top: 1em;
+    font-size: 1.1em;
+}
+
+#players-title {
+    margin-bottom: 0.5em;
+    color: #263238;
+    font-weight: bold;
+    font-size: 1.7em;
+}
+
+#players-separator {
+    width: 90%;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.2);
+    margin-bottom: 1em;
+}
+
+#players-list-container {
+    width: 100%;
+    flex-grow: 1;
+}
+
+#players-ul {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+    margin: 0;
+}
+
+.player-item {
+    width: 100%;
+    padding: 0.8em 1em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #263238;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    transition: background-color 0.3s ease;
+    box-sizing: border-box;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+.player-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.invite-button {
+    background-color: #e9c46a;
+    color: #263238;
+    border: none;
+    padding: 0.3em 0.6em;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    flex-shrink: 0;
+    font-weight: 600;
+}
+
+.invite-button:hover {
+    background-color: #d65a3a;
+}
+
+.current-user {
+    font-size: 1.5em;
+    color: white;
+    margin-top: 1em;
+    padding: 0.8em 1em;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    width: 100%;
+    box-sizing: border-box;
+}

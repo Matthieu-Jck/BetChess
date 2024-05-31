@@ -1,7 +1,8 @@
 const togglePlayersButton = document.getElementById('toggle-players');
 togglePlayersButton.addEventListener('click', function () {
     var playersDiv = document.getElementById('players');
-    if (playersDiv.style.display === 'none') {
+    var computedStyle = window.getComputedStyle(playersDiv);
+    if (computedStyle.display === 'none') {
         playersDiv.style.display = 'flex';
     } else {
         playersDiv.style.display = 'none';

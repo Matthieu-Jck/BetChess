@@ -54,16 +54,18 @@ export const socketClient = (userName, onPlayersFn) => {
 };
 
 const initializeGame = () => {
-  if (!username) {
-    username = prompt("Enter username");
-  }
-
-  if (username) {
-    const ws = socketClient(username, displayPlayers);
-    const board = initBoard(username);
-    game(ws, board);
-  }
+  document.addEventListener('usernameSet', (event) => {
+    const username = event.detail.username;
+    if (username) {
+      const ws = socketClient(username, displayPlayers);
+      const board = initBoard(username);
+      game(ws, board);
+    }
+  });
+  $('body').append('<div id="popupContainer"></div>');
+  $('#popupContainer').load('/public/usernamePopup.html');
 };
+
 
 if (typeof window !== 'undefined') {
   window.addEventListener('load', initializeGame);
