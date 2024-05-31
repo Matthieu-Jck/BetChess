@@ -1,4 +1,4 @@
-import { sayCorrectBet, sayIncorrectBet } from "./chester.js";
+import { sayCorrectBet, sayIncorrectBet, sayBet, sayYourTurn, sayOpponentTurn } from "./chester.js";
 
 const initBoard = (username) => {
   let board = null;
@@ -92,6 +92,7 @@ const initBoard = (username) => {
         to: target,
         promotion: 'q'
       });
+      sayBet();
 
       if (firstMove === null) {
         return 'snapback';
@@ -150,7 +151,7 @@ const initBoard = (username) => {
       }
     }
     if (!correctBet) {
-      sayIncorrectBet()
+        sayIncorrectBet();
     }
   }
 
@@ -181,6 +182,7 @@ const initBoard = (username) => {
   }
 
   function endTurn() {
+    sayOpponentTurn();
     proceedToOpponentTurn();
   }
 
@@ -195,6 +197,9 @@ const initBoard = (username) => {
     turnCounter++;
     if (turnCounter >= 1 && predictedMove) {
       verifyPrediction(data.moves);
+    }
+    else{
+      sayYourTurn();
     }
     actionCount = 0;
     turn = true;

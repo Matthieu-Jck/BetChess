@@ -8,14 +8,18 @@ function sayBegin() {
     changeDialogueText("Alright, let's begin.");
 }
 
+function sayYourTurn(){
+    changeDialogueText("It's your turn now, try not to play a move easily predictable.");
+}
+
 // Function to display "Opponent's Turn" message
 function sayOpponentTurn() {
-    changeDialogueText('It\'s your opponent\'s turn. Wait for their move.');
+    changeDialogueText('It\'s your opponent\'s turn. Give him a second.');
 }
 
 // Function to display "Place Your Bet" message
 function sayBet() {
-    changeDialogueText('Place your bet on what you think your opponent\'s next move will be.');
+    changeDialogueText('Place your bet on what you think your opponent\'s next move will be by dragging one of his pieces.');
 }
 
 // Function to display "Correct Bet" message
@@ -25,7 +29,7 @@ function sayCorrectBet() {
 
 // Function to display "Incorrect Bet" message
 function sayIncorrectBet() {
-    changeDialogueText('Sorry, your guess was incorrect.');
+    changeDialogueText("Sorry, your guess was incorrect. Let's try again.");
 }
 
 // Function to display "You Win" message
@@ -46,6 +50,7 @@ function say5minLeft() {
 // Exporting functions for external use
 export {
     sayBegin,
+    sayYourTurn,
     sayOpponentTurn,
     sayBet,
     sayCorrectBet,
