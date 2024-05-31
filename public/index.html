@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="/public/css/chessboard.css" />
   <link rel="stylesheet" href="/public/css/main.css" />
   <link rel="stylesheet" href="/public/css/header.css" />
+  <link rel="stylesheet" href="/public/css/help.css" />
   <link rel="stylesheet" href="/public/css/players.css" />
   <link rel="stylesheet" href="/public/css/timer.css" />
   <link rel="stylesheet" href="/public/css/chester.css" />
@@ -26,7 +27,7 @@
   <div class="main-content">
     <div id="chester" class="chester">
       <div class="dialogue-bubble">
-          Welcome to BetChess. <br><br> A simple game of chess where each turn, you will bet on your opponent's next move. Start by challenging someone by clicking  <img src="/public/images/icons/link.png" alt="Invite Icon" class="icon-in-bubble">. <br><br> Or, learn more about the rules by clicking <img src="/public/images/icons/help.png" alt="Invite Icon" class="icon-in-bubble">
+          Welcome to BetChess. <br><br> A game of chess where each turn, you will bet on your opponent's next move. <br><br>Challenge someone by clicking  <img src="/public/images/icons/link.png" alt="Invite Icon" class="icon-in-bubble"> <br><br> Or, learn the (simple) rules by clicking <img src="/public/images/icons/help.png" alt="Invite Icon" class="icon-in-bubble">
       </div>
       <img src="/public/images/chester/chester_still.png" alt="Chester Character" class="character-image">
   </div>  
@@ -39,12 +40,15 @@
       </div>
       <div id="bottom_timer">20:00</div>
     </div>
+    <div id="help" class="help">
+      <div id="help-text">The rules are simple:</div>
+    </div>
     <div id="players" class="players">
       <div id="players-title">Players online</div>
       <div id="players-separator"></div>
       <div id="players-list-container"></div>
       <div id="current-player"></div>
-    </div>
+  </div>  
   </div>
 
   <script src="/public/lib/jquery-3.6.4.min.js"></script>

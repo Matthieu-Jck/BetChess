@@ -1,17 +1,17 @@
 .players {
-    height: 100%;
     width: 20em;
     background-color: #2a9d8f;
     box-shadow: -3px 0 6px rgba(0, 0, 0, 0.1);
-    display: none;
+    display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
     position: fixed;
-    right: 0;
+    top: 0;
+    bottom: 0;
+    right: -20em;
     transition: right 0.3s, display 1s;
     z-index: 1;
-    padding-top: 1em;
+    padding-top: 4em;
     font-size: 1.1em;
 }
 
@@ -20,6 +20,7 @@
     color: #263238;
     font-weight: bold;
     font-size: 1.7em;
+    margin-top: 0.5em;
 }
 
 #players-separator {
@@ -32,6 +33,7 @@
 #players-list-container {
     width: 100%;
     flex-grow: 1;
+    overflow-y: auto;
 }
 
 #players-ul {
@@ -76,12 +78,20 @@
 }
 
 .current-user {
-    font-size: 1.5em;
-    color: white;
-    margin-top: 1em;
+    font-size: 1.2em;
+    color: #023348;
     padding: 0.8em 1em;
     text-align: center;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     width: 100%;
     box-sizing: border-box;
+    flex-shrink: 0;
+    font-weight: 700;
+}
+
+
+@media (max-width: 920px) {
+    .players {
+        padding-top: 2.5em;
+    }
 }
