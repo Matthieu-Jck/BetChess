@@ -93,6 +93,7 @@ const initBoard = (username) => {
         promotion: 'q'
       });
       sayBet();
+      verifyCheckMate();
 
       if (firstMove === null) {
         return 'snapback';
@@ -283,6 +284,13 @@ const initBoard = (username) => {
     const svg = document.querySelector('.chessboard-svg-overlay');
     const existingArrows = svg.querySelectorAll('line');
     existingArrows.forEach((arrow) => arrow.remove());
+  }
+
+  function verifyCheckMate(){
+    if (engine.isCheckmate()){
+      socket1.emit('gameEnd', { result: `${color.charAt(0).toUpperCase() + color.slice(1)} loses on time!`, gameId });
+      socket2.emit('gameEnd', { result: `${color.charAt(0).toUpperCase() + color.slice(1)} loses on time!`, gameId });
+    }
   }
 
   return {
