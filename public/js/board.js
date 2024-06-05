@@ -287,7 +287,7 @@ const initBoard = (username) => {
   }
 
   function verifyCheckMate(){
-    if (engine.isCheckmate()){
+    if (engine.game_over()){
       endTurn();
       socket1.emit('gameEnd', { result: `${color.charAt(0).toUpperCase() + color.slice(1)} loses on time!`, gameId });
       socket2.emit('gameEnd', { result: `${color.charAt(0).toUpperCase() + color.slice(1)} loses on time!`, gameId });
