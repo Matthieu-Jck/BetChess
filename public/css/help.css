@@ -12,7 +12,7 @@
     right: -20em;
     transition: right 0.3s ease-in-out;
     z-index: 1;
-    padding-top: 1em;
+    padding: 1em;
     font-size: 1.1em;
     line-height: 1.5;
 }
