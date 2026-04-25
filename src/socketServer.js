@@ -1,102 +1,147 @@
 import { Server } from "socket.io";
 import { v4 as uuidv4 } from "uuid";
-import { startTimer, switchTimer, clearPlayerTimers } from "../src/timerServer.js";
+import { clearPlayerTimers, startTimer, switchTimer } from "./timerServer.js";
 
 let socketIO = null;
-const players = [];
-const games = [];
 
-const findPlayer = (name) => players.find((player) => player.username === name);
-const findGameById = (gameId) => games.find((game) => game.gameId === gameId);
-const findGameByPlayers = (username1, username2) => {
-  return games.find(game => 
-    (game.white === username1 && game.black === username2) || 
-    (game.white === username2 && game.black === username1)
-  );
+const playersByUsername = new Map();
+const socketToUsername = new Map();
+const gamesById = new Map();
+
+const listPlayers = () => Array.from(playersByUsername.values()).map(({ socketId, username }) => ({ socketId, username }));
+
+const getSocketByUsername = (username) => {
+  const player = playersByUsername.get(username);
+  return player ? socketIO.sockets.sockets.get(player.socketId) : null;
 };
 
-const removePlayerBySocketId = (socketId) => {
-  const index = players.findIndex(player => player.socketId === socketId);
-  if (index !== -1) {
-    players.splice(index, 1);
+const getGameById = (gameId) => gamesById.get(gameId);
+
+const getGameByUsername = (username) => {
+  return Array.from(gamesById.values()).find((game) => game.white === username || game.black === username);
+};
+
+const broadcastPlayers = () => {
+  socketIO.emit("players", listPlayers());
+};
+
+const removeGame = (gameId) => {
+  clearPlayerTimers(gameId);
+  gamesById.delete(gameId);
+};
+
+const emitGameEnd = (game, result) => {
+  [game.white, game.black].forEach((username) => {
+    const socket = getSocketByUsername(username);
+    socket?.emit("gameEnd", { result });
+  });
+  removeGame(game.gameId);
+};
+
+const onUserConnected = (socket) => ({ userName }) => {
+  const trimmedUsername = userName?.trim();
+  if (!trimmedUsername) {
+    socket.emit("usernameRejected", { message: "Please choose a valid username." });
+    return;
   }
-};
 
-const onConnect = (socket) => {
-  socket.on("userConnected", onUserConnected(socket));
-  socket.on("disconnect", onDisconnect(socket));
-  socket.on("challenge", onChallenge);
-  socket.on("move", (data) => onMoveSent(data));
-  socket.on("startTimer", (data) => onStartTimer(data));
-};
+  const existingPlayer = playersByUsername.get(trimmedUsername);
+  if (existingPlayer && existingPlayer.socketId !== socket.id) {
+    socket.emit("usernameRejected", { message: "That username is already in use." });
+    return;
+  }
 
-const onUserConnected = (socket) => (data) => {
-  players.push({ username: data.userName, socketId: socket.id });
-  socketIO.emit("players", players);
+  socket.data.username = trimmedUsername;
+  playersByUsername.set(trimmedUsername, { socketId: socket.id, username: trimmedUsername });
+  socketToUsername.set(socket.id, trimmedUsername);
+  broadcastPlayers();
 };
 
 const onDisconnect = (socket) => () => {
-  removePlayerBySocketId(socket.id);
-  socketIO.emit("players", players);
-  const userGames = games.filter(game => game.white === socket.id || game.black === socket.id);
-  userGames.forEach(game => {
-    clearPlayerTimers(game.gameId);
-    games.splice(games.indexOf(game), 1);
-  });
-  socketIO.emit("games", games);
+  const username = socketToUsername.get(socket.id);
+  if (!username) {
+    return;
+  }
+
+  const activeGame = getGameByUsername(username);
+  if (activeGame) {
+    const opponent = activeGame.white === username ? activeGame.black : activeGame.white;
+    const result = `${opponent} wins because ${username} disconnected.`;
+    emitGameEnd(activeGame, result);
+  }
+
+  playersByUsername.delete(username);
+  socketToUsername.delete(socket.id);
+  broadcastPlayers();
 };
 
-const onChallenge = (data) => {
-  const challenger = findPlayer(data.from);
-  const challengee = findPlayer(data.to);
-  const playersData = {
+const onChallenge = ({ from, to }) => {
+  const challenger = playersByUsername.get(from);
+  const challengee = playersByUsername.get(to);
+
+  if (!challenger || !challengee) {
+    return;
+  }
+
+  if (getGameByUsername(from) || getGameByUsername(to)) {
+    const challengerSocket = getSocketByUsername(from);
+    challengerSocket?.emit("challengeFailed", { message: "One of those players is already in a game." });
+    return;
+  }
+
+  const game = {
     gameId: uuidv4(),
-    white: challenger.username,
-    black: challengee.username
+    white: from,
+    black: to
   };
-  games.push(playersData);
-  socketIO.to(challenger.socketId).emit("gameStart", playersData);
-  socketIO.to(challengee.socketId).emit("gameStart", playersData);
-  socketIO.emit("games", games);
+
+  gamesById.set(game.gameId, game);
+  getSocketByUsername(from)?.emit("gameStart", game);
+  getSocketByUsername(to)?.emit("gameStart", game);
 };
 
-const onMoveSent = (data) => {
-  let game = findGameByPlayers(data.from,data.to);
-  let playerReceiver = findPlayer(data.to);
-  if (playerReceiver && playerReceiver.socketId) {
-    socketIO.to(playerReceiver.socketId).emit("move", data);
-    console.log("switching timers for game: ",game);
-    onSwitchTimer({ game });
-  } else {
-    console.log("Player not found or invalid socket ID", data);
+const onMove = (data) => {
+  const game = getGameById(data.gameId);
+  if (!game) {
+    return;
   }
-};
 
-const onStartTimer = ({ game }) => {
-  let gameId = game.gameId;
-  let socket1 = getSocketByUsername(game.white);
-  let socket2 = getSocketByUsername(game.black);
-  if (socket1 && socket2) {
-    startTimer(gameId, socket1, socket2);
-  } else {
-    console.log('One or both player sockets not found');
+  const receiverSocket = getSocketByUsername(data.to);
+  receiverSocket?.emit("move", data);
+
+  if (data.result) {
+    emitGameEnd(game, data.result);
+    return;
   }
+
+  switchTimer(
+    game.gameId,
+    getSocketByUsername(game.white),
+    getSocketByUsername(game.black),
+    (result) => emitGameEnd(game, result)
+  );
 };
 
-const onSwitchTimer = ({ game }) => {
-  let gameId = game.gameId;
-  let socket1 = getSocketByUsername(game.white);
-  let socket2 = getSocketByUsername(game.black);
-  if (socket1 && socket2) {
-    switchTimer(gameId, socket1, socket2);
-  } else {
-    console.log('One or both player sockets not found');
+const onStartTimer = ({ gameId }) => {
+  const game = getGameById(gameId);
+  if (!game) {
+    return;
   }
+
+  startTimer(
+    game.gameId,
+    getSocketByUsername(game.white),
+    getSocketByUsername(game.black),
+    (result) => emitGameEnd(game, result)
+  );
 };
 
-const getSocketByUsername = (username) => {
-  let player = findPlayer(username);
-  return player ? socketIO.sockets.sockets.get(player.socketId) : null;
+const onConnect = (socket) => {
+  socket.on("challenge", onChallenge);
+  socket.on("disconnect", onDisconnect(socket));
+  socket.on("move", onMove);
+  socket.on("startTimer", onStartTimer);
+  socket.on("userConnected", onUserConnected(socket));
 };
 
 const socketServer = (server) => {

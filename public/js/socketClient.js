@@ -1,74 +1,90 @@
-import { updateTimerDisplay, setupTimers } from './timer.js';
-import { sayBegin } from './chester.js';
-import initBoard from './board.js';
-import displayPlayers from './players.js';
-import game from './game.js';
-
-let gameEnded = false;
-let playerColor = null;
-let username = null;
+import { setupTimers, updateTimerDisplay } from "./timer.js";
+import initBoard from "./board.js";
+import game from "./game.js";
+import displayPlayers from "./players.js";
 
 export const socketClient = (userName, onPlayersFn) => {
+  let callbacks = {
+    onGameEnd: null,
+    onGameStart: null,
+    onMove: null
+  };
+  let playerColor = null;
+  const socket = io(window.location.origin);
 
-  let onGameStartFn = null;
-  let onMoveFn = null;
-  const socket = io(window.SOCKET_URL);
   const emitEvent = (event, data) => socket.emit(event, data);
-  const initiate = (startFn, moveFn) => { onGameStartFn = startFn; onMoveFn = moveFn; };
 
-  socket.on("connect", () => emitEvent("userConnected", { userName }));
+  const initiate = (onGameStart, onMove, onGameEnd) => {
+    callbacks = { onGameEnd, onGameStart, onMove };
+  };
 
-  socket.on("players", (data) => onPlayersFn(userName, data, (players) => emitEvent("challenge", players)));
+  socket.on("connect", () => {
+    emitEvent("userConnected", { userName });
+  });
+
+  socket.on("players", (players) => {
+    onPlayersFn(userName, players, (challenge) => emitEvent("challenge", challenge));
+  });
+
+  socket.on("usernameRejected", ({ message }) => {
+    socket.disconnect();
+    window.dispatchEvent(new CustomEvent("usernameRejected", { detail: { message } }));
+  });
+
+  socket.on("challengeFailed", ({ message }) => {
+    window.alert(message);
+  });
 
   socket.on("gameStart", (gameData) => {
-    sayBegin();
-    onGameStartFn(gameData);
-    playerColor = gameData.white === userName ? 'white' : 'black';
+    playerColor = gameData.white === userName ? "white" : "black";
     setupTimers(playerColor);
-    if (playerColor === 'white') {
-      emitEvent("startTimer", { game: gameData });
+    callbacks.onGameStart?.(gameData);
+
+    if (playerColor === "white") {
+      emitEvent("startTimer", { gameId: gameData.gameId });
     }
   });
 
   socket.on("move", (data) => {
-    console.log("Move received:", data);
-    onMoveFn(data);
+    callbacks.onMove?.(data);
   });
 
-  socket.on('timerUpdate', (data) => {
-    const timerId = data.color === playerColor ? 'bottom_timer' : 'top_timer';
+  socket.on("timerUpdate", (data) => {
+    const timerId = data.color === playerColor ? "bottom_timer" : "top_timer";
     updateTimerDisplay(timerId, data.time);
   });
 
-  socket.on("gameEnd", (data) => {
-    alert(data.result);
-    gameEnded = true;
+  socket.on("gameEnd", ({ result }) => {
+    callbacks.onGameEnd?.(result);
   });
 
   return {
+    disconnect: () => socket.disconnect(),
     initiate,
-    onMoveSent: (data) => emitEvent("move", data),
-    startTimer: (color, user1, user2) => emitEvent("startTimer", { color, user1, user2 }),
-    setupTimers
+    onMoveSent: (data) => emitEvent("move", data)
   };
 };
 
 const initializeGame = () => {
-  document.addEventListener('usernameSet', (event) => {
-    const username = event.detail.username;
-    if (username) {
-      const ws = socketClient(username, displayPlayers);
-      const board = initBoard(username);
-      game(ws, board);
+  let currentSession = null;
+
+  document.addEventListener("usernameSet", (event) => {
+    const submittedUsername = event.detail.username;
+    if (!submittedUsername) {
+      return;
     }
+
+    currentSession?.disconnect();
+
+    const ws = socketClient(submittedUsername, displayPlayers);
+    const board = initBoard(submittedUsername);
+    game(ws, board);
+    currentSession = ws;
   });
-  $('body').append('<div id="popupContainer"></div>');
-  $('#popupContainer').load('/public/usernamePopup.html');
 };
 
-
-if (typeof window !== 'undefined') {
-  window.addEventListener('load', initializeGame);
+if (typeof window !== "undefined") {
+  window.addEventListener("load", initializeGame);
 }
 
 export default socketClient;

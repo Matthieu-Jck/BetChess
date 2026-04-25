@@ -1,48 +1,52 @@
-export const displayPlayers = (me, players, fn) => {
-  const playerList = document.createElement("ul");
-  playerList.setAttribute('id', 'players-ul');
+const createInviteButton = (playerName, onChallenge, me) => {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "invite-button";
+  button.textContent = "Challenge";
+  button.addEventListener("click", () => onChallenge({ from: me, to: playerName }));
+  return button;
+};
 
-  players.forEach((player) => {
-      if (player.username === me) return;
+export const displayPlayers = (me, players, onChallenge) => {
+  const otherPlayers = players.filter((player) => player.username !== me);
+  const listContainer = document.getElementById("players-list-container");
+  const title = document.getElementById("players-title");
+  const count = document.getElementById("players-count");
+  const currentPlayer = document.getElementById("current-player");
 
-      const listItem = document.createElement("li");
-      listItem.classList.add("player-item");
+  if (!listContainer || !title || !count || !currentPlayer) {
+    return;
+  }
 
-      const playerName = document.createElement("span");
+  title.textContent = "Players online";
+  count.textContent = `${players.length} connected`;
+  listContainer.replaceChildren();
+
+  if (otherPlayers.length === 0) {
+    const emptyState = document.createElement("p");
+    emptyState.className = "players-empty";
+    emptyState.textContent = "No opponents available yet.";
+    listContainer.appendChild(emptyState);
+  } else {
+    const playerList = document.createElement("ul");
+    playerList.id = "players-ul";
+
+    otherPlayers.forEach((player) => {
+      const item = document.createElement("li");
+      item.className = "player-item";
+
+      const playerName = document.createElement("div");
+      playerName.className = "player-item__name";
       playerName.textContent = player.username;
 
-      const button = document.createElement("button");
-      button.textContent = "Invite to play";
-      button.classList.add("invite-button");
-      button.onclick = function () {
-          fn({ from: me, to: player.username });
-      };
+      item.append(playerName, createInviteButton(player.username, onChallenge, me));
+      playerList.appendChild(item);
+    });
 
-      listItem.appendChild(playerName);
-      listItem.appendChild(button);
-      playerList.appendChild(listItem);
-  });
-
-  const currentUser = document.createElement("div");
-  currentUser.classList.add("current-user");
-  currentUser.textContent = me + " (you)";
-
-  const parent = document.getElementById("players");
-  const listContainer = document.getElementById("players-list-container");
-  const oldList = document.getElementById("players-ul");
-  const currentPlayerContainer = document.getElementById("current-player");
-
-  if (oldList) {
-      listContainer.removeChild(oldList);
+    listContainer.appendChild(playerList);
   }
 
-  listContainer.appendChild(playerList);
-
-  if (currentPlayerContainer.firstChild) {
-      currentPlayerContainer.removeChild(currentPlayerContainer.firstChild);
-  }
-
-  currentPlayerContainer.appendChild(currentUser);
+  currentPlayer.textContent = `Signed in as ${me}`;
 };
 
 export default displayPlayers;

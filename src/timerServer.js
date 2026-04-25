@@ -1,69 +1,78 @@
-const playerTimers = {};
+const INITIAL_TIME = 20 * 60;
+const gameTimers = new Map();
 
-export const handleTimeUpdate = (color, gameId, socket1, socket2) => {
-  const timer = playerTimers[gameId];
-  if (!timer) return;
-
-  const time = color === 'white' ? --timer.whiteTime : --timer.blackTime;
-  if (time <= 0) {
-    socket1.emit('gameEnd', { result: `${color.charAt(0).toUpperCase() + color.slice(1)} loses on time!`, gameId });
-    socket2.emit('gameEnd', { result: `${color.charAt(0).toUpperCase() + color.slice(1)} loses on time!`, gameId });
-    clearPlayerTimers(gameId);
-  } else {
-    socket1.emit('timerUpdate', { color, time });
-    socket2.emit('timerUpdate', { color, time });
+const ensureTimerState = (gameId) => {
+  if (!gameTimers.has(gameId)) {
+    gameTimers.set(gameId, {
+      activeColor: null,
+      blackTime: INITIAL_TIME,
+      intervalId: null,
+      onTimeout: null,
+      whiteTime: INITIAL_TIME
+    });
   }
+
+  return gameTimers.get(gameId);
 };
 
-const initializePlayerTimers = (gameId) => {
-  if (!playerTimers[gameId]) {
-    playerTimers[gameId] = {
-      whiteTime: 1200,
-      blackTime: 1200,
-      whiteTimerInterval: null,
-      blackTimerInterval: null,
-      gameEnded: false
-    };
-  }
+const emitTimerUpdate = (color, time, socket1, socket2) => {
+  socket1?.emit("timerUpdate", { color, time });
+  socket2?.emit("timerUpdate", { color, time });
 };
 
-const tickTimer = (color, gameId, socket1, socket2) => {
-  clearInterval(playerTimers[gameId][`${color}TimerInterval`]);
-  playerTimers[gameId][`${color}TimerInterval`] = setInterval(() => handleTimeUpdate(color, gameId, socket1, socket2), 1000);
-};
-
-export const startTimer = (gameId, socket1, socket2) => {
-  initializePlayerTimers(gameId);
-  if (playerTimers[gameId].gameEnded) return;
-
-  tickTimer('white', gameId, socket1, socket2);
-};
-
-export const switchTimer = (gameId, socket1, socket2) => {
-  if (!playerTimers[gameId]) return;
-
-  const timer = playerTimers[gameId];
-  let currentColor;
-  if (timer.whiteTimerInterval) {
-    clearInterval(timer.whiteTimerInterval);
-    timer.whiteTimerInterval = null;
-    currentColor = 'white';
-  } else if (timer.blackTimerInterval) {
-    clearInterval(timer.blackTimerInterval);
-    timer.blackTimerInterval = null;
-    currentColor = 'black';
-  } else {
-    console.log('No active timer found for game:', gameId);
+const clearPlayerTimers = (gameId) => {
+  const timerState = gameTimers.get(gameId);
+  if (!timerState) {
     return;
   }
-  let oppositeColor = currentColor === 'white' ? 'black' : 'white';
-  tickTimer(oppositeColor, gameId, socket1, socket2);
+
+  clearInterval(timerState.intervalId);
+  gameTimers.delete(gameId);
 };
 
-export const clearPlayerTimers = (gameId) => {
-  if (playerTimers[gameId]) {
-    clearInterval(playerTimers[gameId].whiteTimerInterval);
-    clearInterval(playerTimers[gameId].blackTimerInterval);
-    delete playerTimers[gameId];
-  }
+const finishOnTime = (activeColor, socket1, socket2, gameId) => {
+  const timerState = gameTimers.get(gameId);
+  const loser = activeColor === "white" ? socket1?.data.username : socket2?.data.username;
+  const winner = activeColor === "white" ? socket2?.data.username : socket1?.data.username;
+  const result = `${winner} wins on time against ${loser}.`;
+
+  timerState?.onTimeout?.(result);
+  clearPlayerTimers(gameId);
 };
+
+const startColorTimer = (gameId, color, socket1, socket2) => {
+  const timerState = ensureTimerState(gameId);
+  clearInterval(timerState.intervalId);
+  timerState.activeColor = color;
+
+  timerState.intervalId = setInterval(() => {
+    const timeKey = color === "white" ? "whiteTime" : "blackTime";
+    timerState[timeKey] -= 1;
+
+    if (timerState[timeKey] <= 0) {
+      finishOnTime(color, socket1, socket2, gameId);
+      return;
+    }
+
+    emitTimerUpdate(color, timerState[timeKey], socket1, socket2);
+  }, 1000);
+};
+
+const startTimer = (gameId, socket1, socket2, onTimeout) => {
+  const timerState = ensureTimerState(gameId);
+  timerState.onTimeout = onTimeout;
+  startColorTimer(gameId, "white", socket1, socket2);
+};
+
+const switchTimer = (gameId, socket1, socket2, onTimeout) => {
+  const timerState = gameTimers.get(gameId);
+  if (!timerState || !timerState.activeColor) {
+    return;
+  }
+
+  timerState.onTimeout = onTimeout;
+  const nextColor = timerState.activeColor === "white" ? "black" : "white";
+  startColorTimer(gameId, nextColor, socket1, socket2);
+};
+
+export { clearPlayerTimers, startTimer, switchTimer };

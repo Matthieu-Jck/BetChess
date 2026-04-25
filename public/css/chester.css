@@ -1,56 +1,69 @@
+.chester-panel {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+.panel-kicker {
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
 .chester {
-  padding: 20px;
-  width: 30%;
-  margin: 0.1em;
-  margin-top: 5em;
+  padding: 20px 20px 0;
+  border-radius: var(--radius-lg);
+  background: var(--bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-height: 100vh;
+  gap: 14px;
   overflow: hidden;
 }
 
 .character-image {
-  width: 100%;
+  width: min(100%, 280px);
   height: auto;
-  max-width: 300px;
 }
 
 .dialogue-bubble {
-  background-color: #fff;
-  border: 2px solid #000;
-  border-radius: 10px;
-  padding: 10px;
-  margin-bottom: 10px;
-  position: relative;
-  max-width: 90%;
-  font-weight: 500;
-  font-size: 1.1em;
-  text-align: center;
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: #ffffff;
+  color: var(--ink);
+  line-height: 1.6;
+  box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.05);
 }
 
-.dialogue-bubble:after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 20px;
-  border-width: 10px;
-  border-style: solid;
-  border-color: #fff transparent transparent transparent;
+.status-grid {
+  display: grid;
+  gap: 12px;
 }
 
-@media (max-width: 920px) {
-  .chester {
-    width: 100%;
-    max-width: 100%;
-    padding: 0;
-    margin: 0;
-    margin-top: 2em;
-  }
+.status-card {
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(17, 24, 39, 0.06);
+  box-shadow: var(--shadow-md);
+}
 
-  .character-image {
-    width: 100%;
-    height: auto;
-    max-width: 200px;
-  }
+.status-card__label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.status-card strong {
+  display: block;
+  line-height: 1.4;
 }

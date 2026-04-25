@@ -1,61 +1,123 @@
-// Function to change the text of the dialogue bubble
-function changeDialogueText(text) {
-    $('.dialogue-bubble').html(text);
-}
+const setBubbleText = (text) => {
+  const bubble = document.querySelector(".dialogue-bubble");
+  if (bubble) {
+    bubble.innerHTML = text;
+  }
+};
 
-// Function to display the beginning message
-function sayBegin() {
-    changeDialogueText("Alright, let's begin.");
-}
+const setSummary = (id, text) => {
+  const element = document.getElementById(id);
+  if (element) {
+    element.textContent = text;
+  }
+};
 
-function sayYourTurn(){
-    changeDialogueText("It's your turn now, try not to play a move easily predictable.");
-}
+const setTurnIndicator = (text, tone = "idle") => {
+  const indicator = document.getElementById("turn-indicator");
+  if (!indicator) {
+    return;
+  }
 
-// Function to display "Opponent's Turn" message
-function sayOpponentTurn() {
-    changeDialogueText('It\'s your opponent\'s turn. Give him a second.');
-}
+  indicator.textContent = text;
+  indicator.className = `turn-indicator turn-indicator--${tone}`;
+};
 
-// Function to display "Place Your Bet" message
-function sayBet() {
-    changeDialogueText('Place your bet on what you think your opponent\'s next move will be by dragging one of his pieces.');
-}
+const sayWaitingForMatch = () => {
+  setBubbleText("Pick a username, open the players drawer, and challenge someone when they appear online.");
+  setTurnIndicator("Waiting for a match", "idle");
+  setSummary("status-turn", "Waiting for a match");
+  setSummary("status-bonus", "No bonus queued");
+  setSummary("status-prediction", "No prediction yet");
+};
 
-// Function to display "Correct Bet" message
-function sayCorrectBet() {
-    changeDialogueText('Congratulations! You guessed correctly. You can play twice this turn.');
-}
+const sayBegin = () => {
+  setBubbleText("Game on. Use your move first, then lock in a prediction for the response.");
+};
 
-// Function to display "Incorrect Bet" message
-function sayIncorrectBet() {
-    changeDialogueText("Sorry, your guess was incorrect. Let's try again.");
-}
+const sayYourTurn = () => {
+  setTurnIndicator("Your turn", "active");
+  setSummary("status-turn", "Your move");
+  setSummary("status-bonus", "No bonus queued");
+  setSummary("status-prediction", "Prediction opens after your move");
+  setBubbleText("It's your turn. Make your move, then call your opponent's reply.");
+};
 
-// Function to display "You Win" message
-function sayYouWin() {
-    changeDialogueText('You win! Great job.');
-}
+const sayOpponentTurn = () => {
+  setTurnIndicator("Opponent's turn", "waiting");
+  setSummary("status-turn", "Waiting on opponent");
+  setSummary("status-prediction", "Prediction locked in");
+  setBubbleText("Your turn is submitted. Now we wait and see how the board answers back.");
+};
 
-// Function to display "You Lose" message
-function sayYouLose() {
-    changeDialogueText('You lose. Better luck next time.');
-}
+const sayBet = () => {
+  setTurnIndicator("Place your prediction", "active");
+  setSummary("status-turn", "Prediction phase");
+  setSummary("status-prediction", "Drag an opposing piece to mark the reply");
+  setBubbleText("Now place your bet. Drag one of your opponent's pieces to the move you expect next.");
+};
 
-// Function to display "5 Minutes Left" message
-function say5minLeft() {
-    changeDialogueText('Hurry up! Only 5 minutes left.');
-}
+const sayExtraMove = () => {
+  setTurnIndicator("Bonus move active", "active");
+  setSummary("status-turn", "Play your extra move");
+  setSummary("status-bonus", "One extra move is active");
+  setSummary("status-prediction", "Prediction opens after your final move");
+  setBubbleText("Nice read. Your bonus move is live this turn, so make one more chess move before placing a prediction.");
+};
 
-// Exporting functions for external use
+const sayPredictionPlaced = (prediction) => {
+  setTurnIndicator("Prediction locked", "waiting");
+  setSummary("status-turn", "Opponent's turn");
+  setSummary("status-prediction", prediction);
+  setBubbleText("Prediction saved. Let's see whether they walk into it.");
+};
+
+const sayCorrectBet = () => {
+  setTurnIndicator("Your turn", "success");
+  setSummary("status-turn", "Bonus turn ready");
+  setSummary("status-bonus", "One extra move available");
+  setSummary("status-prediction", "Last prediction hit");
+  setBubbleText("Beautiful read. You earned an extra move this turn.");
+};
+
+const sayIncorrectBet = () => {
+  setTurnIndicator("Your turn", "active");
+  setSummary("status-turn", "Your move");
+  setSummary("status-bonus", "No bonus queued");
+  setSummary("status-prediction", "Last prediction missed");
+  setBubbleText("Close, but not quite. You're back on move with a normal turn.");
+};
+
+const sayYouWin = (result) => {
+  setTurnIndicator("Game over", "success");
+  setSummary("status-turn", "Match finished");
+  setBubbleText(result);
+};
+
+const sayYouLose = (result) => {
+  setTurnIndicator("Game over", "danger");
+  setSummary("status-turn", "Match finished");
+  setBubbleText(result);
+};
+
+const sayGameDraw = (result) => {
+  setTurnIndicator("Game over", "idle");
+  setSummary("status-turn", "Match finished");
+  setSummary("status-bonus", "No bonus queued");
+  setSummary("status-prediction", "No active prediction");
+  setBubbleText(result);
+};
+
 export {
-    sayBegin,
-    sayYourTurn,
-    sayOpponentTurn,
-    sayBet,
-    sayCorrectBet,
-    sayIncorrectBet,
-    sayYouWin,
-    sayYouLose,
-    say5minLeft
+  sayBet,
+  sayBegin,
+  sayCorrectBet,
+  sayExtraMove,
+  sayGameDraw,
+  sayIncorrectBet,
+  sayOpponentTurn,
+  sayPredictionPlaced,
+  sayWaitingForMatch,
+  sayYourTurn,
+  sayYouLose,
+  sayYouWin
 };

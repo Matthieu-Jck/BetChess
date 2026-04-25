@@ -1,39 +1,58 @@
-$(document).ready(function() {
+const USERNAME_PATTERN = /^[A-Za-z0-9_]{2,15}$/;
+
+const initializePopup = () => {
+  const popup = document.getElementById("usernamePopup");
+  const form = document.getElementById("usernameForm");
+  const input = document.getElementById("usernameInput");
+  const error = document.getElementById("error-message");
+
+  if (!popup || !form || !input || !error) {
+    return;
+  }
+
   const showPopup = () => {
-    $('#usernamePopup').show();
+    popup.classList.add("is-visible");
+    input.focus();
   };
 
-  const validateUsername = (username) => {
-    const regex = /^[a-zA-Z0-9_]{2,15}$/;
-    return regex.test(username);
-  };
-
-  const displayError = (message) => {
-    $('#error-message').text(message);
-    $('#usernameInput').addClass('invalid');
+  const hidePopup = () => {
+    popup.classList.remove("is-visible");
   };
 
   const clearError = () => {
-    $('#error-message').text('');
-    $('#usernameInput').removeClass('invalid');
+    error.textContent = "";
+    input.classList.remove("invalid");
   };
 
-  $('#validateButton').click(function() {
-    const username = $('#usernameInput').val().trim();
+  const setError = (message) => {
+    error.textContent = message;
+    input.classList.add("invalid");
+    showPopup();
+  };
+
+  const submitUsername = (event) => {
+    event.preventDefault();
     clearError();
-    if (validateUsername(username)) {
-      $('#usernamePopup').hide();
-      window.setUsername(username);
-    } else {
-      displayError('Invalid username. Must be 2-15 characters and alphanumeric.');
+
+    const username = input.value.trim();
+    if (!USERNAME_PATTERN.test(username)) {
+      setError("Use 2 to 15 letters, numbers, or underscores.");
+      return;
     }
+
+    hidePopup();
+    document.dispatchEvent(new CustomEvent("usernameSet", { detail: { username } }));
+  };
+
+  form.addEventListener("submit", submitUsername);
+  input.addEventListener("input", clearError);
+  window.addEventListener("usernameRejected", (event) => {
+    setError(event.detail.message);
   });
 
   showPopup();
-});
-
-window.setUsername = (username) => {
-  window.username = username;
-  const event = new CustomEvent('usernameSet', { detail: { username } });
-  document.dispatchEvent(event);
 };
+
+if (typeof window !== "undefined") {
+  window.addEventListener("load", initializePopup);
+}

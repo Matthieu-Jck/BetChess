@@ -1,7 +1,7 @@
-# Predictive Chess
+# BetChess
 
 ## Introduction
-Welcome to Predictive Chess, where the classic game of chess meets strategic prediction. In this unique twist on traditional chess, players not only make their moves but also bet on their opponent's next move. Successfully predicting an opponent's move grants the player an advantageous double move on their next turn!
+BetChess is a multiplayer chess variant where each turn ends with a prediction. After making your move, you bet on the opponent's next one. Guess correctly, and your following turn includes an extra move.
 
 ## How to Play
 ### Rules
@@ -9,3 +9,14 @@ Welcome to Predictive Chess, where the classic game of chess meets strategic pre
   1. **Move**: Make your standard chess move.
   2. **Predict**: Predict your opponent's next move.
 - If you predict correctly, you earn the right to make two consecutive moves on your next turn.
+- If your opponent earns a bonus turn, your prediction succeeds if it matches either move they make.
+
+## Deployment
+This repository includes a Fly.io deployment workflow at `.github/workflows/fly.yml`.
+
+To enable automatic deployment from GitHub:
+
+1. Create a Fly app and keep its app name handy.
+2. Add a repository secret named `FLY_API_TOKEN`.
+3. Add a repository variable named `FLY_APP_NAME`.
+4. Push to `main`.

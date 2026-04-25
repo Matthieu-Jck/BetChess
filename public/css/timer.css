@@ -1,29 +1,41 @@
+.timer-card {
+  width: min(100%, 760px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(17, 24, 39, 0.06);
+  box-shadow: var(--shadow-md);
+}
+
+.timer-label {
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
 #top_timer,
 #bottom_timer {
-    background-color: rgb(0, 0, 0);
-    color: white;
-    border-radius: 5px;
-    display: none;
-    text-align: center;
-    font-size: 1.5em;
+  font-size: clamp(1.4rem, 2vw, 1.8rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
 }
 
-#top_timer {
-    margin-bottom: 0.3rem;
-    padding: 0 0.5rem;
-    width: fit-content;
+.timer-card[data-color="white"] {
+  background: #f8fafc;
+  color: #0f172a;
 }
 
-#bottom_timer {
-    margin-top: 0.3rem;
-    padding: 0 0.5rem;
-    width: fit-content;
-    margin-left: auto;
+.timer-card[data-color="black"] {
+  background: #111827;
+  color: #f8fafc;
 }
 
-@media (max-width: 920px) {
-    #top_timer,
-    #bottom_timer {
-        font-size: 1em;
-    }
+.timer-card[data-color="black"] .timer-label {
+  color: rgba(248, 250, 252, 0.72);
 }

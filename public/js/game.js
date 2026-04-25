@@ -1,7 +1,4 @@
-import { setupTimers } from './timer.js';
-
 export const game = (socketClient, board) => {
-
   const onGameStart = (gameData) => {
     board.startGame(gameData);
   };
@@ -10,11 +7,15 @@ export const game = (socketClient, board) => {
     board.onMoveReceived(data);
   };
 
+  const onGameEnd = (result) => {
+    board.onGameEnd(result);
+  };
+
   const onMoveSent = (data) => {
     socketClient.onMoveSent(data);
   };
 
-  socketClient.initiate(onGameStart, onMoveReceived);
+  socketClient.initiate(onGameStart, onMoveReceived, onGameEnd);
   board.initiate(onMoveSent);
 };
 

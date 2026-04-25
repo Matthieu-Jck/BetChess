@@ -1,19 +1,31 @@
+const INITIAL_TIME = 20 * 60;
+
 const updateTimerDisplay = (elementId, time) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = time % 60;
-    document.getElementById(elementId).innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  const minutes = Math.floor(time / 60);
+  const seconds = time % 60;
+  const element = document.getElementById(elementId);
+
+  if (element) {
+    element.textContent = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  }
 };
 
 const setupTimers = (color) => {
-    const [topTimer, bottomTimer] = ['top_timer', 'bottom_timer'].map(id => document.getElementById(id));
-    [topTimer, bottomTimer].forEach((timer) => {
-        timer.style.display = 'block';
-        updateTimerDisplay(timer.id, 1200);
-    });
+  const topTimer = document.getElementById("top_timer");
+  const bottomTimer = document.getElementById("bottom_timer");
+  const topCard = document.querySelector(".timer-card--top");
+  const bottomCard = document.querySelector(".timer-card--bottom");
 
-    const timerStyles = { white: { backgroundColor: 'white', color: 'black' }, black: { backgroundColor: 'black', color: 'white' } };
-    Object.assign(bottomTimer.style, timerStyles[color]);
-    Object.assign(topTimer.style, timerStyles[color === 'white' ? 'black' : 'white']);
+  [topTimer, bottomTimer].forEach((timer) => {
+    if (timer) {
+      updateTimerDisplay(timer.id, INITIAL_TIME);
+    }
+  });
+
+  if (topCard && bottomCard) {
+    bottomCard.dataset.color = color;
+    topCard.dataset.color = color === "white" ? "black" : "white";
+  }
 };
 
-export { updateTimerDisplay, setupTimers };
+export { setupTimers, updateTimerDisplay };

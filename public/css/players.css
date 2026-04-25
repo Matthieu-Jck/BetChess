@@ -1,97 +1,65 @@
-.players {
-    width: 20em;
-    background-color: #2a9d8f;
-    box-shadow: -3px 0 6px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    right: -20em;
-    transition: right 0.3s, display 1s;
-    z-index: 1;
-    padding-top: 4em;
-    font-size: 1.1em;
-}
-
-#players-title {
-    margin-bottom: 0.5em;
-    color: #263238;
-    font-weight: bold;
-    font-size: 1.7em;
-    margin-top: 0.5em;
-}
-
-#players-separator {
-    width: 90%;
-    height: 1px;
-    background-color: rgba(255, 255, 255, 0.2);
-    margin-bottom: 1em;
+.players-count {
+  margin-bottom: 16px;
+  color: #9fb9df;
+  font-size: 0.95rem;
 }
 
 #players-list-container {
-    width: 100%;
-    flex-grow: 1;
-    overflow-y: auto;
+  min-height: 120px;
 }
 
 #players-ul {
-    list-style-type: none;
-    padding: 0;
-    width: 100%;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
 }
 
 .player-item {
-    width: 100%;
-    padding: 0.8em 1em;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #263238;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    transition: background-color 0.3s ease;
-    box-sizing: border-box;
-    font-size: 0.8em;
-    font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
 }
 
-.player-item:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+.player-item__name {
+  min-width: 0;
+  font-weight: 700;
+  word-break: break-word;
 }
 
 .invite-button {
-    background-color: #e9c46a;
-    color: #263238;
-    border: none;
-    padding: 0.3em 0.6em;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-    flex-shrink: 0;
-    font-weight: 600;
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 12px;
+  background: #fbbf24;
+  color: #1f2937;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  flex-shrink: 0;
 }
 
 .invite-button:hover {
-    background-color: #d65a3a;
+  background: #f59e0b;
 }
 
-.current-user {
-    font-size: 1.2em;
-    color: #023348;
-    padding: 0.8em 1em;
-    text-align: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-    width: 100%;
-    box-sizing: border-box;
-    flex-shrink: 0;
-    font-weight: 700;
+.players-empty {
+  margin: 0;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
 }
 
-
-@media (max-width: 920px) {
-    .players {
-        padding-top: 2.5em;
-    }
+.current-player {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  color: #f8fafc;
+  font-weight: 700;
 }

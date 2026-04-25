@@ -4,9 +4,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/png" href="/public/images/icons/BetChess_favicon.png">
+  <link rel="icon" type="image/png" href="/public/images/icons/BetChess_favicon.png" />
   <title>BetChess</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/public/css/chessboard.css" />
   <link rel="stylesheet" href="/public/css/main.css" />
   <link rel="stylesheet" href="/public/css/header.css" />
@@ -14,62 +16,145 @@
   <link rel="stylesheet" href="/public/css/players.css" />
   <link rel="stylesheet" href="/public/css/timer.css" />
   <link rel="stylesheet" href="/public/css/chester.css" />
+  <link rel="stylesheet" href="/public/css/popup.css" />
 </head>
 
 <body>
-  <header class="game-header">
-    <img class="game-icon" src="/public/images/icons/BetChess.png" alt="BetChess Icon">
-    <div class="game-title">BetChess</div>
-    <button id="toggle-help" class="toggle-help"></button>
-    <button id="toggle-players" class="toggle-players"></button>
-  </header>
+  <div class="app-shell">
+    <header class="game-header">
+      <div class="brand-block">
+        <img class="game-icon" src="/public/images/icons/BetChess.png" alt="BetChess logo" />
+        <div class="brand-copy">
+          <p class="brand-kicker">Predict the reply. Steal the tempo.</p>
+          <h1 class="game-title">BetChess</h1>
+        </div>
+      </div>
 
-  <div class="main-content">
-    <div id="chester" class="chester">
-      <div class="dialogue-bubble">
-        Welcome to BetChess. <br><br> A game of chess where each turn, you will bet on your opponent's next move.
-        <br><br>Challenge someone by clicking <img src="/public/images/icons/link.png" alt="Invite Icon"
-          class="icon-in-bubble"> in the top right corner. <br><br> Or, learn the (simple) rules by clicking <img
-          src="/public/images/icons/help.png" alt="Invite Icon" class="icon-in-bubble"> next to it.
-      </div>
-      <img src="/public/images/chester/chester_still.png" alt="Chester Character" class="character-image">
-    </div>
+      <div class="header-tools">
+        <div id="turn-indicator" class="turn-indicator turn-indicator--idle">Waiting for a match</div>
 
-    <div class="board-container">
-      <div id="top_timer">20:00</div>
-      <div id="chess-display">
-        <div id="chess-board" class="chess-board"></div>
-        <svg class="chessboard-svg-overlay"></svg>
+        <button id="toggle-help" class="header-button" type="button" aria-controls="help" aria-expanded="false">
+          <img src="/public/images/icons/help.png" alt="" class="header-button__icon" />
+          <span>Rules</span>
+        </button>
+
+        <button id="toggle-players" class="header-button" type="button" aria-controls="players" aria-expanded="false">
+          <img src="/public/images/icons/link.png" alt="" class="header-button__icon" />
+          <span>Players</span>
+        </button>
       </div>
-      <div id="bottom_timer">20:00</div>
-    </div>
-    <div id="help" class="help">
-      <div id="help-text">
-        <p><strong>The rules are simple:</strong></p>
-        <ul>
-          <li>All moves must follow the standard chess rules. See: <a
-              href="https://en.wikipedia.org/wiki/Rules_of_chess" target="_blank">Rules of Chess</a>.</li>
-          <li>Each turn, <strong>you make a move first</strong> and then <strong>place a bet</strong> on what you think
-            your opponent’s next move will be.</li>
-          <li>If your bet is correct, <strong>you earn an extra move</strong> for your own pieces on your next turn.
-          </li>
-          <li>If your opponent plays two moves, <strong>your bet succeeds</strong> if it matches either of their moves.
-          </li>
-        </ul>
-        <br>
-        <p><strong>When playing twice in a turn:</strong></p>
-        <ul>
-          <li><strong>You cannot move the same piece twice.</strong></li>
-          <li>Both moves need to be legal from the start of your turn. This means you play your second move as if you
-            hadn't played the first one yet.</li>
-        </ul>
-      </div>
-    </div>
-    <div id="players" class="players">
-      <div id="players-title">Players online</div>
-      <div id="players-separator"></div>
-      <div id="players-list-container"></div>
-      <div id="current-player"></div>
+    </header>
+
+    <main class="main-content">
+      <section class="chester-panel">
+        <div class="panel-kicker">Match guide</div>
+
+        <div id="chester" class="chester">
+          <div class="dialogue-bubble">
+            Welcome to BetChess.<br /><br />
+            Make your move, then drag one of your opponent's pieces to the square you think they will play next.<br /><br />
+            Predict correctly and your next turn comes with an extra move.
+          </div>
+          <img src="/public/images/chester/chester_still.png" alt="Chester" class="character-image" />
+        </div>
+
+        <div class="status-grid">
+          <div class="status-card">
+            <span class="status-card__label">Turn</span>
+            <strong id="status-turn">Waiting for a match</strong>
+          </div>
+          <div class="status-card">
+            <span class="status-card__label">Bonus move</span>
+            <strong id="status-bonus">No bonus queued</strong>
+          </div>
+          <div class="status-card">
+            <span class="status-card__label">Prediction</span>
+            <strong id="status-prediction">No prediction yet</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="board-area">
+        <div class="timer-card timer-card--top">
+          <span class="timer-label">Opponent</span>
+          <div id="top_timer">20:00</div>
+        </div>
+
+        <div class="board-container">
+          <div class="board-surface">
+            <div id="chess-display">
+              <div id="chess-board" class="chess-board"></div>
+              <svg class="chessboard-svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="timer-card timer-card--bottom">
+          <span class="timer-label">You</span>
+          <div id="bottom_timer">20:00</div>
+        </div>
+
+        <p class="board-footnote">
+          On your turn, finish every move you earned first. Then place one prediction for your opponent's reply.
+        </p>
+      </section>
+
+      <aside id="help" class="drawer help" aria-hidden="true">
+        <div class="drawer__header">
+          <span class="drawer__eyebrow">How it works</span>
+          <h2>Rules</h2>
+        </div>
+
+        <div id="help-text" class="drawer__content">
+          <p><strong>Every turn has two parts:</strong></p>
+          <ul>
+            <li>Make your legal chess move.</li>
+            <li>Then predict your opponent's next move by dragging one of their pieces.</li>
+          </ul>
+
+          <p><strong>If your prediction is correct:</strong></p>
+          <ul>
+            <li>You earn one extra move on your next turn.</li>
+            <li>Your next turn becomes two normal chess moves, played one after the other.</li>
+          </ul>
+
+          <p><strong>When your opponent has a bonus move:</strong></p>
+          <ul>
+            <li>They may make two moves before the turn passes back to you.</li>
+            <li>Your prediction succeeds if it matches either move they played.</li>
+          </ul>
+
+          <p>Standard chess rules still apply for legal moves, check, checkmate, stalemate, and insufficient material.</p>
+        </div>
+      </aside>
+
+      <aside id="players" class="drawer players" aria-hidden="true">
+        <div class="drawer__header">
+          <span class="drawer__eyebrow">Lobby</span>
+          <h2 id="players-title">Players online</h2>
+        </div>
+
+        <div id="players-count" class="players-count">0 connected</div>
+        <div id="players-list-container"></div>
+        <div id="current-player" class="current-player"></div>
+      </aside>
+    </main>
+
+    <div id="drawer-scrim" class="drawer-scrim" hidden></div>
+  </div>
+
+  <div id="usernamePopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="usernameTitle">
+    <div class="popup-content">
+      <p class="popup-kicker">Start a session</p>
+      <h2 id="usernameTitle">Choose a username</h2>
+      <p class="popup-copy">Pick a short handle so other players can challenge you.</p>
+
+      <form id="usernameForm" novalidate>
+        <label class="sr-only" for="usernameInput">Username</label>
+        <input type="text" id="usernameInput" name="username" placeholder="Username" maxlength="15" autocomplete="off" />
+        <p id="error-message" aria-live="polite"></p>
+        <button id="validateButton" type="submit">Enter lobby</button>
+      </form>
     </div>
   </div>
 
@@ -78,9 +163,10 @@
   <script src="/public/lib/chess.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
 
-  <script src="/public/js/header.js" type="module" defer></script>
+  <script src="/public/js/header.js" type="module"></script>
   <script src="/public/js/players.js" type="module"></script>
   <script src="/public/js/chester.js" type="module"></script>
+  <script src="/public/js/popup.js" type="module"></script>
   <script src="/public/js/board.js" type="module"></script>
   <script src="/public/js/timer.js" type="module"></script>
   <script src="/public/js/socketClient.js" type="module"></script>
