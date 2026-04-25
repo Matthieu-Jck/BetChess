@@ -28,4 +28,20 @@ const setupTimers = (color) => {
   }
 };
 
-export { setupTimers, updateTimerDisplay };
+const resetTimers = () => {
+  const topTimer = document.getElementById("top_timer");
+  const bottomTimer = document.getElementById("bottom_timer");
+  const topCard = document.querySelector(".timer-card--top");
+  const bottomCard = document.querySelector(".timer-card--bottom");
+
+  [topTimer, bottomTimer].forEach((timer) => {
+    if (timer) {
+      updateTimerDisplay(timer.id, INITIAL_TIME);
+    }
+  });
+
+  topCard?.removeAttribute("data-color");
+  bottomCard?.removeAttribute("data-color");
+};
+
+export { resetTimers, setupTimers, updateTimerDisplay };

@@ -1,9 +1,16 @@
 import { setupTimers, updateTimerDisplay } from "./timer.js";
 import initBoard from "./board.js";
 import game from "./game.js";
-import displayPlayers from "./players.js";
+import {
+  clearAllChallenges,
+  clearChallenge,
+  displayPlayers,
+  showLobbyNotice,
+  trackIncomingChallenge,
+  trackOutgoingChallenge
+} from "./players.js";
 
-export const socketClient = (userName, onPlayersFn) => {
+export const socketClient = (userName) => {
   let callbacks = {
     onGameEnd: null,
     onGameStart: null,
@@ -23,7 +30,12 @@ export const socketClient = (userName, onPlayersFn) => {
   });
 
   socket.on("players", (players) => {
-    onPlayersFn(userName, players, (challenge) => emitEvent("challenge", challenge));
+    displayPlayers(
+      userName,
+      players,
+      (challenge) => emitEvent("challenge", challenge),
+      (response) => emitEvent("challengeResponse", response)
+    );
   });
 
   socket.on("usernameRejected", ({ message }) => {
@@ -32,10 +44,29 @@ export const socketClient = (userName, onPlayersFn) => {
   });
 
   socket.on("challengeFailed", ({ message }) => {
-    window.alert(message);
+    showLobbyNotice(message, "danger");
+  });
+
+  socket.on("challengeSent", (invite) => {
+    trackOutgoingChallenge(invite);
+  });
+
+  socket.on("challengeReceived", (invite) => {
+    trackIncomingChallenge(invite);
+  });
+
+  socket.on("challengeDeclined", ({ invitationId, message }) => {
+    clearChallenge(invitationId);
+    showLobbyNotice(message, "danger");
+  });
+
+  socket.on("challengeCancelled", ({ invitationId, message }) => {
+    clearChallenge(invitationId);
+    showLobbyNotice(message, "neutral");
   });
 
   socket.on("gameStart", (gameData) => {
+    clearAllChallenges();
     playerColor = gameData.white === userName ? "white" : "black";
     setupTimers(playerColor);
     callbacks.onGameStart?.(gameData);
@@ -75,8 +106,9 @@ const initializeGame = () => {
     }
 
     currentSession?.disconnect();
+    clearAllChallenges();
 
-    const ws = socketClient(submittedUsername, displayPlayers);
+    const ws = socketClient(submittedUsername);
     const board = initBoard(submittedUsername);
     game(ws, board);
     currentSession = ws;

@@ -7,8 +7,18 @@ let socketIO = null;
 const playersByUsername = new Map();
 const socketToUsername = new Map();
 const gamesById = new Map();
+const invitationsById = new Map();
 
-const listPlayers = () => Array.from(playersByUsername.values()).map(({ socketId, username }) => ({ socketId, username }));
+const getGameByUsername = (username) => {
+  return Array.from(gamesById.values()).find((game) => game.white === username || game.black === username);
+};
+
+const listPlayers = () =>
+  Array.from(playersByUsername.values()).map(({ socketId, username }) => ({
+    inGame: Boolean(getGameByUsername(username)),
+    socketId,
+    username
+  }));
 
 const getSocketByUsername = (username) => {
   const player = playersByUsername.get(username);
@@ -17,23 +27,44 @@ const getSocketByUsername = (username) => {
 
 const getGameById = (gameId) => gamesById.get(gameId);
 
-const getGameByUsername = (username) => {
-  return Array.from(gamesById.values()).find((game) => game.white === username || game.black === username);
-};
-
 const broadcastPlayers = () => {
   socketIO.emit("players", listPlayers());
+};
+
+const notifyPlayer = (username, event, payload) => {
+  getSocketByUsername(username)?.emit(event, payload);
+};
+
+const findExistingInvitation = (from, to) => {
+  return Array.from(invitationsById.values()).find((invite) => invite.from === from && invite.to === to);
+};
+
+const cancelInvitation = (invitationId, message) => {
+  const invite = invitationsById.get(invitationId);
+  if (!invite) {
+    return;
+  }
+
+  invitationsById.delete(invitationId);
+  notifyPlayer(invite.from, "challengeCancelled", { invitationId, message });
+  notifyPlayer(invite.to, "challengeCancelled", { invitationId, message });
+};
+
+const cancelInvitationsForPlayer = (username, message, excludedInvitationId = null) => {
+  Array.from(invitationsById.values())
+    .filter((invite) => (invite.from === username || invite.to === username) && invite.invitationId !== excludedInvitationId)
+    .forEach((invite) => cancelInvitation(invite.invitationId, message));
 };
 
 const removeGame = (gameId) => {
   clearPlayerTimers(gameId);
   gamesById.delete(gameId);
+  broadcastPlayers();
 };
 
 const emitGameEnd = (game, result) => {
   [game.white, game.black].forEach((username) => {
-    const socket = getSocketByUsername(username);
-    socket?.emit("gameEnd", { result });
+    notifyPlayer(username, "gameEnd", { result });
   });
   removeGame(game.gameId);
 };
@@ -63,11 +94,12 @@ const onDisconnect = (socket) => () => {
     return;
   }
 
+  cancelInvitationsForPlayer(username, `${username} left the lobby.`);
+
   const activeGame = getGameByUsername(username);
   if (activeGame) {
     const opponent = activeGame.white === username ? activeGame.black : activeGame.white;
-    const result = `${opponent} wins because ${username} disconnected.`;
-    emitGameEnd(activeGame, result);
+    emitGameEnd(activeGame, `${opponent} wins because ${username} disconnected.`);
   }
 
   playersByUsername.delete(username);
@@ -83,21 +115,72 @@ const onChallenge = ({ from, to }) => {
     return;
   }
 
+  if (from === to) {
+    notifyPlayer(from, "challengeFailed", { message: "You cannot challenge yourself." });
+    return;
+  }
+
   if (getGameByUsername(from) || getGameByUsername(to)) {
-    const challengerSocket = getSocketByUsername(from);
-    challengerSocket?.emit("challengeFailed", { message: "One of those players is already in a game." });
+    notifyPlayer(from, "challengeFailed", { message: "One of those players is already in a game." });
+    return;
+  }
+
+  if (findExistingInvitation(from, to)) {
+    notifyPlayer(from, "challengeFailed", { message: `You already invited ${to}.` });
+    return;
+  }
+
+  const invite = {
+    from,
+    invitationId: uuidv4(),
+    to
+  };
+
+  invitationsById.set(invite.invitationId, invite);
+  notifyPlayer(to, "challengeReceived", invite);
+  notifyPlayer(from, "challengeSent", invite);
+};
+
+const onChallengeResponse = (socket) => ({ accept, invitationId }) => {
+  const invite = invitationsById.get(invitationId);
+  if (!invite || socket.data.username !== invite.to) {
+    return;
+  }
+
+  invitationsById.delete(invitationId);
+
+  if (!accept) {
+    notifyPlayer(invite.from, "challengeDeclined", {
+      invitationId,
+      message: `${invite.to} declined your invitation.`
+    });
+    return;
+  }
+
+  if (getGameByUsername(invite.from) || getGameByUsername(invite.to)) {
+    notifyPlayer(invite.from, "challengeCancelled", {
+      invitationId,
+      message: "That invitation expired because one player is already busy."
+    });
+    notifyPlayer(invite.to, "challengeCancelled", {
+      invitationId,
+      message: "That invitation expired because one player is already busy."
+    });
     return;
   }
 
   const game = {
     gameId: uuidv4(),
-    white: from,
-    black: to
+    white: invite.from,
+    black: invite.to
   };
 
   gamesById.set(game.gameId, game);
-  getSocketByUsername(from)?.emit("gameStart", game);
-  getSocketByUsername(to)?.emit("gameStart", game);
+  cancelInvitationsForPlayer(invite.from, `${invite.from} is now in a match.`, invitationId);
+  cancelInvitationsForPlayer(invite.to, `${invite.to} is now in a match.`, invitationId);
+  notifyPlayer(invite.from, "gameStart", game);
+  notifyPlayer(invite.to, "gameStart", game);
+  broadcastPlayers();
 };
 
 const onMove = (data) => {
@@ -106,8 +189,7 @@ const onMove = (data) => {
     return;
   }
 
-  const receiverSocket = getSocketByUsername(data.to);
-  receiverSocket?.emit("move", data);
+  notifyPlayer(data.to, "move", data);
 
   if (data.result) {
     emitGameEnd(game, data.result);
@@ -138,6 +220,7 @@ const onStartTimer = ({ gameId }) => {
 
 const onConnect = (socket) => {
   socket.on("challenge", onChallenge);
+  socket.on("challengeResponse", onChallengeResponse(socket));
   socket.on("disconnect", onDisconnect(socket));
   socket.on("move", onMove);
   socket.on("startTimer", onStartTimer);

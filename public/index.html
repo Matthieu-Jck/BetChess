@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/png" href="/public/images/icons/BetChess_favicon.png" />
+  <meta name="theme-color" content="#0c1025" />
+  <link rel="icon" type="image/svg+xml" href="/public/images/icons/betchess-mark.svg" />
   <title>BetChess</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -23,9 +24,9 @@
   <div class="app-shell">
     <header class="game-header">
       <div class="brand-block">
-        <img class="game-icon" src="/public/images/icons/BetChess.png" alt="BetChess logo" />
+        <img class="game-icon" src="/public/images/icons/betchess-mark.svg" alt="BetChess logo" />
         <div class="brand-copy">
-          <p class="brand-kicker">Predict the reply. Steal the tempo.</p>
+          <p class="brand-kicker">Read the board. Call the reply.</p>
           <h1 class="game-title">BetChess</h1>
         </div>
       </div>
@@ -39,64 +40,55 @@
         </button>
 
         <button id="toggle-players" class="header-button" type="button" aria-controls="players" aria-expanded="false">
-          <img src="/public/images/icons/link.png" alt="" class="header-button__icon" />
+          <img src="/public/images/icons/players.png" alt="" class="header-button__icon" />
           <span>Players</span>
         </button>
       </div>
     </header>
 
     <main class="main-content">
-      <section class="chester-panel">
-        <div class="panel-kicker">Match guide</div>
-
-        <div id="chester" class="chester">
-          <div class="dialogue-bubble">
-            Welcome to BetChess.<br /><br />
-            Make your move, then drag one of your opponent's pieces to the square you think they will play next.<br /><br />
-            Predict correctly and your next turn comes with an extra move.
-          </div>
-          <img src="/public/images/chester/chester_still.png" alt="Chester" class="character-image" />
-        </div>
-
-        <div class="status-grid">
-          <div class="status-card">
-            <span class="status-card__label">Turn</span>
-            <strong id="status-turn">Waiting for a match</strong>
-          </div>
-          <div class="status-card">
-            <span class="status-card__label">Bonus move</span>
-            <strong id="status-bonus">No bonus queued</strong>
-          </div>
-          <div class="status-card">
-            <span class="status-card__label">Prediction</span>
-            <strong id="status-prediction">No prediction yet</strong>
-          </div>
-        </div>
-      </section>
-
       <section class="board-area">
-        <div class="timer-card timer-card--top">
-          <span class="timer-label">Opponent</span>
-          <div id="top_timer">20:00</div>
+        <div id="invite-stack" class="invite-stack" aria-live="polite"></div>
+
+        <div id="phase-track" class="phase-track">
+          <div id="phase-opponent" class="phase-card">
+            <span class="phase-card__eyebrow">1</span>
+            <strong>Opponent's turn</strong>
+          </div>
+          <div id="phase-move" class="phase-card">
+            <span class="phase-card__eyebrow">2</span>
+            <strong>Your move</strong>
+          </div>
+          <div id="phase-second" class="phase-card is-hidden" aria-hidden="true">
+            <span class="phase-card__eyebrow">3</span>
+            <strong>Your second move</strong>
+          </div>
+          <div id="phase-bet" class="phase-card">
+            <span class="phase-card__eyebrow">3</span>
+            <strong>Your bet</strong>
+          </div>
         </div>
 
-        <div class="board-container">
-          <div class="board-surface">
-            <div id="chess-display">
-              <div id="chess-board" class="chess-board"></div>
-              <svg class="chessboard-svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+        <div class="board-stage">
+          <div class="timer-card timer-card--top">
+            <span class="timer-label">Opponent</span>
+            <div id="top_timer">20:00</div>
+          </div>
+
+          <div class="board-container">
+            <div class="board-surface">
+              <div id="chess-display">
+                <div id="chess-board" class="chess-board"></div>
+                <svg class="chessboard-svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="timer-card timer-card--bottom">
-          <span class="timer-label">You</span>
-          <div id="bottom_timer">20:00</div>
+          <div class="timer-card timer-card--bottom">
+            <span class="timer-label">You</span>
+            <div id="bottom_timer">20:00</div>
+          </div>
         </div>
-
-        <p class="board-footnote">
-          On your turn, finish every move you earned first. Then place one prediction for your opponent's reply.
-        </p>
       </section>
 
       <aside id="help" class="drawer help" aria-hidden="true">
@@ -147,7 +139,7 @@
     <div class="popup-content">
       <p class="popup-kicker">Start a session</p>
       <h2 id="usernameTitle">Choose a username</h2>
-      <p class="popup-copy">Pick a short handle so other players can challenge you.</p>
+      <p class="popup-copy">Pick a short handle so other players can invite you to a match.</p>
 
       <form id="usernameForm" novalidate>
         <label class="sr-only" for="usernameInput">Username</label>

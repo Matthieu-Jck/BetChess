@@ -1,6 +1,5 @@
 import {
   sayBet,
-  sayBegin,
   sayCorrectBet,
   sayExtraMove,
   sayGameDraw,
@@ -12,10 +11,12 @@ import {
   sayYouLose,
   sayYouWin
 } from "./chester.js";
+import { resetTimers } from "./timer.js";
 
 const SNAPBACK = "snapback";
 const MOVE_STAGE = "move";
 const PREDICTION_STAGE = "prediction";
+const EMPTY_POSITION = {};
 
 const createMovePayload = (move) => ({
   from: move.from,
@@ -32,15 +33,68 @@ const initBoard = (username) => {
     board: null,
     engine: new Chess(),
     gameData: null,
-    sendMove: null,
     gameEnded: false,
     isMyTurn: false,
-    stage: MOVE_STAGE,
     activeBonusTurn: false,
-    queuedBonusTurn: false,
     moveAllowance: 1,
-    turnMoves: [],
-    predictedMove: null
+    predictedMove: null,
+    queuedBonusTurn: false,
+    sendMove: null,
+    stage: MOVE_STAGE,
+    turnMoves: []
+  };
+
+  function onDrop(source, target) {
+    if (source === target) {
+      return SNAPBACK;
+    }
+
+    if (state.stage === MOVE_STAGE) {
+      return handleTurnMove(source, target);
+    }
+
+    return handlePrediction(source, target);
+  }
+
+  const renderBoard = ({ draggable, orientation, position }) => {
+    const config = {
+      draggable,
+      onDragStart,
+      onDrop,
+      orientation,
+      pieceTheme: "/public/images/pieces/{piece}.svg",
+      position
+    };
+
+    if (state.board) {
+      state.board.destroy();
+    }
+
+    state.board = Chessboard("chess-board", config);
+    removeArrows();
+  };
+
+  const resetTurnState = () => {
+    state.turnMoves = [];
+    state.stage = MOVE_STAGE;
+  };
+
+  const renderIdleBoard = () => {
+    state.engine.reset();
+    state.gameData = null;
+    state.gameEnded = false;
+    state.isMyTurn = false;
+    state.activeBonusTurn = false;
+    state.queuedBonusTurn = false;
+    state.moveAllowance = 1;
+    state.predictedMove = null;
+    resetTurnState();
+    resetTimers();
+    renderBoard({
+      draggable: false,
+      orientation: "white",
+      position: EMPTY_POSITION
+    });
   };
 
   const getOpponent = () => {
@@ -62,27 +116,25 @@ const initBoard = (username) => {
     state.engine.load(fenParts.join(" "));
   };
 
-  const resetTurnState = () => {
-    state.turnMoves = [];
-    state.stage = MOVE_STAGE;
-  };
-
   const beginPlayerTurn = ({ predictionMatched = null } = {}) => {
     state.isMyTurn = true;
     state.gameEnded = false;
     state.activeBonusTurn = state.queuedBonusTurn;
     state.queuedBonusTurn = false;
     state.moveAllowance = state.activeBonusTurn ? 2 : 1;
-    state.turnMoves = [];
-    state.stage = MOVE_STAGE;
+    resetTurnState();
 
     if (predictionMatched === false) {
       sayIncorrectBet();
-    } else if (state.activeBonusTurn) {
-      sayCorrectBet();
-    } else {
-      sayYourTurn();
+      return;
     }
+
+    if (state.activeBonusTurn) {
+      sayCorrectBet();
+      return;
+    }
+
+    sayYourTurn();
   };
 
   const finishLocalGame = (result) => {
@@ -93,15 +145,18 @@ const initBoard = (username) => {
     const lowered = result.toLowerCase();
     if (lowered.includes("draw")) {
       sayGameDraw(result);
+      renderIdleBoard();
       return;
     }
 
     if (lowered.startsWith(`${state.username.toLowerCase()} wins`)) {
       sayYouWin(result);
+      renderIdleBoard();
       return;
     }
 
     sayYouLose(result);
+    renderIdleBoard();
   };
 
   const buildResultMessage = () => {
@@ -138,9 +193,9 @@ const initBoard = (username) => {
       gameId: state.gameData.gameId,
       fen: state.engine.fen(),
       from: state.username,
-      to: opponent,
       moves: state.turnMoves.map(createMovePayload),
-      result
+      result,
+      to: opponent
     };
 
     state.sendMove(movesData);
@@ -148,10 +203,7 @@ const initBoard = (username) => {
 
     if (result) {
       finishLocalGame(result);
-      return;
     }
-
-    sayOpponentTurn();
   };
 
   const validatePrediction = (source, target) => {
@@ -232,45 +284,23 @@ const initBoard = (username) => {
     state.queuedBonusTurn = false;
     state.activeBonusTurn = false;
     state.moveAllowance = 1;
-    resetTurnState();
     state.predictedMove = null;
+    resetTurnState();
 
-    const config = {
-      position: "start",
-      orientation: state.gameData.color,
+    renderBoard({
       draggable: true,
-      onDragStart,
-      onDrop,
-      pieceTheme: "/public/images/pieces/{piece}.svg"
-    };
-
-    if (state.board) {
-      state.board.destroy();
-    }
-
-    state.board = Chessboard("chess-board", config);
-    removeArrows();
-    sayBegin();
+      orientation: state.gameData.color,
+      position: "start"
+    });
 
     if (state.gameData.color === "white") {
       beginPlayerTurn();
-    } else {
-      state.isMyTurn = false;
-      sayOpponentTurn();
+      return;
     }
+
+    state.isMyTurn = false;
+    sayOpponentTurn();
   };
-
-  function onDrop(source, target) {
-    if (source === target) {
-      return SNAPBACK;
-    }
-
-    if (state.stage === MOVE_STAGE) {
-      return handleTurnMove(source, target);
-    }
-
-    return handlePrediction(source, target);
-  }
 
   const verifyPrediction = (opponentMoves = []) => {
     const predictionMatched = opponentMoves.some((move) => {
@@ -304,6 +334,7 @@ const initBoard = (username) => {
 
   const initiate = (callback) => {
     state.sendMove = callback;
+    renderIdleBoard();
     sayWaitingForMatch();
   };
 
@@ -319,32 +350,82 @@ const initBoard = (username) => {
     removeArrows();
 
     const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+
+    const gradient = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
+    gradient.setAttribute("id", "prediction-gradient");
+    gradient.setAttribute("gradientUnits", "userSpaceOnUse");
+    gradient.setAttribute("x1", fromPos.x);
+    gradient.setAttribute("y1", fromPos.y);
+    gradient.setAttribute("x2", toPos.x);
+    gradient.setAttribute("y2", toPos.y);
+
+    const startStop = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+    startStop.setAttribute("offset", "0%");
+    startStop.setAttribute("stop-color", "#34d399");
+
+    const endStop = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+    endStop.setAttribute("offset", "100%");
+    endStop.setAttribute("stop-color", "#ff7a59");
+
+    gradient.append(startStop, endStop);
+
+    const filter = document.createElementNS("http://www.w3.org/2000/svg", "filter");
+    filter.setAttribute("id", "prediction-glow");
+    filter.setAttribute("x", "-50%");
+    filter.setAttribute("y", "-50%");
+    filter.setAttribute("width", "200%");
+    filter.setAttribute("height", "200%");
+
+    const dropShadow = document.createElementNS("http://www.w3.org/2000/svg", "feDropShadow");
+    dropShadow.setAttribute("dx", "0");
+    dropShadow.setAttribute("dy", "0");
+    dropShadow.setAttribute("stdDeviation", "1.2");
+    dropShadow.setAttribute("flood-color", "#f97316");
+    dropShadow.setAttribute("flood-opacity", "0.5");
+    filter.appendChild(dropShadow);
+
     const marker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
     marker.setAttribute("id", "arrowhead");
     marker.setAttribute("viewBox", "0 0 10 10");
-    marker.setAttribute("refX", "7");
+    marker.setAttribute("refX", "8");
     marker.setAttribute("refY", "5");
-    marker.setAttribute("markerWidth", "5");
-    marker.setAttribute("markerHeight", "5");
+    marker.setAttribute("markerWidth", "5.8");
+    marker.setAttribute("markerHeight", "5.8");
     marker.setAttribute("orient", "auto");
 
     const markerPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    markerPath.setAttribute("d", "M 0 0 L 10 5 L 0 10 z");
-    markerPath.setAttribute("fill", "#d97706");
+    markerPath.setAttribute("d", "M 0 1 L 10 5 L 0 9 Q 2.4 5 0 1 z");
+    markerPath.setAttribute("fill", "#ff7a59");
     marker.appendChild(markerPath);
-    defs.appendChild(marker);
+
+    defs.append(gradient, filter, marker);
     svg.appendChild(defs);
 
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.setAttribute("x1", fromPos.x);
-    line.setAttribute("y1", fromPos.y);
-    line.setAttribute("x2", toPos.x);
-    line.setAttribute("y2", toPos.y);
-    line.setAttribute("stroke", "#d97706");
-    line.setAttribute("stroke-width", "1.65");
-    line.setAttribute("stroke-linecap", "round");
-    line.setAttribute("marker-end", "url(#arrowhead)");
-    svg.appendChild(line);
+    const dx = toPos.x - fromPos.x;
+    const dy = toPos.y - fromPos.y;
+    const length = Math.hypot(dx, dy) || 1;
+    const curveOffset = Math.min(10, Math.max(3, length * 0.18));
+    const controlX = (fromPos.x + toPos.x) / 2 - (dy / length) * curveOffset;
+    const controlY = (fromPos.y + toPos.y) / 2 + (dx / length) * curveOffset;
+
+    const trail = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    trail.setAttribute("d", `M ${fromPos.x} ${fromPos.y} Q ${controlX} ${controlY} ${toPos.x} ${toPos.y}`);
+    trail.setAttribute("fill", "none");
+    trail.setAttribute("stroke", "url(#prediction-gradient)");
+    trail.setAttribute("stroke-width", "1.9");
+    trail.setAttribute("stroke-linecap", "round");
+    trail.setAttribute("marker-end", "url(#arrowhead)");
+    trail.setAttribute("filter", "url(#prediction-glow)");
+
+    const startDot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    startDot.setAttribute("cx", fromPos.x);
+    startDot.setAttribute("cy", fromPos.y);
+    startDot.setAttribute("r", "1.35");
+    startDot.setAttribute("fill", "#34d399");
+    startDot.setAttribute("stroke", "#f8fafc");
+    startDot.setAttribute("stroke-width", "0.4");
+
+    svg.append(trail, startDot);
   }
 
   function notationToPosition(notation, color) {
