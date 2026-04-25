@@ -1,21 +1,22 @@
 :root {
-  --bg: #0c1025;
-  --bg-deep: #090c1d;
-  --panel: rgba(15, 20, 43, 0.72);
-  --panel-strong: rgba(20, 28, 57, 0.92);
+  --bg: #13161d;
+  --bg-deep: #0c0f14;
+  --panel: rgba(25, 30, 40, 0.82);
+  --panel-strong: rgba(20, 24, 32, 0.95);
   --border: rgba(255, 255, 255, 0.1);
-  --ink: #eef2ff;
-  --ink-soft: #a9b6d9;
-  --accent: #39d0c8;
-  --accent-strong: #1fb6c2;
-  --coral: #ff7a59;
-  --gold: #ffcf5a;
-  --mint: #34d399;
-  --shadow-lg: 0 32px 70px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 18px 34px rgba(0, 0, 0, 0.25);
-  --radius-lg: 28px;
-  --radius-md: 18px;
-  --radius-sm: 12px;
+  --ink: #f4f0e6;
+  --ink-soft: #b7b2a7;
+  --accent: #6bc2ad;
+  --accent-strong: #58af9a;
+  --coral: #cd7757;
+  --gold: #d7b16c;
+  --mint: #82cda4;
+  --shadow-lg: 0 24px 48px rgba(0, 0, 0, 0.34);
+  --shadow-md: 0 12px 24px rgba(0, 0, 0, 0.24);
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --sidebar-size: clamp(120px, 16vw, 210px);
 }
 
 *,
@@ -25,19 +26,27 @@
 }
 
 html {
-  background:
-    radial-gradient(circle at top left, rgba(255, 122, 89, 0.34), transparent 28%),
-    radial-gradient(circle at top right, rgba(57, 208, 200, 0.28), transparent 24%),
-    radial-gradient(circle at bottom right, rgba(255, 207, 90, 0.2), transparent 24%),
-    var(--bg);
+  background: linear-gradient(180deg, #191c24 0%, #0d1016 100%);
 }
 
 body {
+  position: relative;
   margin: 0;
   height: 100dvh;
   color: var(--ink);
   font-family: "Inter", sans-serif;
   overflow: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(120deg, rgba(107, 194, 173, 0.08), transparent 36%),
+    linear-gradient(180deg, rgba(215, 177, 108, 0.06), transparent 44%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .app-shell {
@@ -51,21 +60,34 @@ body {
   width: min(1380px, calc(100% - 24px));
   margin: 0 auto;
   height: 100%;
+  min-height: 0;
   padding: 10px 0 14px;
 }
 
 .board-area {
-  display: grid;
   height: 100%;
-  gap: 12px;
-  justify-items: center;
-  align-content: start;
-  grid-template-rows: auto auto 1fr;
-  --board-size: min(calc(100dvh - 256px), calc(100vw - 24px), 720px);
+  min-height: 0;
+  --board-size: min(calc(100dvh - 210px), calc(100vw - var(--sidebar-size) - 64px), 720px);
 }
 
 .board-stage {
-  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, var(--sidebar-size)) minmax(0, 1fr);
+  gap: clamp(10px, 1.8vw, 20px);
+  align-items: center;
+}
+
+.board-sidebar {
+  align-self: stretch;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
+}
+
+.board-playfield {
   min-height: 0;
   display: grid;
   justify-items: center;
@@ -79,14 +101,6 @@ body {
 
 .board-surface {
   width: 100%;
-  padding: clamp(10px, 1.4vw, 18px);
-  border-radius: var(--radius-lg);
-  background:
-    linear-gradient(135deg, rgba(57, 208, 200, 0.18), transparent 35%),
-    linear-gradient(315deg, rgba(255, 122, 89, 0.18), transparent 32%),
-    rgba(10, 13, 28, 0.88);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-lg);
 }
 
 #chess-display {
@@ -94,8 +108,10 @@ body {
   width: min(100%, var(--board-size));
   aspect-ratio: 1;
   margin: 0 auto;
-  border-radius: 20px;
   overflow: hidden;
+  border-radius: 0;
+  outline: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-lg);
 }
 
 #chess-display::before {
@@ -105,7 +121,7 @@ body {
   background:
     linear-gradient(45deg, rgba(0, 0, 0, 0.24) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.24) 75%),
     linear-gradient(45deg, rgba(0, 0, 0, 0.24) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.24) 75%),
-    linear-gradient(135deg, #f4d58d, #d4a864);
+    linear-gradient(135deg, #e2c284, #c99755);
   background-size: 25% 25%, 25% 25%, cover;
   background-position: 0 0, 12.5% 12.5%, center;
   z-index: 0;
@@ -135,8 +151,8 @@ body {
   max-height: calc(100dvh - 100px);
   padding: 22px;
   overflow: auto;
-  border-radius: 20px;
-  background: linear-gradient(180deg, rgba(18, 22, 47, 0.98), rgba(9, 12, 29, 0.98));
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(26, 31, 42, 0.98), rgba(13, 16, 23, 0.98));
   color: #f8fafc;
   box-shadow: 0 28px 48px rgba(15, 23, 42, 0.38);
   transform: translateX(calc(100% + 24px));
@@ -157,7 +173,7 @@ body {
 .drawer__eyebrow {
   display: inline-block;
   margin-bottom: 8px;
-  color: #9fb9df;
+  color: #b7c4de;
   font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -172,7 +188,7 @@ body {
 .drawer-scrim {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.24);
+  background: rgba(6, 8, 12, 0.45);
   backdrop-filter: blur(3px);
   z-index: 14;
   opacity: 0;
@@ -196,7 +212,8 @@ body {
 
 @media (max-width: 1080px) {
   .board-area {
-    --board-size: min(calc(100dvh - 252px), calc(100vw - 24px), 620px);
+    --sidebar-size: clamp(98px, 18vw, 144px);
+    --board-size: min(calc(100dvh - 220px), calc(100vw - var(--sidebar-size) - 44px), 620px);
   }
 }
 
@@ -207,7 +224,13 @@ body {
   }
 
   .board-area {
-    --board-size: min(calc(100dvh - 248px), calc(100vw - 20px), 92vw);
+    --sidebar-size: clamp(90px, 25vw, 116px);
+    --board-size: min(calc(100dvh - 250px), calc(100vw - var(--sidebar-size) - 26px), 92vw);
+  }
+
+  .board-stage {
+    gap: 10px;
+    align-items: center;
   }
 
   .drawer {
@@ -221,6 +244,6 @@ body {
 
 @media (max-height: 720px) {
   .board-area {
-    --board-size: min(calc(100dvh - 224px), calc(100vw - 20px), 76vh);
+    --board-size: min(calc(100dvh - 190px), calc(100vw - var(--sidebar-size) - 40px), 74vh);
   }
 }

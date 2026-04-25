@@ -1,6 +1,6 @@
 .players-count {
   margin-bottom: 16px;
-  color: #9fb9df;
+  color: #b7c4de;
   font-size: 0.95rem;
 }
 
@@ -22,8 +22,8 @@
   justify-content: space-between;
   gap: 12px;
   padding: 14px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.07);
 }
 
 .player-item__identity {
@@ -47,21 +47,21 @@
 }
 
 .player-item__status--available {
-  background: rgba(52, 211, 153, 0.14);
-  color: #9af2cb;
+  background: rgba(130, 205, 164, 0.14);
+  color: #bde7cb;
 }
 
 .player-item__status--busy {
-  background: rgba(255, 122, 89, 0.16);
-  color: #ffc3b3;
+  background: rgba(205, 119, 87, 0.16);
+  color: #f0c0ae;
 }
 
 .invite-button {
   border: 0;
   border-radius: 999px;
   padding: 9px 12px;
-  background: linear-gradient(135deg, #ffcf5a, #ff7a59);
-  color: #101727;
+  background: linear-gradient(135deg, #d7b16c, #cd7757);
+  color: #171b24;
   cursor: pointer;
   font: inherit;
   font-weight: 700;
@@ -82,9 +82,9 @@
 .players-empty {
   margin: 0;
   padding: 16px;
-  border-radius: 14px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.06);
-  color: #cbd5e1;
+  color: #d8dde8;
 }
 
 .current-player {
@@ -96,11 +96,12 @@
 }
 
 .invite-stack {
-  width: min(100%, 980px);
+  min-height: 0;
   display: grid;
   gap: 10px;
-  max-height: 140px;
+  align-content: start;
   overflow: auto;
+  padding-right: 2px;
 }
 
 .invite-stack:empty {
@@ -109,33 +110,27 @@
 
 .invite-card {
   width: 100%;
-  padding: 14px 16px;
-  border-radius: 16px;
-  background: rgba(11, 16, 36, 0.88);
+  padding: 14px 14px 15px;
+  border-radius: 14px;
+  background: rgba(18, 22, 30, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: var(--shadow-md);
 }
 
 .invite-card--incoming {
-  background:
-    linear-gradient(135deg, rgba(57, 208, 200, 0.18), rgba(57, 208, 200, 0)),
-    rgba(11, 16, 36, 0.92);
+  border-color: rgba(107, 194, 173, 0.35);
 }
 
 .invite-card--outgoing {
-  background:
-    linear-gradient(135deg, rgba(255, 207, 90, 0.16), rgba(255, 122, 89, 0.08)),
-    rgba(11, 16, 36, 0.92);
+  border-color: rgba(215, 177, 108, 0.32);
 }
 
 .invite-card--danger {
-  background:
-    linear-gradient(135deg, rgba(255, 122, 89, 0.18), rgba(255, 122, 89, 0)),
-    rgba(11, 16, 36, 0.92);
+  border-color: rgba(205, 119, 87, 0.4);
 }
 
 .invite-card--neutral {
-  background: rgba(11, 16, 36, 0.88);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .invite-card__actions {
@@ -148,16 +143,32 @@
   border: 0;
   border-radius: 999px;
   padding: 9px 12px;
-  color: #0d1325;
+  color: #10141b;
   cursor: pointer;
   font: inherit;
   font-weight: 700;
 }
 
 .invite-card__button--accept {
-  background: #34d399;
+  background: #82cda4;
 }
 
 .invite-card__button--decline {
-  background: #ffb4a2;
+  background: #e4b39f;
+}
+
+@media (max-width: 720px) {
+  .invite-card {
+    padding: 11px 10px 12px;
+  }
+
+  .invite-card strong,
+  .invite-card,
+  .invite-card__button {
+    font-size: 0.8rem;
+  }
+
+  .invite-card__actions {
+    flex-direction: column;
+  }
 }

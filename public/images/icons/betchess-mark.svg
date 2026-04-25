@@ -1,44 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
   <title id="title">BetChess icon</title>
-  <desc id="desc">A knight chess piece paired with betting chips.</desc>
-  <defs>
-    <linearGradient id="bg" x1="24" y1="24" x2="232" y2="232" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#131a3c" />
-      <stop offset="0.55" stop-color="#0d1027" />
-      <stop offset="1" stop-color="#070914" />
-    </linearGradient>
-    <linearGradient id="ring" x1="52" y1="44" x2="214" y2="212" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#39d0c8" />
-      <stop offset="0.5" stop-color="#ffcf5a" />
-      <stop offset="1" stop-color="#ff7a59" />
-    </linearGradient>
-    <linearGradient id="chip" x1="152" y1="52" x2="210" y2="126" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ffcf5a" />
-      <stop offset="1" stop-color="#ff7a59" />
-    </linearGradient>
-  </defs>
+  <desc id="desc">A knight chess piece paired with a betting chip.</desc>
 
-  <rect width="256" height="256" rx="60" fill="url(#bg)" />
-  <rect x="10" y="10" width="236" height="236" rx="50" fill="none" stroke="url(#ring)" stroke-width="8" />
+  <rect width="256" height="256" rx="46" fill="#151922" />
+  <rect x="16" y="16" width="224" height="224" rx="34" fill="none" stroke="#d7b16c" stroke-opacity="0.3" stroke-width="8" />
 
-  <g opacity="0.88">
-    <circle cx="186" cy="78" r="34" fill="none" stroke="url(#chip)" stroke-width="12" />
-    <circle cx="186" cy="78" r="20" fill="none" stroke="#fff5cf" stroke-width="6" stroke-dasharray="4 6" />
-  </g>
+  <circle cx="188" cy="70" r="27" fill="none" stroke="#d7b16c" stroke-width="12" />
+  <circle cx="188" cy="70" r="16" fill="none" stroke="#f4f0e6" stroke-width="5" stroke-dasharray="3 7" stroke-linecap="round" />
 
-  <g transform="translate(38 34)">
-    <path
-      d="M56 148c4-12 8-27 8-40 0-35-20-45-20-69 0-19 14-31 35-31 16 0 27 7 43 21l20-1 7 24-23 16c11 11 17 26 17 43 0 13-4 25-12 37l20 28v16H56v-14l24-30-10-20H56z"
-      fill="#f5f0ff"
-    />
-    <circle cx="87" cy="40" r="8" fill="#131a3c" />
-    <path d="M104 130c22-1 33-15 33-32 0-11-5-21-13-28-7 12-18 20-33 24 9 7 13 19 13 36z" fill="#39d0c8" opacity="0.8" />
-  </g>
-
-  <g transform="translate(124 144)">
-    <rect x="0" y="0" width="34" height="34" rx="8" fill="#f7d794" />
-    <rect x="34" y="0" width="34" height="34" rx="8" fill="#8854d0" opacity="0.2" />
-    <rect x="0" y="34" width="34" height="34" rx="8" fill="#8854d0" opacity="0.2" />
-    <rect x="34" y="34" width="34" height="34" rx="8" fill="#f7d794" />
-  </g>
+  <path
+    d="M76 214h104v-18l-18-28c9-12 14-27 14-43 0-39-25-68-61-68-26 0-45 12-59 34l22 18c7-12 18-18 31-18 17 0 29 12 29 29 0 14-8 26-22 34l-17 9 15 27H76z"
+    fill="#f4f0e6"
+  />
+  <circle cx="118" cy="100" r="7" fill="#151922" />
+  <path d="M119 154c14 0 30-7 42-20" fill="none" stroke="#6bc2ad" stroke-width="10" stroke-linecap="round" />
+  <path d="M92 216h94" fill="none" stroke="#6bc2ad" stroke-width="12" stroke-linecap="round" />
 </svg>

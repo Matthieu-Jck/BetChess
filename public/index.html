@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0c1025" />
+  <meta name="theme-color" content="#13161d" />
   <link rel="icon" type="image/svg+xml" href="/public/images/icons/betchess-mark.svg" />
   <title>BetChess</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -48,45 +48,49 @@
 
     <main class="main-content">
       <section class="board-area">
-        <div id="invite-stack" class="invite-stack" aria-live="polite"></div>
-
-        <div id="phase-track" class="phase-track">
-          <div id="phase-opponent" class="phase-card">
-            <span class="phase-card__eyebrow">1</span>
-            <strong>Opponent's turn</strong>
-          </div>
-          <div id="phase-move" class="phase-card">
-            <span class="phase-card__eyebrow">2</span>
-            <strong>Your move</strong>
-          </div>
-          <div id="phase-second" class="phase-card is-hidden" aria-hidden="true">
-            <span class="phase-card__eyebrow">3</span>
-            <strong>Your second move</strong>
-          </div>
-          <div id="phase-bet" class="phase-card">
-            <span class="phase-card__eyebrow">3</span>
-            <strong>Your bet</strong>
-          </div>
-        </div>
-
         <div class="board-stage">
-          <div class="timer-card timer-card--top">
-            <span class="timer-label">Opponent</span>
-            <div id="top_timer">20:00</div>
-          </div>
-
-          <div class="board-container">
-            <div class="board-surface">
-              <div id="chess-display">
-                <div id="chess-board" class="chess-board"></div>
-                <svg class="chessboard-svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+          <aside class="board-sidebar">
+            <div id="phase-track" class="phase-track">
+              <div id="phase-opponent" class="phase-card">
+                <span class="phase-card__eyebrow">1</span>
+                <strong>Opponent's turn</strong>
+              </div>
+              <div id="phase-move" class="phase-card">
+                <span class="phase-card__eyebrow">2</span>
+                <strong>Your move</strong>
+              </div>
+              <div id="phase-second" class="phase-card is-hidden" aria-hidden="true">
+                <span class="phase-card__eyebrow">3</span>
+                <strong>Your second move</strong>
+              </div>
+              <div id="phase-bet" class="phase-card">
+                <span class="phase-card__eyebrow">3</span>
+                <strong>Your bet</strong>
               </div>
             </div>
-          </div>
 
-          <div class="timer-card timer-card--bottom">
-            <span class="timer-label">You</span>
-            <div id="bottom_timer">20:00</div>
+            <div id="invite-stack" class="invite-stack" aria-live="polite"></div>
+          </aside>
+
+          <div class="board-playfield">
+            <div class="timer-card timer-card--top">
+              <span class="timer-label">Opponent</span>
+              <div id="top_timer">20:00</div>
+            </div>
+
+            <div class="board-container">
+              <div class="board-surface">
+                <div id="chess-display">
+                  <div id="chess-board" class="chess-board"></div>
+                  <svg class="chessboard-svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="timer-card timer-card--bottom">
+              <span class="timer-label">You</span>
+              <div id="bottom_timer">20:00</div>
+            </div>
           </div>
         </div>
       </section>

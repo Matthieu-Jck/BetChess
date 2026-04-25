@@ -1,28 +1,22 @@
 .phase-track {
-  width: min(100%, 980px);
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 10px;
-}
-
-.phase-track.has-bonus {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-content: start;
 }
 
 .phase-card {
-  min-height: 72px;
-  padding: 14px;
+  min-height: 74px;
+  padding: 12px;
   border-radius: var(--radius-md);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)),
-    rgba(9, 12, 29, 0.84);
+  background: rgba(20, 24, 33, 0.88);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: var(--shadow-md);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  display: grid;
+  gap: 6px;
+  align-content: center;
   color: var(--ink-soft);
-  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
 .phase-card__eyebrow {
@@ -30,27 +24,25 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.44);
 }
 
 .phase-card strong {
-  font-size: clamp(0.92rem, 1.6vw, 1rem);
+  font-size: 0.96rem;
   line-height: 1.2;
   font-weight: 800;
 }
 
 .phase-card--active {
-  background:
-    linear-gradient(135deg, rgba(57, 208, 200, 0.26), rgba(255, 122, 89, 0.2)),
-    rgba(14, 21, 43, 0.96);
-  border-color: rgba(255, 207, 90, 0.42);
+  background: rgba(107, 194, 173, 0.14);
+  border-color: rgba(107, 194, 173, 0.42);
   color: var(--ink);
-  transform: translateY(-2px);
+  transform: translateX(3px);
 }
 
 .phase-card--complete {
-  border-color: rgba(52, 211, 153, 0.34);
-  color: #d7fff0;
+  border-color: rgba(215, 177, 108, 0.34);
+  color: #efe2bd;
 }
 
 .phase-card.is-hidden {
@@ -63,11 +55,15 @@
   }
 
   .phase-card {
-    min-height: 64px;
-    padding: 10px;
+    min-height: 62px;
+    padding: 10px 9px;
   }
 
   .phase-card strong {
-    font-size: 0.82rem;
+    font-size: 0.78rem;
+  }
+
+  .phase-card__eyebrow {
+    font-size: 0.65rem;
   }
 }

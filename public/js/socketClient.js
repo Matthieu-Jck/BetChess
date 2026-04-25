@@ -9,6 +9,7 @@ import {
   trackIncomingChallenge,
   trackOutgoingChallenge
 } from "./players.js";
+import { playChallengeReceived, playChallengeSent, playNotice } from "./sound.js";
 
 export const socketClient = (userName) => {
   let callbacks = {
@@ -45,24 +46,29 @@ export const socketClient = (userName) => {
 
   socket.on("challengeFailed", ({ message }) => {
     showLobbyNotice(message, "danger");
+    playNotice("danger");
   });
 
   socket.on("challengeSent", (invite) => {
     trackOutgoingChallenge(invite);
+    playChallengeSent();
   });
 
   socket.on("challengeReceived", (invite) => {
     trackIncomingChallenge(invite);
+    playChallengeReceived();
   });
 
   socket.on("challengeDeclined", ({ invitationId, message }) => {
     clearChallenge(invitationId);
     showLobbyNotice(message, "danger");
+    playNotice("danger");
   });
 
   socket.on("challengeCancelled", ({ invitationId, message }) => {
     clearChallenge(invitationId);
     showLobbyNotice(message, "neutral");
+    playNotice("neutral");
   });
 
   socket.on("gameStart", (gameData) => {

@@ -35,8 +35,8 @@
 }
 
 .game-icon {
-  width: clamp(54px, 6vw, 72px);
-  height: auto;
+  width: clamp(46px, 5vw, 60px);
+  height: clamp(46px, 5vw, 60px);
   flex-shrink: 0;
 }
 
@@ -66,23 +66,23 @@
 }
 
 .turn-indicator--active {
-  background: rgba(57, 208, 200, 0.15);
-  color: #8cf3e0;
+  background: rgba(107, 194, 173, 0.16);
+  color: #b7eee0;
 }
 
 .turn-indicator--waiting {
-  background: rgba(255, 207, 90, 0.14);
-  color: #ffe59b;
+  background: rgba(215, 177, 108, 0.14);
+  color: #f2ddae;
 }
 
 .turn-indicator--success {
-  background: rgba(52, 211, 153, 0.16);
-  color: #9af2cb;
+  background: rgba(130, 205, 164, 0.16);
+  color: #bde7cb;
 }
 
 .turn-indicator--danger {
-  background: rgba(255, 122, 89, 0.16);
-  color: #ffc3b3;
+  background: rgba(205, 119, 87, 0.16);
+  color: #f0c0ae;
 }
 
 .header-button {

@@ -11,6 +11,17 @@ import {
   sayYouLose,
   sayYouWin
 } from "./chester.js";
+import {
+  playBetPlaced,
+  playCorrectBet,
+  playDraw,
+  playGameStart,
+  playIncorrectBet,
+  playLose,
+  playMove,
+  playMoveSequence,
+  playWin
+} from "./sound.js";
 import { resetTimers } from "./timer.js";
 
 const SNAPBACK = "snapback";
@@ -19,6 +30,7 @@ const PREDICTION_STAGE = "prediction";
 const EMPTY_POSITION = {};
 
 const createMovePayload = (move) => ({
+  captured: move.captured ?? null,
   from: move.from,
   to: move.to,
   san: move.san,
@@ -126,11 +138,13 @@ const initBoard = (username) => {
 
     if (predictionMatched === false) {
       sayIncorrectBet();
+      playIncorrectBet();
       return;
     }
 
     if (state.activeBonusTurn) {
       sayCorrectBet();
+      playCorrectBet();
       return;
     }
 
@@ -145,17 +159,20 @@ const initBoard = (username) => {
     const lowered = result.toLowerCase();
     if (lowered.includes("draw")) {
       sayGameDraw(result);
+      playDraw();
       renderIdleBoard();
       return;
     }
 
     if (lowered.startsWith(`${state.username.toLowerCase()} wins`)) {
       sayYouWin(result);
+      playWin();
       renderIdleBoard();
       return;
     }
 
     sayYouLose(result);
+    playLose();
     renderIdleBoard();
   };
 
@@ -243,6 +260,7 @@ const initBoard = (username) => {
     state.turnMoves.push(move);
     state.board.position(state.engine.fen());
     removeArrows();
+    playMove(Boolean(move.captured));
 
     const result = buildResultMessage();
     if (result) {
@@ -270,6 +288,7 @@ const initBoard = (username) => {
     state.predictedMove = prediction;
     drawArrow(source, target, state.gameData.color);
     sayPredictionPlaced(formatPrediction(prediction));
+    playBetPlaced();
     endTurn();
     return SNAPBACK;
   };
@@ -292,6 +311,7 @@ const initBoard = (username) => {
       orientation: state.gameData.color,
       position: "start"
     });
+    playGameStart();
 
     if (state.gameData.color === "white") {
       beginPlayerTurn();
@@ -317,6 +337,7 @@ const initBoard = (username) => {
     state.board.position(data.fen);
     state.engine.load(data.fen);
     resetTurnState();
+    playMoveSequence(data.moves);
 
     if (data.result) {
       finishLocalGame(data.result);
@@ -328,6 +349,10 @@ const initBoard = (username) => {
   };
 
   const onGameEnd = (result) => {
+    if (!state.gameData) {
+      return;
+    }
+
     removeArrows();
     finishLocalGame(result);
   };
