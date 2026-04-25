@@ -3,23 +3,36 @@
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'betchess'
-primary_region = 'ams'
+app = "betchess"
+primary_region = "ams"
 
 [build]
 
 [env]
-  PORT = '3000'
+  HOST = "0.0.0.0"
+  NODE_ENV = "production"
+  PORT = "3000"
 
 [http_service]
-  internal_port = 8080
+  internal_port = 3000
   force_https = true
-  auto_stop_machines = 'stop'
   auto_start_machines = true
-  min_machines_running = 0
-  processes = ['app']
+  auto_stop_machines = "stop"
+  min_machines_running = 1
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 50
+
+[[http_service.checks]]
+  grace_period = "10s"
+  interval = "15s"
+  method = "GET"
+  timeout = "5s"
+  path = "/healthz"
 
 [[vm]]
-  cpu_kind = 'shared'
+  cpu_kind = "shared"
   cpus = 1
   memory_mb = 512

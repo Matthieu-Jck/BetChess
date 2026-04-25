@@ -11,6 +11,7 @@ config();
 
 // Constants and initializations
 const __dirname = path.resolve();
+const HOST = process.env.HOST || "0.0.0.0";
 const PORT = process.env.PORT || 10000;
 const app = express();
 
@@ -26,13 +27,17 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+app.get("/healthz", (_req, res) => {
+  res.status(200).json({ ok: true });
+});
+
 app.use("/api", (_req, res) => {
   res.send({ text: "Hello World" });
 });
 
 // Server setup
 const server = createServer(app);
-server.listen(PORT, () => console.log(`Application started on port ${PORT}`));
+server.listen(PORT, HOST, () => console.log(`Application started on http://${HOST}:${PORT}`));
 
 // WebSocket setup
 socketServer(server);
