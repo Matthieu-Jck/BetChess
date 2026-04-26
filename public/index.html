@@ -49,30 +49,9 @@
     <main class="main-content">
       <section class="board-area">
         <div class="board-stage">
-          <aside class="board-sidebar">
-            <div id="phase-track" class="phase-track">
-              <div id="phase-opponent" class="phase-card">
-                <span class="phase-card__eyebrow">1</span>
-                <strong>Opponent's turn</strong>
-              </div>
-              <div id="phase-move" class="phase-card">
-                <span class="phase-card__eyebrow">2</span>
-                <strong>Your move</strong>
-              </div>
-              <div id="phase-second" class="phase-card is-hidden" aria-hidden="true">
-                <span class="phase-card__eyebrow">3</span>
-                <strong>Your second move</strong>
-              </div>
-              <div id="phase-bet" class="phase-card">
-                <span class="phase-card__eyebrow">3</span>
-                <strong>Your bet</strong>
-              </div>
-            </div>
-
-            <div id="invite-stack" class="invite-stack" aria-live="polite"></div>
-          </aside>
-
           <div class="board-playfield">
+            <div id="invite-stack" class="invite-stack" aria-live="polite"></div>
+
             <div class="timer-card timer-card--top">
               <span class="timer-label">Opponent</span>
               <div id="top_timer">20:00</div>
@@ -80,6 +59,25 @@
 
             <div class="board-container">
               <div class="board-surface">
+                <div id="phase-track" class="phase-track">
+                  <div id="phase-opponent" class="phase-card">
+                    <span class="phase-card__eyebrow">1</span>
+                    <strong>Opponent's turn</strong>
+                  </div>
+                  <div id="phase-move" class="phase-card">
+                    <span class="phase-card__eyebrow">2</span>
+                    <strong>Your move</strong>
+                  </div>
+                  <div id="phase-second" class="phase-card is-hidden" aria-hidden="true">
+                    <span class="phase-card__eyebrow">3</span>
+                    <strong>Your second move</strong>
+                  </div>
+                  <div id="phase-bet" class="phase-card">
+                    <span class="phase-card__eyebrow">3</span>
+                    <strong>Your bet</strong>
+                  </div>
+                </div>
+
                 <div id="chess-display">
                   <div id="chess-board" class="chess-board"></div>
                   <svg class="chessboard-svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>

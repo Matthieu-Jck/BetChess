@@ -96,12 +96,14 @@
 }
 
 .invite-stack {
+  width: min(100%, calc(var(--board-size) + var(--phase-width) + 28px));
   min-height: 0;
   display: grid;
   gap: 10px;
   align-content: start;
   overflow: auto;
   padding-right: 2px;
+  margin: 0 auto;
 }
 
 .invite-stack:empty {
@@ -158,6 +160,10 @@
 }
 
 @media (max-width: 720px) {
+  .invite-stack {
+    width: min(100%, var(--board-size));
+  }
+
   .invite-card {
     padding: 11px 10px 12px;
   }
