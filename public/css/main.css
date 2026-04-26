@@ -1,15 +1,15 @@
 :root {
-  --bg: #13161d;
-  --bg-deep: #0c0f14;
-  --panel: rgba(25, 30, 40, 0.82);
-  --panel-strong: rgba(20, 24, 32, 0.95);
-  --border: rgba(255, 255, 255, 0.1);
-  --ink: #f4f0e6;
-  --ink-soft: #b7b2a7;
-  --accent: #6bc2ad;
-  --accent-strong: #58af9a;
+  --bg: #171922;
+  --bg-deep: #101219;
+  --panel: rgba(34, 36, 46, 0.84);
+  --panel-strong: rgba(27, 29, 38, 0.96);
+  --border: rgba(255, 236, 205, 0.12);
+  --ink: #fbf2e3;
+  --ink-soft: #c9beb0;
+  --accent: #72c7b1;
+  --accent-strong: #62bca5;
   --coral: #cd7757;
-  --gold: #d7b16c;
+  --gold: #e0b768;
   --mint: #82cda4;
   --shadow-lg: 0 24px 48px rgba(0, 0, 0, 0.34);
   --shadow-md: 0 12px 24px rgba(0, 0, 0, 0.24);
@@ -26,7 +26,7 @@
 }
 
 html {
-  background: linear-gradient(180deg, #191c24 0%, #0d1016 100%);
+  background: linear-gradient(180deg, #20212a 0%, #11141b 100%);
 }
 
 body {
@@ -44,8 +44,9 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    linear-gradient(120deg, rgba(107, 194, 173, 0.08), transparent 36%),
-    linear-gradient(180deg, rgba(215, 177, 108, 0.06), transparent 44%);
+    linear-gradient(120deg, rgba(114, 199, 177, 0.1), transparent 38%),
+    linear-gradient(180deg, rgba(224, 183, 104, 0.09), transparent 46%),
+    radial-gradient(circle at 78% 18%, rgba(205, 119, 87, 0.12), transparent 30%);
   pointer-events: none;
   z-index: -1;
 }
@@ -144,10 +145,10 @@ body > img[data-piece] {
 
 .drawer {
   position: fixed;
-  top: 84px;
+  top: 96px;
   right: 16px;
   width: min(360px, calc(100vw - 32px));
-  max-height: calc(100dvh - 100px);
+  max-height: calc(100dvh - 112px);
   padding: 22px;
   display: flex;
   flex-direction: column;
@@ -169,13 +170,21 @@ body > img[data-piece] {
   content: "";
   position: absolute;
   top: -6px;
-  right: 30px;
+  right: 118px;
   width: 10px;
   height: 10px;
   border-left: 1px solid rgba(215, 177, 108, 0.3);
   border-top: 1px solid rgba(215, 177, 108, 0.3);
   background: rgba(28, 32, 43, 0.98);
   transform: rotate(45deg);
+}
+
+#help::before {
+  right: 220px;
+}
+
+#players::before {
+  right: 118px;
 }
 
 .drawer.is-open {
@@ -271,7 +280,7 @@ body > img[data-piece] {
     border-right: 0;
     border-bottom: 0;
     overflow: auto;
-    background: linear-gradient(180deg, rgba(26, 31, 42, 0.92), rgba(13, 16, 23, 0.92));
+    background: linear-gradient(180deg, rgba(38, 39, 48, 0.94), rgba(18, 20, 28, 0.94));
     box-shadow: -18px 0 34px rgba(0, 0, 0, 0.18);
     z-index: 4;
   }
@@ -310,6 +319,14 @@ body > img[data-piece] {
     width: calc(100vw - 20px);
     max-height: calc(100dvh - 94px);
     padding: 18px;
+  }
+
+  #help::before {
+    right: 122px;
+  }
+
+  #players::before {
+    right: 72px;
   }
 }
 
