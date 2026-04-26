@@ -1,4 +1,5 @@
 const getPhaseTrack = () => document.getElementById("phase-track");
+const getPhaseTrackShell = () => document.getElementById("phase-track-shell");
 const getPhaseCards = () => ({
   bet: document.getElementById("phase-bet"),
   move: document.getElementById("phase-move"),
@@ -67,9 +68,13 @@ const setTurnIndicator = (text, tone = "idle") => {
 
 const setPhaseState = ({ active = null, completed = [], showBonus = false }) => {
   const track = getPhaseTrack();
+  const shell = getPhaseTrackShell();
   const cards = getPhaseCards();
   const phaseOrder = ["opponent", "move", "second", "bet"];
+  const isVisible = active !== null || completed.length > 0 || showBonus;
 
+  shell?.classList.toggle("is-active", isVisible);
+  shell?.setAttribute("aria-hidden", String(!isVisible));
   track?.classList.toggle("has-bonus", showBonus);
   cards.second?.classList.toggle("is-hidden", !showBonus);
   cards.second?.setAttribute("aria-hidden", String(!showBonus));

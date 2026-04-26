@@ -1,20 +1,37 @@
+.phase-track-shell {
+  width: min(100%, var(--board-size));
+  max-height: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  overflow: hidden;
+  transition: opacity 0.18s ease, max-height 0.18s ease;
+}
+
+.phase-track-shell.is-active {
+  max-height: 84px;
+  opacity: 1;
+  visibility: visible;
+}
+
 .phase-track {
-  position: absolute;
-  top: 50%;
-  left: calc((var(--phase-width) + 14px) * -1);
-  width: var(--phase-width);
-  transform: translateY(-50%);
+  width: 100%;
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
-  align-content: start;
   z-index: 4;
   pointer-events: none;
 }
 
+.phase-track.has-bonus {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .phase-card {
-  min-height: 74px;
-  padding: 12px;
+  min-height: 72px;
+  padding: 12px 10px;
   border-radius: var(--radius-md);
   background: rgba(20, 24, 33, 0.88);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -22,13 +39,15 @@
   display: grid;
   gap: 6px;
   align-content: center;
+  justify-items: center;
+  text-align: center;
   color: var(--ink-soft);
   transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
   pointer-events: none;
 }
 
 .phase-card__eyebrow {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -36,7 +55,7 @@
 }
 
 .phase-card strong {
-  font-size: 0.96rem;
+  font-size: 0.92rem;
   line-height: 1.2;
   font-weight: 800;
 }
@@ -45,7 +64,7 @@
   background: rgba(107, 194, 173, 0.14);
   border-color: rgba(107, 194, 173, 0.42);
   color: var(--ink);
-  transform: translateX(3px);
+  transform: translateY(-2px);
 }
 
 .phase-card--complete {
@@ -58,33 +77,29 @@
 }
 
 @media (max-width: 720px) {
-  .phase-track {
-    position: static;
-    order: 2;
+  .phase-track-shell {
     width: min(100%, var(--board-size));
-    transform: none;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-    margin: 8px auto 0;
   }
 
-  .phase-track.has-bonus {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+  .phase-track {
+    gap: 8px;
+  }
+
+  .phase-track-shell.is-active {
+    max-height: 74px;
   }
 
   .phase-card {
-    min-height: 44px;
-    padding: 7px 6px;
+    min-height: 58px;
+    padding: 8px 6px;
   }
 
   .phase-card strong {
-    font-size: 0.62rem;
+    font-size: 0.66rem;
     line-height: 1.15;
-    text-align: center;
   }
 
   .phase-card__eyebrow {
     font-size: 0.54rem;
-    text-align: center;
   }
 }

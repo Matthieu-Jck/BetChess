@@ -9,11 +9,12 @@
   <title>BetChess</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/public/css/chessboard.css" />
   <link rel="stylesheet" href="/public/css/main.css" />
   <link rel="stylesheet" href="/public/css/header.css" />
   <link rel="stylesheet" href="/public/css/help.css" />
+  <link rel="stylesheet" href="/public/css/legal.css" />
   <link rel="stylesheet" href="/public/css/players.css" />
   <link rel="stylesheet" href="/public/css/timer.css" />
   <link rel="stylesheet" href="/public/css/chester.css" />
@@ -47,6 +48,21 @@
     </header>
 
     <main class="main-content">
+      <section class="site-trust" aria-label="Trust signals">
+        <div class="site-trust__signals">
+          <span class="trust-pill">Move, bet, bonus turn</span>
+          <span class="trust-pill">Free play only</span>
+          <span class="trust-pill">No hidden fees</span>
+          <span class="trust-pill">No payment data</span>
+        </div>
+
+        <nav class="site-trust__links" aria-label="Support and policy links">
+          <a href="/public/support.html">Support</a>
+          <a href="/public/privacy.html">Privacy</a>
+          <a href="/public/terms.html">Terms</a>
+        </nav>
+      </section>
+
       <section class="board-area">
         <div class="board-stage">
           <div class="board-playfield">
@@ -59,25 +75,6 @@
 
             <div class="board-container">
               <div class="board-surface">
-                <div id="phase-track" class="phase-track">
-                  <div id="phase-opponent" class="phase-card">
-                    <span class="phase-card__eyebrow">1</span>
-                    <strong>Opponent's turn</strong>
-                  </div>
-                  <div id="phase-move" class="phase-card">
-                    <span class="phase-card__eyebrow">2</span>
-                    <strong>Your move</strong>
-                  </div>
-                  <div id="phase-second" class="phase-card is-hidden" aria-hidden="true">
-                    <span class="phase-card__eyebrow">3</span>
-                    <strong>Your second move</strong>
-                  </div>
-                  <div id="phase-bet" class="phase-card">
-                    <span class="phase-card__eyebrow">3</span>
-                    <strong>Your bet</strong>
-                  </div>
-                </div>
-
                 <div id="chess-display">
                   <div id="chess-board" class="chess-board"></div>
                   <svg class="chessboard-svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
@@ -88,6 +85,27 @@
             <div class="timer-card timer-card--bottom">
               <span class="timer-label">You</span>
               <div id="bottom_timer">20:00</div>
+            </div>
+
+            <div id="phase-track-shell" class="phase-track-shell" aria-hidden="true">
+              <div id="phase-track" class="phase-track">
+                <div id="phase-opponent" class="phase-card">
+                  <span class="phase-card__eyebrow">1</span>
+                  <strong>Opponent's turn</strong>
+                </div>
+                <div id="phase-move" class="phase-card">
+                  <span class="phase-card__eyebrow">2</span>
+                  <strong>Your move</strong>
+                </div>
+                <div id="phase-second" class="phase-card is-hidden" aria-hidden="true">
+                  <span class="phase-card__eyebrow">3</span>
+                  <strong>Your second move</strong>
+                </div>
+                <div id="phase-bet" class="phase-card">
+                  <span class="phase-card__eyebrow">3</span>
+                  <strong>Your bet</strong>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -100,25 +118,36 @@
         </div>
 
         <div id="help-text" class="drawer__content">
-          <p><strong>Every turn has two parts:</strong></p>
-          <ul>
-            <li>Make your legal chess move.</li>
-            <li>Then predict your opponent's next move by dragging one of their pieces.</li>
-          </ul>
+          <section class="rules-block">
+            <h3>One turn, three steps</h3>
+            <ol class="rules-list">
+              <li><strong>Opponent's turn:</strong> wait for their move to land.</li>
+              <li><strong>Your move:</strong> play one legal chess move.</li>
+              <li><strong>Your bet:</strong> drag one of your opponent's pieces to the square you think it will play next.</li>
+            </ol>
+          </section>
 
-          <p><strong>If your prediction is correct:</strong></p>
-          <ul>
-            <li>You earn one extra move on your next turn.</li>
-            <li>Your next turn becomes two normal chess moves, played one after the other.</li>
-          </ul>
+          <section class="rules-block">
+            <h3>If your bet is correct</h3>
+            <ul class="rules-list">
+              <li>Your next turn starts with a bonus move.</li>
+              <li>You may play two legal moves in a row before betting again.</li>
+              <li>You cannot move the same piece twice during that bonus turn.</li>
+            </ul>
+          </section>
 
-          <p><strong>When your opponent has a bonus move:</strong></p>
-          <ul>
-            <li>They may make two moves before the turn passes back to you.</li>
-            <li>Your prediction succeeds if it matches either move they played.</li>
-          </ul>
+          <section class="rules-block">
+            <h3>If the opponent has a bonus turn</h3>
+            <ul class="rules-list">
+              <li>Your prediction is counted as correct if it matches either of the two moves they make.</li>
+              <li>Their second move must use a different piece from the first one.</li>
+            </ul>
+          </section>
 
-          <p>Standard chess rules still apply for legal moves, check, checkmate, stalemate, and insufficient material.</p>
+          <div class="rules-note">
+            <strong>Standard chess still decides the game.</strong>
+            Check, checkmate, stalemate, repetition, and insufficient material all work normally.
+          </div>
         </div>
       </aside>
 

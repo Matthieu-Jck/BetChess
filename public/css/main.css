@@ -36,6 +36,7 @@ body {
   color: var(--ink);
   font-family: "Inter", sans-serif;
   overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body::before {
@@ -62,13 +63,16 @@ body::before {
   height: 100%;
   min-height: 0;
   padding: 10px 0 14px;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 10px;
 }
 
 .board-area {
   position: relative;
   height: 100%;
   min-height: 0;
-  --board-size: min(calc(100dvh - 208px), calc(100vw - var(--phase-width) - 64px), 720px);
+  --board-size: min(calc(100dvh - 286px), calc(100vw - 64px), 720px);
 }
 
 .board-stage {
@@ -207,8 +211,7 @@ body > img[data-piece] {
 
 @media (max-width: 1080px) {
   .board-area {
-    --phase-width: clamp(92px, 11vw, 104px);
-    --board-size: min(calc(100dvh - 214px), calc(100vw - var(--phase-width) - 42px), 620px);
+    --board-size: min(calc(100dvh - 298px), calc(100vw - 42px), 620px);
   }
 }
 
@@ -216,25 +219,15 @@ body > img[data-piece] {
   .main-content {
     width: 100%;
     padding: 8px 4px 10px;
+    gap: 8px;
   }
 
   .board-area {
-    --phase-width: min(68px, 18vw);
-    --board-size: min(calc(100vw - 10px), calc(100dvh - 278px), 99vw);
+    --board-size: min(calc(100vw - 10px), calc(100dvh - 334px), 99vw);
   }
 
   .board-playfield {
     gap: 6px;
-  }
-
-  .board-surface {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-  }
-
-  #chess-display {
-    order: 1;
   }
 
   .board-container {
@@ -252,12 +245,12 @@ body > img[data-piece] {
 
 @media (max-height: 720px) {
   .board-area {
-    --board-size: min(calc(100dvh - 184px), calc(100vw - var(--phase-width) - 36px), 74vh);
+    --board-size: min(calc(100dvh - 262px), calc(100vw - 36px), 74vh);
   }
 }
 
 @media (max-width: 720px) and (max-height: 720px) {
   .board-area {
-    --board-size: min(calc(100vw - 10px), calc(100dvh - 252px), 99vw);
+    --board-size: min(calc(100vw - 10px), calc(100dvh - 308px), 99vw);
   }
 }
