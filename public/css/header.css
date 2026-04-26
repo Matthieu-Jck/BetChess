@@ -1,6 +1,6 @@
 .game-header {
   position: relative;
-  z-index: 20;
+  z-index: 80;
   width: 100%;
   margin: 0;
   padding: 10px clamp(12px, 2vw, 24px);
@@ -151,7 +151,7 @@
     linear-gradient(180deg, rgba(28, 32, 43, 0.98), rgba(13, 16, 23, 0.98)),
     rgba(17, 20, 28, 0.98);
   box-shadow: 0 22px 42px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.09);
-  z-index: 35;
+  z-index: 120;
 }
 
 .language-menu::before {

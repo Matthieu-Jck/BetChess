@@ -54,7 +54,7 @@ body::before {
   height: 100%;
   display: grid;
   grid-template-rows: auto 1fr;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .main-content {
