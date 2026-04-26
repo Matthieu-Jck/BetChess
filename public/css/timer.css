@@ -2,9 +2,9 @@
   position: relative;
   z-index: 3;
   width: min(100%, var(--board-size));
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
   padding: 10px 14px;
   border-radius: 12px;
@@ -14,15 +14,19 @@
 }
 
 .timer-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: var(--ink-soft);
   font-size: 0.86rem;
   font-weight: 700;
-  text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
 #top_timer,
 #bottom_timer {
+  justify-self: end;
   font-size: clamp(1.25rem, 2vw, 1.6rem);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
@@ -43,6 +47,7 @@
 }
 
 .surrender-button {
+  justify-self: end;
   border: 1px solid rgba(205, 119, 87, 0.42);
   border-radius: 999px;
   padding: 7px 11px;

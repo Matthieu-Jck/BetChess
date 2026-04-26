@@ -75,7 +75,10 @@ export const socketClient = (userName) => {
   socket.on("gameStart", (gameData) => {
     clearAllChallenges();
     playerColor = gameData.white === userName ? "white" : "black";
-    setupTimers(playerColor);
+    setupTimers(playerColor, {
+      opponentName: playerColor === "white" ? gameData.black : gameData.white,
+      playerName: userName
+    });
     callbacks.onGameStart?.(gameData);
 
     if (playerColor === "white") {
