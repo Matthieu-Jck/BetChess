@@ -5,7 +5,26 @@ const getPhaseCards = () => ({
   opponent: document.getElementById("phase-opponent"),
   second: document.getElementById("phase-second")
 });
-let bonusToastTimeoutId = null;
+let detachBonusToastDismiss = null;
+
+const hideBonusToast = () => {
+  const toast = document.getElementById("bonus-toast");
+  if (!toast) {
+    return;
+  }
+
+  if (detachBonusToastDismiss) {
+    detachBonusToastDismiss();
+    detachBonusToastDismiss = null;
+  }
+
+  toast.classList.remove("is-visible");
+  window.setTimeout(() => {
+    if (!toast.classList.contains("is-visible")) {
+      toast.hidden = true;
+    }
+  }, 220);
+};
 
 const showBonusToast = () => {
   const toast = document.getElementById("bonus-toast");
@@ -13,10 +32,7 @@ const showBonusToast = () => {
     return;
   }
 
-  if (bonusToastTimeoutId) {
-    window.clearTimeout(bonusToastTimeoutId);
-    bonusToastTimeoutId = null;
-  }
+  hideBonusToast();
 
   toast.hidden = false;
   toast.classList.remove("is-visible");
@@ -25,14 +41,18 @@ const showBonusToast = () => {
     toast.classList.add("is-visible");
   });
 
-  bonusToastTimeoutId = window.setTimeout(() => {
-    toast.classList.remove("is-visible");
-    window.setTimeout(() => {
-      if (!toast.classList.contains("is-visible")) {
-        toast.hidden = true;
-      }
-    }, 220);
-  }, 2200);
+  const dismissToast = () => {
+    hideBonusToast();
+  };
+
+  const onPointerDown = () => {
+    dismissToast();
+  };
+
+  window.addEventListener("pointerdown", onPointerDown, { once: true });
+  detachBonusToastDismiss = () => {
+    window.removeEventListener("pointerdown", onPointerDown);
+  };
 };
 
 const setTurnIndicator = (text, tone = "idle") => {
@@ -78,21 +98,25 @@ const setPhaseState = ({ active = null, completed = [], showBonus = false }) => 
 };
 
 const sayWaitingForMatch = () => {
+  hideBonusToast();
   setTurnIndicator("Waiting for a match", "idle");
   setPhaseState({ showBonus: false });
 };
 
 const sayYourTurn = () => {
+  hideBonusToast();
   setTurnIndicator("Your move", "active");
   setPhaseState({ active: "move", showBonus: false });
 };
 
 const sayOpponentTurn = () => {
+  hideBonusToast();
   setTurnIndicator("Opponent's turn", "waiting");
   setPhaseState({ active: "opponent", showBonus: false });
 };
 
 const sayBet = () => {
+  hideBonusToast();
   const showBonus = !document.getElementById("phase-second")?.classList.contains("is-hidden");
   setTurnIndicator("Place your bet", "active");
   setPhaseState({
@@ -103,6 +127,7 @@ const sayBet = () => {
 };
 
 const sayExtraMove = () => {
+  hideBonusToast();
   setTurnIndicator("Your second move", "active");
   setPhaseState({
     active: "second",
@@ -112,6 +137,7 @@ const sayExtraMove = () => {
 };
 
 const sayPredictionPlaced = (prediction) => {
+  hideBonusToast();
   setTurnIndicator(`Bet locked: ${prediction}`, "waiting");
   setPhaseState({
     active: "opponent",
@@ -130,6 +156,7 @@ const sayCorrectBet = () => {
 };
 
 const sayIncorrectBet = () => {
+  hideBonusToast();
   setTurnIndicator("Missed bet. Normal turn.", "active");
   setPhaseState({
     active: "move",
@@ -138,16 +165,19 @@ const sayIncorrectBet = () => {
 };
 
 const sayYouWin = (result) => {
+  hideBonusToast();
   setTurnIndicator(result, "success");
   setPhaseState({ showBonus: false });
 };
 
 const sayYouLose = (result) => {
+  hideBonusToast();
   setTurnIndicator(result, "danger");
   setPhaseState({ showBonus: false });
 };
 
 const sayGameDraw = (result) => {
+  hideBonusToast();
   setTurnIndicator(result, "idle");
   setPhaseState({ showBonus: false });
 };

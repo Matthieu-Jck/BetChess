@@ -28,6 +28,8 @@ const SNAPBACK = "snapback";
 const MOVE_STAGE = "move";
 const PREDICTION_STAGE = "prediction";
 const EMPTY_POSITION = {};
+const HIGHLIGHT_CLASS = "betchess-highlight";
+const FILES = "abcdefgh".split("");
 
 const createMovePayload = (move) => ({
   captured: move.captured ?? null,
@@ -84,6 +86,7 @@ const initBoard = (username) => {
 
     state.board = Chessboard("chess-board", config);
     removeArrows();
+    updatePieceHighlights();
   };
 
   const resetTurnState = () => {
@@ -122,6 +125,83 @@ const initBoard = (username) => {
     return pieceColor === state.gameData.color;
   };
 
+  const getOpponentColor = () => {
+    if (!state.gameData) {
+      return null;
+    }
+
+    return state.gameData.color === "white" ? "black" : "white";
+  };
+
+  const getBlockedBonusSquare = () => {
+    if (!state.activeBonusTurn || state.turnMoves.length !== 1) {
+      return null;
+    }
+
+    return state.turnMoves[0].to;
+  };
+
+  const getPieceAtSquare = (square) => {
+    if (typeof state.engine.get !== "function") {
+      return null;
+    }
+
+    return state.engine.get(square);
+  };
+
+  const clearPieceHighlights = () => {
+    const boardElement = document.getElementById("chess-board");
+    if (!boardElement) {
+      return;
+    }
+
+    boardElement.querySelectorAll(`.${HIGHLIGHT_CLASS}`).forEach((squareElement) => {
+      squareElement.classList.remove(HIGHLIGHT_CLASS);
+    });
+  };
+
+  const getHighlightedSquares = () => {
+    if (!state.gameData || state.gameEnded || !state.isMyTurn) {
+      return [];
+    }
+
+    const targetColor = state.stage === MOVE_STAGE ? state.gameData.color : getOpponentColor();
+    const blockedSquare = state.stage === MOVE_STAGE ? getBlockedBonusSquare() : null;
+    const highlightedSquares = [];
+
+    for (const file of FILES) {
+      for (let rank = 1; rank <= 8; rank += 1) {
+        const square = `${file}${rank}`;
+        const piece = getPieceAtSquare(square);
+        if (!piece) {
+          continue;
+        }
+
+        const pieceColor = piece.color === "w" ? "white" : "black";
+        if (pieceColor !== targetColor || square === blockedSquare) {
+          continue;
+        }
+
+        highlightedSquares.push(square);
+      }
+    }
+
+    return highlightedSquares;
+  };
+
+  const updatePieceHighlights = () => {
+    clearPieceHighlights();
+
+    const boardElement = document.getElementById("chess-board");
+    if (!boardElement) {
+      return;
+    }
+
+    getHighlightedSquares().forEach((square) => {
+      boardElement.querySelector(`[data-square="${square}"]`)?.classList.add(HIGHLIGHT_CLASS);
+    });
+  };
+
   const setEngineTurn = (color) => {
     const fenParts = state.engine.fen().split(" ");
     fenParts[1] = color === "white" ? "w" : "b";
@@ -139,16 +219,19 @@ const initBoard = (username) => {
     if (predictionMatched === false) {
       sayIncorrectBet();
       playIncorrectBet();
+      updatePieceHighlights();
       return;
     }
 
     if (state.activeBonusTurn) {
       sayCorrectBet();
       playCorrectBet();
+      updatePieceHighlights();
       return;
     }
 
     sayYourTurn();
+    updatePieceHighlights();
   };
 
   const finishLocalGame = (result) => {
@@ -217,6 +300,7 @@ const initBoard = (username) => {
 
     state.sendMove(movesData);
     state.isMyTurn = false;
+    updatePieceHighlights();
 
     if (result) {
       finishLocalGame(result);
@@ -234,12 +318,16 @@ const initBoard = (username) => {
     return move ? createMovePayload(move) : null;
   };
 
-  const onDragStart = (_source, piece) => {
+  const onDragStart = (source, piece) => {
     if (!state.gameData || state.gameEnded || !state.isMyTurn) {
       return false;
     }
 
     if (state.stage === MOVE_STAGE) {
+      if (source === getBlockedBonusSquare()) {
+        return false;
+      }
+
       return isPlayerPiece(piece);
     }
 
@@ -247,6 +335,10 @@ const initBoard = (username) => {
   };
 
   const handleTurnMove = (source, target) => {
+    if (source === getBlockedBonusSquare()) {
+      return SNAPBACK;
+    }
+
     const move = state.engine.move({
       from: source,
       to: target,
@@ -271,11 +363,13 @@ const initBoard = (username) => {
     if (state.turnMoves.length < state.moveAllowance) {
       setEngineTurn(state.gameData.color);
       sayExtraMove();
+      updatePieceHighlights();
       return;
     }
 
     state.stage = PREDICTION_STAGE;
     sayBet();
+    updatePieceHighlights();
     return;
   };
 
@@ -320,6 +414,7 @@ const initBoard = (username) => {
 
     state.isMyTurn = false;
     sayOpponentTurn();
+    updatePieceHighlights();
   };
 
   const verifyPrediction = (opponentMoves = []) => {
@@ -354,6 +449,7 @@ const initBoard = (username) => {
     }
 
     removeArrows();
+    updatePieceHighlights();
     finishLocalGame(result);
   };
 

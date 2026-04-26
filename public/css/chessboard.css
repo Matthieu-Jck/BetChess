@@ -34,6 +34,23 @@
     box-shadow: inset 0 0 3px 3px #ff0
 }
 
+.square-55d63.betchess-highlight::after {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 2px rgba(241, 203, 116, 0.95);
+    background: radial-gradient(circle at center, rgba(241, 203, 116, 0.18), rgba(241, 203, 116, 0));
+    pointer-events: none;
+}
+
+.square-55d63.betchess-highlight .piece-417db {
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 0 10px rgba(241, 203, 116, 0.45));
+    transform: scale(1.03);
+}
+
 .notation-322f9 {
     cursor: default;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
