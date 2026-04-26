@@ -33,19 +33,6 @@
       </div>
 
       <div class="header-tools">
-        <label class="sr-only" for="language-select" data-i18n="language.label">Language</label>
-        <select id="language-select" class="language-select" data-language-select data-i18n-aria-label="language.label" aria-label="Language">
-          <option value="en">English</option>
-          <option value="fr">Français</option>
-          <option value="de">Deutsch</option>
-          <option value="es">Español</option>
-          <option value="it">Italiano</option>
-          <option value="zh">中文</option>
-          <option value="ja">日本語</option>
-        </select>
-
-        <div id="turn-indicator" class="turn-indicator turn-indicator--idle">Waiting for a match</div>
-
         <button id="toggle-help" class="header-button" type="button" aria-controls="help" aria-expanded="false">
           <img src="/public/images/icons/help.png" alt="" class="header-button__icon" />
           <span data-i18n="header.rules">Rules</span>
@@ -55,6 +42,30 @@
           <img src="/public/images/icons/players.png" alt="" class="header-button__icon" />
           <span data-i18n="header.players">Players</span>
         </button>
+
+        <div class="language-picker">
+          <label class="sr-only" for="language-select" data-i18n="language.label">Language</label>
+          <span class="language-picker__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M4 5h9" />
+              <path d="M9 3v2" />
+              <path d="M6 9c1.6 2.8 4.2 4.7 7 5.7" />
+              <path d="M12 5c-.8 4-3 7.1-7 9" />
+              <path d="M14 21l4-9 4 9" />
+              <path d="M15.4 18h5.2" />
+            </svg>
+          </span>
+          <select id="language-select" class="language-select" data-language-select data-i18n-aria-label="language.label" aria-label="Language">
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="es">Español</option>
+            <option value="it">Italiano</option>
+            <option value="zh">中文</option>
+            <option value="ja">日本語</option>
+          </select>
+          <span class="language-picker__chevron" aria-hidden="true"></span>
+        </div>
       </div>
     </header>
 

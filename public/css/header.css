@@ -57,70 +57,92 @@
   justify-content: flex-end;
 }
 
-.language-select {
-  min-height: 40px;
-  max-width: 136px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+.language-picker {
+  position: relative;
+  width: 48px;
+  height: 44px;
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid rgba(215, 177, 108, 0.34);
   border-radius: 999px;
-  padding: 0 34px 0 13px;
   background:
-    linear-gradient(45deg, transparent 50%, var(--ink) 50%) right 14px center / 6px 6px no-repeat,
-    linear-gradient(135deg, var(--ink) 50%, transparent 50%) right 10px center / 6px 6px no-repeat,
-    rgba(255, 255, 255, 0.1);
+    radial-gradient(circle at 30% 24%, rgba(215, 177, 108, 0.28), transparent 38%),
+    linear-gradient(135deg, rgba(107, 194, 173, 0.2), rgba(205, 119, 87, 0.14)),
+    rgba(255, 255, 255, 0.09);
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.13);
+  overflow: hidden;
+  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.language-picker:hover {
+  transform: translateY(-1px);
+  border-color: rgba(107, 194, 173, 0.55);
+  background:
+    radial-gradient(circle at 30% 24%, rgba(215, 177, 108, 0.34), transparent 38%),
+    linear-gradient(135deg, rgba(107, 194, 173, 0.26), rgba(205, 119, 87, 0.18)),
+    rgba(255, 255, 255, 0.12);
+}
+
+.language-picker:focus-within {
+  border-color: rgba(107, 194, 173, 0.7);
+  box-shadow: 0 0 0 4px rgba(107, 194, 173, 0.13), var(--shadow-md);
+}
+
+.language-picker__icon {
+  width: 24px;
+  height: 24px;
   color: var(--ink);
-  box-shadow: var(--shadow-md);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.language-picker__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.language-picker__chevron {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid rgba(244, 240, 230, 0.72);
+  border-bottom: 2px solid rgba(244, 240, 230, 0.72);
+  transform: rotate(45deg);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.language-select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: inherit;
+  padding: 0;
+  background: transparent;
+  color: transparent;
   cursor: pointer;
   font: inherit;
-  font-size: 0.86rem;
-  font-weight: 800;
   appearance: none;
 }
 
 .language-select:focus {
   outline: none;
-  border-color: rgba(107, 194, 173, 0.58);
-  box-shadow: 0 0 0 4px rgba(107, 194, 173, 0.13);
 }
 
 .language-select option {
   color: #10141d;
-}
-
-.turn-indicator {
-  max-width: min(520px, 100%);
-  padding: 10px 14px;
-  border-radius: 999px;
-  font-size: 0.9rem;
-  font-weight: 700;
-  line-height: 1.3;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: var(--shadow-md);
-  text-align: center;
-}
-
-.turn-indicator--idle {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--ink-soft);
-}
-
-.turn-indicator--active {
-  background: rgba(107, 194, 173, 0.16);
-  color: #b7eee0;
-}
-
-.turn-indicator--waiting {
-  background: rgba(215, 177, 108, 0.14);
-  color: #f2ddae;
-}
-
-.turn-indicator--success {
-  background: rgba(130, 205, 164, 0.16);
-  color: #bde7cb;
-}
-
-.turn-indicator--danger {
-  background: rgba(205, 119, 87, 0.16);
-  color: #f0c0ae;
+  background: #f4f0e6;
 }
 
 .header-button {
@@ -177,15 +199,8 @@
     padding: 11px;
   }
 
-  .language-select {
-    max-width: 108px;
-    min-height: 38px;
-    padding-left: 11px;
-    font-size: 0.78rem;
-  }
-
-  .turn-indicator {
-    flex: 1 1 auto;
-    min-width: 0;
+  .language-picker {
+    width: 44px;
+    height: 40px;
   }
 }
