@@ -163,7 +163,7 @@ body > img[data-piece] {
   transform: translateX(calc(100% + 24px));
   opacity: 0;
   transition: transform 0.25s ease, opacity 0.25s ease;
-  z-index: 70;
+  z-index: 110;
 }
 
 .drawer::before {
