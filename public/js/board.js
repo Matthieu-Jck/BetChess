@@ -310,7 +310,10 @@ const initBoard = (username) => {
   const setEngineTurn = (color) => {
     const fenParts = state.engine.fen().split(" ");
     fenParts[1] = color === "white" ? "w" : "b";
-    state.engine.load(fenParts.join(" "));
+    // A bonus move means the previous move no longer offers an en-passant reply.
+    // chess.js rejects same-side-to-move FEN when that old en-passant square remains.
+    fenParts[3] = "-";
+    return state.engine.load(fenParts.join(" "));
   };
 
   const beginPlayerTurn = ({ predictionMatched = null } = {}) => {
