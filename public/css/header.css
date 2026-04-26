@@ -1,4 +1,6 @@
 .game-header {
+  position: relative;
+  z-index: 20;
   width: 100%;
   margin: 0;
   padding: 10px clamp(12px, 2vw, 24px);

@@ -226,7 +226,7 @@ body > img[data-piece] {
     grid-template-columns: minmax(0, 1fr) clamp(292px, 22vw, 350px);
     grid-template-rows: minmax(0, 1fr);
     align-items: stretch;
-    padding: 10px 0 0 12px;
+    padding: 0 0 0 12px;
     gap: 12px;
   }
 
