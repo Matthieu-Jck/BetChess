@@ -34,6 +34,7 @@ body {
 
 .legal-header__copy {
   min-width: 0;
+  flex: 1;
 }
 
 .legal-header__copy p {
@@ -49,6 +50,35 @@ body {
   margin: 0;
   font-family: "Space Grotesk", "Inter", sans-serif;
   font-size: clamp(1.8rem, 4vw, 2.6rem);
+}
+
+.legal-language-select {
+  min-height: 40px;
+  max-width: 136px;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 0 34px 0 13px;
+  background:
+    linear-gradient(45deg, transparent 50%, #f4f0e6 50%) right 14px center / 6px 6px no-repeat,
+    linear-gradient(135deg, #f4f0e6 50%, transparent 50%) right 10px center / 6px 6px no-repeat,
+    rgba(255, 255, 255, 0.1);
+  color: #f4f0e6;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 800;
+  appearance: none;
+}
+
+.legal-language-select option {
+  color: #10141d;
+}
+
+.legal-language-select:focus {
+  outline: none;
+  border-color: rgba(107, 194, 173, 0.58);
+  box-shadow: 0 0 0 4px rgba(107, 194, 173, 0.13);
 }
 
 .legal-card {
@@ -106,4 +136,26 @@ body {
 
 .legal-link-row a:hover {
   background: rgba(107, 194, 173, 0.22);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+@media (max-width: 620px) {
+  .legal-header {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .legal-language-select {
+    max-width: 100%;
+  }
 }

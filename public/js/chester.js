@@ -1,3 +1,5 @@
+import { onLanguageChange, t } from "./i18n.js";
+
 const getPhaseTrack = () => document.getElementById("phase-track");
 const getPhaseTrackShell = () => document.getElementById("phase-track-shell");
 const getPhaseCards = () => ({
@@ -7,6 +9,7 @@ const getPhaseCards = () => ({
   second: document.getElementById("phase-second")
 });
 let detachBonusToastDismiss = null;
+let turnIndicatorState = { key: "turn.waiting", tone: "idle", values: {} };
 
 const hideBonusToast = () => {
   const toast = document.getElementById("bonus-toast");
@@ -56,13 +59,15 @@ const showBonusToast = () => {
   };
 };
 
-const setTurnIndicator = (text, tone = "idle") => {
+const setTurnIndicator = (key, tone = "idle", values = {}) => {
   const indicator = document.getElementById("turn-indicator");
+  turnIndicatorState = { key, tone, values };
+
   if (!indicator) {
     return;
   }
 
-  indicator.textContent = text;
+  indicator.textContent = t(key, values);
   indicator.className = `turn-indicator turn-indicator--${tone}`;
 };
 
@@ -104,26 +109,26 @@ const setPhaseState = ({ active = null, completed = [], showBonus = false }) => 
 
 const sayWaitingForMatch = () => {
   hideBonusToast();
-  setTurnIndicator("Waiting for a match", "idle");
+  setTurnIndicator("turn.waiting", "idle");
   setPhaseState({ showBonus: false });
 };
 
 const sayYourTurn = () => {
   hideBonusToast();
-  setTurnIndicator("Your move", "active");
+  setTurnIndicator("turn.yourMove", "active");
   setPhaseState({ active: "move", showBonus: false });
 };
 
 const sayOpponentTurn = () => {
   hideBonusToast();
-  setTurnIndicator("Opponent's turn", "waiting");
+  setTurnIndicator("turn.opponent", "waiting");
   setPhaseState({ active: "opponent", showBonus: false });
 };
 
 const sayBet = () => {
   hideBonusToast();
   const showBonus = !document.getElementById("phase-second")?.classList.contains("is-hidden");
-  setTurnIndicator("Place your bet", "active");
+  setTurnIndicator("turn.bet", "active");
   setPhaseState({
     active: "bet",
     completed: showBonus ? ["move", "second"] : ["move"],
@@ -133,7 +138,7 @@ const sayBet = () => {
 
 const sayExtraMove = () => {
   hideBonusToast();
-  setTurnIndicator("Your second move", "active");
+  setTurnIndicator("turn.secondMove", "active");
   setPhaseState({
     active: "second",
     completed: ["move"],
@@ -143,7 +148,7 @@ const sayExtraMove = () => {
 
 const sayPredictionPlaced = (prediction) => {
   hideBonusToast();
-  setTurnIndicator(`Bet locked: ${prediction}`, "waiting");
+  setTurnIndicator("turn.betLocked", "waiting", { prediction });
   setPhaseState({
     active: "opponent",
     completed: ["move", "bet"],
@@ -152,7 +157,7 @@ const sayPredictionPlaced = (prediction) => {
 };
 
 const sayCorrectBet = () => {
-  setTurnIndicator("Correct bet. Bonus turn live.", "success");
+  setTurnIndicator("turn.correctBet", "success");
   setPhaseState({
     active: "move",
     showBonus: true
@@ -162,30 +167,34 @@ const sayCorrectBet = () => {
 
 const sayIncorrectBet = () => {
   hideBonusToast();
-  setTurnIndicator("Missed bet. Normal turn.", "active");
+  setTurnIndicator("turn.missedBet", "active");
   setPhaseState({
     active: "move",
     showBonus: false
   });
 };
 
-const sayYouWin = (result) => {
+const sayYouWin = (resultLine) => {
   hideBonusToast();
-  setTurnIndicator(result, "success");
+  setTurnIndicator("result.reason.generic", "success", { reason: resultLine });
   setPhaseState({ showBonus: false });
 };
 
-const sayYouLose = (result) => {
+const sayYouLose = (resultLine) => {
   hideBonusToast();
-  setTurnIndicator(result, "danger");
+  setTurnIndicator("result.reason.generic", "danger", { reason: resultLine });
   setPhaseState({ showBonus: false });
 };
 
-const sayGameDraw = (result) => {
+const sayGameDraw = (resultLine) => {
   hideBonusToast();
-  setTurnIndicator(result, "idle");
+  setTurnIndicator("result.reason.generic", "idle", { reason: resultLine });
   setPhaseState({ showBonus: false });
 };
+
+onLanguageChange(() => {
+  setTurnIndicator(turnIndicatorState.key, turnIndicatorState.tone, turnIndicatorState.values);
+});
 
 export {
   sayBet,

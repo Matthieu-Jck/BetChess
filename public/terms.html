@@ -13,40 +13,51 @@
   <link rel="stylesheet" href="/public/css/legal-page.css" />
 </head>
 
-<body>
+<body data-page-title="page.terms.title">
   <main class="legal-shell">
     <header class="legal-header">
       <img src="/public/images/icons/betchess-logo.png" alt="BetChess logo" />
       <div class="legal-header__copy">
-        <p>Terms</p>
-        <h1>BetChess Terms of Service</h1>
+        <p data-i18n="terms.kicker">Terms</p>
+        <h1 data-i18n="terms.title">BetChess Terms of Service</h1>
       </div>
+      <label class="sr-only" for="language-select" data-i18n="language.label">Language</label>
+      <select id="language-select" class="legal-language-select" data-language-select data-i18n-aria-label="language.label" aria-label="Language">
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="es">Español</option>
+        <option value="it">Italiano</option>
+        <option value="zh">中文</option>
+        <option value="ja">日本語</option>
+      </select>
     </header>
 
     <section class="legal-card">
-      <h2>Free-play only</h2>
-      <p>BetChess is a free multiplayer chess variant. It does not process real-money wagers, deposits, or withdrawals.</p>
+      <h2 data-i18n="terms.freeTitle">Free-play only</h2>
+      <p data-i18n="terms.freeBody">BetChess is a free multiplayer chess variant. It does not process real-money wagers, deposits, or withdrawals.</p>
     </section>
 
     <section class="legal-card">
-      <h2>Use of the service</h2>
+      <h2 data-i18n="terms.useTitle">Use of the service</h2>
       <ul>
-        <li>Choose a username that you are comfortable showing in the public lobby.</li>
-        <li>Do not harass, spam, or impersonate other players.</li>
-        <li>Do not use the app for unlawful or deceptive gambling claims.</li>
+        <li data-i18n="terms.username">Choose a username that you are comfortable showing in the public lobby.</li>
+        <li data-i18n="terms.behavior">Do not harass, spam, or impersonate other players.</li>
+        <li data-i18n="terms.gambling">Do not use the app for unlawful or deceptive gambling claims.</li>
       </ul>
     </section>
 
     <section class="legal-card">
-      <h2>Service status</h2>
-      <p>BetChess is provided as-is. Features, timers, sounds, and multiplayer behavior may change while the project evolves.</p>
+      <h2 data-i18n="terms.statusTitle">Service status</h2>
+      <p data-i18n="terms.statusBody">BetChess is provided as-is. Features, timers, sounds, and multiplayer behavior may change while the project evolves.</p>
       <div class="legal-link-row">
-        <a href="/public/privacy.html">Privacy policy</a>
-        <a href="/public/support.html">Support</a>
-        <a href="/">Back to BetChess</a>
+        <a href="/public/privacy.html" data-i18n="terms.privacy">Privacy policy</a>
+        <a href="/public/support.html" data-i18n="support.kicker">Support</a>
+        <a href="/" data-i18n="support.back">Back to BetChess</a>
       </div>
     </section>
   </main>
+  <script src="/public/js/i18n.js" type="module"></script>
 </body>
 
 </html>

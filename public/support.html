@@ -13,36 +13,47 @@
   <link rel="stylesheet" href="/public/css/legal-page.css" />
 </head>
 
-<body>
+<body data-page-title="page.support.title">
   <main class="legal-shell">
     <header class="legal-header">
       <img src="/public/images/icons/betchess-logo.png" alt="BetChess logo" />
       <div class="legal-header__copy">
-        <p>Support</p>
-        <h1>BetChess Help</h1>
+        <p data-i18n="support.kicker">Support</p>
+        <h1 data-i18n="support.title">BetChess Help</h1>
       </div>
+      <label class="sr-only" for="language-select" data-i18n="language.label">Language</label>
+      <select id="language-select" class="legal-language-select" data-language-select data-i18n-aria-label="language.label" aria-label="Language">
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="es">Español</option>
+        <option value="it">Italiano</option>
+        <option value="zh">中文</option>
+        <option value="ja">日本語</option>
+      </select>
     </header>
 
     <section class="legal-card">
-      <h2>How to reach us</h2>
-      <p>BetChess support is handled through the public project repository so bug reports, gameplay issues, and feature requests all land in one place.</p>
+      <h2 data-i18n="support.reachTitle">How to reach us</h2>
+      <p data-i18n="support.reachBody">BetChess support is handled through the public project repository so bug reports, gameplay issues, and feature requests all land in one place.</p>
       <div class="legal-link-row">
-        <a href="https://github.com/Matthieu-Jck/BetChess/issues">Open a GitHub issue</a>
-        <a href="https://github.com/Matthieu-Jck/BetChess">View the repository</a>
-        <a href="/">Back to BetChess</a>
+        <a href="https://github.com/Matthieu-Jck/BetChess/issues" data-i18n="support.openIssue">Open a GitHub issue</a>
+        <a href="https://github.com/Matthieu-Jck/BetChess" data-i18n="support.viewRepo">View the repository</a>
+        <a href="/" data-i18n="support.back">Back to BetChess</a>
       </div>
     </section>
 
     <section class="legal-card">
-      <h2>What to include in a report</h2>
+      <h2 data-i18n="support.includeTitle">What to include in a report</h2>
       <ul>
-        <li>Your username and what your opponent saw, if relevant.</li>
-        <li>The device you used, especially if the issue only happens on phone.</li>
-        <li>The exact phase of the turn where the bug happened.</li>
-        <li>A screenshot or short clip whenever the board or timers looked wrong.</li>
+        <li data-i18n="support.includeUser">Your username and what your opponent saw, if relevant.</li>
+        <li data-i18n="support.includeDevice">The device you used, especially if the issue only happens on phone.</li>
+        <li data-i18n="support.includePhase">The exact phase of the turn where the bug happened.</li>
+        <li data-i18n="support.includeMedia">A screenshot or short clip whenever the board or timers looked wrong.</li>
       </ul>
     </section>
   </main>
+  <script src="/public/js/i18n.js" type="module"></script>
 </body>
 
 </html>

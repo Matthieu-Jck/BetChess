@@ -13,43 +13,54 @@
   <link rel="stylesheet" href="/public/css/legal-page.css" />
 </head>
 
-<body>
+<body data-page-title="page.privacy.title">
   <main class="legal-shell">
     <header class="legal-header">
       <img src="/public/images/icons/betchess-logo.png" alt="BetChess logo" />
       <div class="legal-header__copy">
-        <p>Privacy</p>
-        <h1>BetChess Privacy Policy</h1>
+        <p data-i18n="privacy.kicker">Privacy</p>
+        <h1 data-i18n="privacy.title">BetChess Privacy Policy</h1>
       </div>
+      <label class="sr-only" for="language-select" data-i18n="language.label">Language</label>
+      <select id="language-select" class="legal-language-select" data-language-select data-i18n-aria-label="language.label" aria-label="Language">
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="es">Español</option>
+        <option value="it">Italiano</option>
+        <option value="zh">中文</option>
+        <option value="ja">日本語</option>
+      </select>
     </header>
 
     <section class="legal-card">
-      <h2>What BetChess collects</h2>
+      <h2 data-i18n="privacy.collectTitle">What BetChess collects</h2>
       <ul>
-        <li>A lobby username so other players can challenge you.</li>
-        <li>Live match state such as moves, timers, invitations, and game results.</li>
-        <li>Technical connection data needed to run the multiplayer session.</li>
+        <li data-i18n="privacy.collectUsername">A lobby username so other players can challenge you.</li>
+        <li data-i18n="privacy.collectMatch">Live match state such as moves, timers, invitations, and game results.</li>
+        <li data-i18n="privacy.collectTechnical">Technical connection data needed to run the multiplayer session.</li>
       </ul>
     </section>
 
     <section class="legal-card">
-      <h2>What BetChess does not collect</h2>
+      <h2 data-i18n="privacy.noCollectTitle">What BetChess does not collect</h2>
       <ul>
-        <li>No payment data.</li>
-        <li>No banking or real-money betting information.</li>
-        <li>No account password for gameplay, since the game currently uses guest usernames.</li>
+        <li data-i18n="privacy.noPayment">No payment data.</li>
+        <li data-i18n="privacy.noBanking">No banking or real-money betting information.</li>
+        <li data-i18n="privacy.noPassword">No account password for gameplay, since the game currently uses guest usernames.</li>
       </ul>
     </section>
 
     <section class="legal-card">
-      <h2>How data is used</h2>
-      <p>Data is used only to show the lobby, run live matches, and deliver the game state between both players. Usernames are visible to other players in the lobby.</p>
+      <h2 data-i18n="privacy.useTitle">How data is used</h2>
+      <p data-i18n="privacy.useBody">Data is used only to show the lobby, run live matches, and deliver the game state between both players. Usernames are visible to other players in the lobby.</p>
       <div class="legal-link-row">
-        <a href="/public/terms.html">Read the terms</a>
-        <a href="/">Back to BetChess</a>
+        <a href="/public/terms.html" data-i18n="privacy.readTerms">Read the terms</a>
+        <a href="/" data-i18n="support.back">Back to BetChess</a>
       </div>
     </section>
   </main>
+  <script src="/public/js/i18n.js" type="module"></script>
 </body>
 
 </html>

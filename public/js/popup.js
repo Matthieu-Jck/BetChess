@@ -1,3 +1,5 @@
+import { onLanguageChange, t, translateServerMessage } from "./i18n.js";
+
 const USERNAME_PATTERN = /^[A-Za-z0-9_]{2,15}$/;
 
 const initializePopup = () => {
@@ -5,6 +7,7 @@ const initializePopup = () => {
   const form = document.getElementById("usernameForm");
   const input = document.getElementById("usernameInput");
   const error = document.getElementById("error-message");
+  let currentErrorRenderer = null;
 
   if (!popup || !form || !input || !error) {
     return;
@@ -20,11 +23,13 @@ const initializePopup = () => {
   };
 
   const clearError = () => {
+    currentErrorRenderer = null;
     error.textContent = "";
     input.classList.remove("invalid");
   };
 
-  const setError = (message) => {
+  const setError = (message, renderer = () => message) => {
+    currentErrorRenderer = renderer;
     error.textContent = message;
     input.classList.add("invalid");
     showPopup();
@@ -36,7 +41,7 @@ const initializePopup = () => {
 
     const username = input.value.trim();
     if (!USERNAME_PATTERN.test(username)) {
-      setError("Use 2 to 15 letters, numbers, or underscores.");
+      setError(t("username.invalid"), () => t("username.invalid"));
       return;
     }
 
@@ -47,7 +52,13 @@ const initializePopup = () => {
   form.addEventListener("submit", submitUsername);
   input.addEventListener("input", clearError);
   window.addEventListener("usernameRejected", (event) => {
-    setError(event.detail.message);
+    const message = event.detail.message;
+    setError(translateServerMessage(message), () => translateServerMessage(message));
+  });
+  onLanguageChange(() => {
+    if (currentErrorRenderer) {
+      error.textContent = currentErrorRenderer();
+    }
   });
 
   showPopup();

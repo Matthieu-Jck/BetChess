@@ -21,28 +21,39 @@
   <link rel="stylesheet" href="/public/css/popup.css" />
 </head>
 
-<body>
+<body data-page-title="page.main.title">
   <div class="app-shell">
     <header class="game-header">
       <div class="brand-block">
         <img class="game-icon" src="/public/images/icons/betchess-logo.png" alt="BetChess logo" />
         <div class="brand-copy">
-          <p class="brand-kicker">Read the board. Call the reply.</p>
+          <p class="brand-kicker" data-i18n="brand.kicker">Read the board. Call the reply.</p>
           <h1 class="game-title">BetChess</h1>
         </div>
       </div>
 
       <div class="header-tools">
+        <label class="sr-only" for="language-select" data-i18n="language.label">Language</label>
+        <select id="language-select" class="language-select" data-language-select data-i18n-aria-label="language.label" aria-label="Language">
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+          <option value="de">Deutsch</option>
+          <option value="es">Español</option>
+          <option value="it">Italiano</option>
+          <option value="zh">中文</option>
+          <option value="ja">日本語</option>
+        </select>
+
         <div id="turn-indicator" class="turn-indicator turn-indicator--idle">Waiting for a match</div>
 
         <button id="toggle-help" class="header-button" type="button" aria-controls="help" aria-expanded="false">
           <img src="/public/images/icons/help.png" alt="" class="header-button__icon" />
-          <span>Rules</span>
+          <span data-i18n="header.rules">Rules</span>
         </button>
 
         <button id="toggle-players" class="header-button" type="button" aria-controls="players" aria-expanded="false">
           <img src="/public/images/icons/players.png" alt="" class="header-button__icon" />
-          <span>Players</span>
+          <span data-i18n="header.players">Players</span>
         </button>
       </div>
     </header>
@@ -54,7 +65,7 @@
             <div id="invite-stack" class="invite-stack" aria-live="polite"></div>
 
             <div class="timer-card timer-card--top">
-              <span class="timer-label">Opponent</span>
+              <span class="timer-label" data-i18n="timer.opponent">Opponent</span>
               <div id="top_timer">20:00</div>
             </div>
 
@@ -68,7 +79,7 @@
             </div>
 
             <div class="timer-card timer-card--bottom">
-              <span class="timer-label">You</span>
+              <span class="timer-label" data-i18n="timer.you">You</span>
               <div id="bottom_timer">20:00</div>
             </div>
 
@@ -76,19 +87,19 @@
               <div id="phase-track" class="phase-track">
                 <div id="phase-opponent" class="phase-card">
                   <span class="phase-card__eyebrow">1</span>
-                  <strong>Opponent's turn</strong>
+                  <strong data-i18n="phase.opponent">Opponent's turn</strong>
                 </div>
                 <div id="phase-move" class="phase-card">
                   <span class="phase-card__eyebrow">2</span>
-                  <strong>Your move</strong>
+                  <strong data-i18n="phase.move">Your move</strong>
                 </div>
                 <div id="phase-second" class="phase-card is-hidden" aria-hidden="true">
                   <span class="phase-card__eyebrow">3</span>
-                  <strong>Your second move</strong>
+                  <strong data-i18n="phase.second">Your second move</strong>
                 </div>
                 <div id="phase-bet" class="phase-card">
                   <span class="phase-card__eyebrow">3</span>
-                  <strong>Your bet</strong>
+                  <strong data-i18n="phase.bet">Your bet</strong>
                 </div>
               </div>
             </div>
@@ -98,45 +109,45 @@
 
       <aside id="help" class="drawer help" aria-hidden="true">
         <div class="drawer__header">
-          <span class="drawer__eyebrow">How it works</span>
-          <h2>Rules</h2>
+          <span class="drawer__eyebrow" data-i18n="rules.eyebrow">How it works</span>
+          <h2 data-i18n="rules.title">Rules</h2>
         </div>
 
         <div id="help-text" class="drawer__content">
           <section class="rules-block">
-            <h3>Play normally</h3>
+            <h3 data-i18n="rules.playTitle">Play normally</h3>
             <ol class="rules-list">
-              <li><strong>Your turn:</strong> one standard legal chess move. </li>
-              <li><strong>Your bet:</strong> drag one of your opponent's pieces to the square you think it will play next.</li>
+              <li><strong data-i18n="rules.turnLabel">Your turn:</strong> <span data-i18n="rules.turnText">one standard legal chess move.</span></li>
+              <li><strong data-i18n="rules.betLabel">Your bet:</strong> <span data-i18n="rules.betText">drag one of your opponent's pieces to the square you think it will play next.</span></li>
             </ol>
           </section>
 
           <section class="rules-block">
-            <h3>If your bet is correct</h3>
+            <h3 data-i18n="rules.correctTitle">If your bet is correct</h3>
             <ul class="rules-list">
-              <li>One bonus move next turn.</li>
-              <li>You may play two legal moves in a row before betting again.</li>
-              <li>You cannot move the same piece twice during that bonus turn.</li>
+              <li data-i18n="rules.bonusOne">One bonus move next turn.</li>
+              <li data-i18n="rules.twoMoves">You may play two legal moves in a row before betting again.</li>
+              <li data-i18n="rules.noSamePiece">You cannot move the same piece twice during that bonus turn.</li>
             </ul>
           </section>
 
           <section class="rules-block">
-            <h3>If the opponent has a bonus turn</h3>
+            <h3 data-i18n="rules.opponentBonusTitle">If the opponent has a bonus turn</h3>
             <ul class="rules-list">
-              <li>Your prediction is counted as correct if it matches either of the two moves they make.</li>
+              <li data-i18n="rules.eitherMove">Your prediction is counted as correct if it matches either of the two moves they make.</li>
             </ul>
           </section>
 
           <div class="rules-note">
-            <strong>Standard chess rules apply.</strong>
-            Check, checkmate, stalemate, repetition, and insufficient material all work normally.
+            <strong data-i18n="rules.noteTitle">Standard chess rules apply.</strong>
+            <span data-i18n="rules.noteBody">Check, checkmate, stalemate, repetition, and insufficient material all work normally.</span>
           </div>
         </div>
       </aside>
 
       <aside id="players" class="drawer players" aria-hidden="true">
         <div class="drawer__header">
-          <span class="drawer__eyebrow">Lobby</span>
+          <span class="drawer__eyebrow" data-i18n="players.eyebrow">Lobby</span>
           <h2 id="players-title">Players online</h2>
         </div>
 
@@ -152,33 +163,33 @@
   <div id="bonus-toast" class="bonus-toast" aria-live="polite" aria-atomic="true" hidden>
     <span class="bonus-toast__chip" aria-hidden="true"></span>
     <div class="bonus-toast__content">
-      <span class="bonus-toast__kicker">Jackpot</span>
-      <strong>Correct bet</strong>
-      <span>Bonus turn unlocked</span>
+      <span class="bonus-toast__kicker" data-i18n="bonus.kicker">Jackpot</span>
+      <strong data-i18n="bonus.title">Correct bet</strong>
+      <span data-i18n="bonus.copy">Bonus turn unlocked</span>
     </div>
     <span class="bonus-toast__spark" aria-hidden="true"></span>
   </div>
 
   <div id="game-result-popup" class="result-popup" aria-live="assertive" aria-atomic="true" hidden>
     <div class="result-popup__card">
-      <span class="result-popup__kicker">Game over</span>
-      <h2 id="game-result-title">Result</h2>
-      <p id="game-result-detail">Tap to continue</p>
-      <span class="result-popup__hint">Tap anywhere to continue</span>
+      <span class="result-popup__kicker" data-i18n="result.kicker">Game over</span>
+      <h2 id="game-result-title" data-i18n="result.title">Result</h2>
+      <p id="game-result-detail" data-i18n="result.tap">Tap to continue</p>
+      <span class="result-popup__hint" data-i18n="result.hint">Tap anywhere to continue</span>
     </div>
   </div>
 
   <div id="usernamePopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="usernameTitle">
     <div class="popup-content">
-      <p class="popup-kicker">Start a session</p>
-      <h2 id="usernameTitle">Choose a username</h2>
-      <p class="popup-copy">Pick a short handle so other players can invite you to a match.</p>
+      <p class="popup-kicker" data-i18n="username.kicker">Start a session</p>
+      <h2 id="usernameTitle" data-i18n="username.title">Choose a username</h2>
+      <p class="popup-copy" data-i18n="username.copy">Pick a short handle so other players can invite you to a match.</p>
 
       <form id="usernameForm" novalidate>
-        <label class="sr-only" for="usernameInput">Username</label>
-        <input type="text" id="usernameInput" name="username" placeholder="Username" maxlength="15" autocomplete="off" />
+        <label class="sr-only" for="usernameInput" data-i18n="username.label">Username</label>
+        <input type="text" id="usernameInput" name="username" placeholder="Username" data-i18n-placeholder="username.placeholder" maxlength="15" autocomplete="off" />
         <p id="error-message" aria-live="polite"></p>
-        <button id="validateButton" type="submit">Enter lobby</button>
+        <button id="validateButton" type="submit" data-i18n="username.submit">Enter lobby</button>
       </form>
     </div>
   </div>
@@ -188,6 +199,7 @@
   <script src="/public/lib/chess.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
 
+  <script src="/public/js/i18n.js" type="module"></script>
   <script src="/public/js/header.js" type="module"></script>
   <script src="/public/js/players.js" type="module"></script>
   <script src="/public/js/chester.js" type="module"></script>

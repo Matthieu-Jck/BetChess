@@ -57,6 +57,35 @@
   justify-content: flex-end;
 }
 
+.language-select {
+  min-height: 40px;
+  max-width: 136px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 0 34px 0 13px;
+  background:
+    linear-gradient(45deg, transparent 50%, var(--ink) 50%) right 14px center / 6px 6px no-repeat,
+    linear-gradient(135deg, var(--ink) 50%, transparent 50%) right 10px center / 6px 6px no-repeat,
+    rgba(255, 255, 255, 0.1);
+  color: var(--ink);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 800;
+  appearance: none;
+}
+
+.language-select:focus {
+  outline: none;
+  border-color: rgba(107, 194, 173, 0.58);
+  box-shadow: 0 0 0 4px rgba(107, 194, 173, 0.13);
+}
+
+.language-select option {
+  color: #10141d;
+}
+
 .turn-indicator {
   max-width: min(520px, 100%);
   padding: 10px 14px;
@@ -146,6 +175,13 @@
 
   .header-button {
     padding: 11px;
+  }
+
+  .language-select {
+    max-width: 108px;
+    min-height: 38px;
+    padding-left: 11px;
+    font-size: 0.78rem;
   }
 
   .turn-indicator {

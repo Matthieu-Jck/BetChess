@@ -23,6 +23,7 @@ import {
   playWin
 } from "./sound.js";
 import { resetTimers } from "./timer.js";
+import { getGameResultContent, onLanguageChange, t } from "./i18n.js";
 
 const SNAPBACK = "snapback";
 const MOVE_STAGE = "move";
@@ -39,15 +40,7 @@ const createMovePayload = (move) => ({
   promotion: move.promotion ?? null
 });
 
-const capitalizeText = (text) => {
-  if (!text) {
-    return "";
-  }
-
-  return text.charAt(0).toUpperCase() + text.slice(1);
-};
-
-const formatPrediction = (move) => `${move.from} to ${move.to}`;
+const formatPrediction = (move) => t("move.format", { from: move.from, to: move.to });
 
 const initBoard = (username) => {
   const state = {
@@ -132,35 +125,7 @@ const initBoard = (username) => {
   };
 
   const parseResultPopupContent = (result) => {
-    const trimmedResult = result.trim().replace(/\.$/, "");
-    const drawMatch = trimmedResult.match(/^Draw(?: by)?\s*(.*)$/i);
-    if (drawMatch) {
-      return {
-        detail: drawMatch[1] ? capitalizeText(drawMatch[1]) : "No winner",
-        title: "Draw"
-      };
-    }
-
-    const winByMatch = trimmedResult.match(/^(.+?) wins by (.+)$/i);
-    if (winByMatch) {
-      return {
-        detail: capitalizeText(winByMatch[2]),
-        title: `${winByMatch[1]} wins`
-      };
-    }
-
-    const winBecauseMatch = trimmedResult.match(/^(.+?) wins because (.+)$/i);
-    if (winBecauseMatch) {
-      return {
-        detail: capitalizeText(winBecauseMatch[2]),
-        title: `${winBecauseMatch[1]} wins`
-      };
-    }
-
-    return {
-      detail: "Match complete",
-      title: trimmedResult
-    };
+    return getGameResultContent(result);
   };
 
   const showResultPopup = (result) => {
@@ -176,6 +141,11 @@ const initBoard = (username) => {
     title.textContent = content.title;
     detail.textContent = content.detail;
     popup.hidden = false;
+
+    if (state.resultDismissHandler) {
+      popup.removeEventListener("pointerdown", state.resultDismissHandler);
+      state.resultDismissHandler = null;
+    }
 
     window.requestAnimationFrame(() => {
       popup.classList.add("is-visible");
@@ -357,21 +327,22 @@ const initBoard = (username) => {
     removeArrows();
 
     const lowered = result.toLowerCase();
+    const resultContent = getGameResultContent(result);
     if (lowered.includes("draw")) {
-      sayGameDraw(result);
+      sayGameDraw(resultContent.line);
       playDraw();
       showResultPopup(result);
       return;
     }
 
     if (lowered.startsWith(`${state.username.toLowerCase()} wins`)) {
-      sayYouWin(result);
+      sayYouWin(resultContent.line);
       playWin();
       showResultPopup(result);
       return;
     }
 
-    sayYouLose(result);
+    sayYouLose(resultContent.line);
     playLose();
     showResultPopup(result);
   };
@@ -577,6 +548,12 @@ const initBoard = (username) => {
     renderIdleBoard();
     sayWaitingForMatch();
   };
+
+  onLanguageChange(() => {
+    if (state.resultMessage) {
+      showResultPopup(state.resultMessage);
+    }
+  });
 
   function drawArrow(from, to, perspectiveColor) {
     const fromPos = notationToPosition(from, perspectiveColor);
