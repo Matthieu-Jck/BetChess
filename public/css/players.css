@@ -5,7 +5,9 @@
 }
 
 #players-list-container {
+  flex: 1 1 auto;
   min-height: 120px;
+  overflow: auto;
 }
 
 #players-ul {
@@ -88,7 +90,7 @@
 }
 
 .current-player {
-  margin-top: 18px;
+  margin-top: auto;
   padding-top: 18px;
   border-top: 1px solid rgba(255, 255, 255, 0.12);
   color: #f8fafc;
@@ -96,14 +98,19 @@
 }
 
 .invite-stack {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
   width: min(100%, calc(var(--board-size) + var(--phase-width) + 28px));
-  min-height: 0;
+  max-height: min(34dvh, 280px);
   display: grid;
   gap: 10px;
   align-content: start;
   overflow: auto;
-  padding-right: 2px;
-  margin: 0 auto;
+  padding: 2px;
+  pointer-events: none;
+  z-index: 12;
 }
 
 .invite-stack:empty {
@@ -116,7 +123,9 @@
   border-radius: 14px;
   background: rgba(18, 22, 30, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.34);
+  pointer-events: auto;
+  backdrop-filter: blur(10px);
 }
 
 .invite-card--incoming {

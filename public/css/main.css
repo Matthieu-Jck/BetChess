@@ -160,6 +160,11 @@ body > img[data-piece] {
   z-index: 15;
 }
 
+.players.drawer {
+  display: flex;
+  flex-direction: column;
+}
+
 .drawer.is-open {
   transform: translateX(0);
   opacity: 1;

@@ -62,11 +62,12 @@ const setPhaseState = ({ active = null, completed = [], showBet = true, showBonu
   const cards = getPhaseCards();
   const phaseOrder = ["opponent", "move", "second", "bet"];
   const isVisible = active !== null || completed.length > 0 || showBonus;
+  const isFirstTurn = isVisible && !showBet && !showBonus && !showOpponent;
 
   shell?.classList.toggle("is-active", isVisible);
   shell?.setAttribute("aria-hidden", String(!isVisible));
   track?.classList.toggle("has-bonus", showBonus);
-  track?.classList.toggle("is-first-turn", isVisible && !showBet && !showBonus && !showOpponent);
+  track?.classList.toggle("is-first-turn", isFirstTurn);
   cards.opponent?.classList.toggle("is-hidden", !showOpponent);
   cards.opponent?.setAttribute("aria-hidden", String(!showOpponent));
   cards.second?.classList.toggle("is-hidden", !showBonus);
@@ -94,6 +95,11 @@ const setPhaseState = ({ active = null, completed = [], showBet = true, showBonu
   const betStep = document.querySelector("#phase-bet .phase-card__eyebrow");
   if (betStep) {
     betStep.textContent = showBonus ? "4" : "3";
+  }
+
+  const moveStep = document.querySelector("#phase-move .phase-card__eyebrow");
+  if (moveStep) {
+    moveStep.textContent = isFirstTurn ? "" : "2";
   }
 };
 
