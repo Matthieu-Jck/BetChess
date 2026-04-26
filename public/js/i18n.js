@@ -18,7 +18,7 @@ const dictionaries = {
     "page.privacy.title": "BetChess Privacy",
     "page.terms.title": "BetChess Terms",
     "language.label": "Language",
-    "brand.kicker": "Read the board. Call the reply.",
+    "brand.kicker": "No money involved. Just chess with a twist.",
     "header.rules": "Rules",
     "header.players": "Players",
     "game.surrender": "Surrender",
