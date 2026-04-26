@@ -5,6 +5,35 @@ const getPhaseCards = () => ({
   opponent: document.getElementById("phase-opponent"),
   second: document.getElementById("phase-second")
 });
+let bonusToastTimeoutId = null;
+
+const showBonusToast = () => {
+  const toast = document.getElementById("bonus-toast");
+  if (!toast) {
+    return;
+  }
+
+  if (bonusToastTimeoutId) {
+    window.clearTimeout(bonusToastTimeoutId);
+    bonusToastTimeoutId = null;
+  }
+
+  toast.hidden = false;
+  toast.classList.remove("is-visible");
+
+  window.requestAnimationFrame(() => {
+    toast.classList.add("is-visible");
+  });
+
+  bonusToastTimeoutId = window.setTimeout(() => {
+    toast.classList.remove("is-visible");
+    window.setTimeout(() => {
+      if (!toast.classList.contains("is-visible")) {
+        toast.hidden = true;
+      }
+    }, 220);
+  }, 2200);
+};
 
 const setTurnIndicator = (text, tone = "idle") => {
   const indicator = document.getElementById("turn-indicator");
@@ -97,6 +126,7 @@ const sayCorrectBet = () => {
     active: "move",
     showBonus: true
   });
+  showBonusToast();
 };
 
 const sayIncorrectBet = () => {

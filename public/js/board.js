@@ -374,73 +374,82 @@ const initBoard = (username) => {
 
     removeArrows();
 
-    const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-
-    const filter = document.createElementNS("http://www.w3.org/2000/svg", "filter");
-    filter.setAttribute("id", "prediction-shadow");
-    filter.setAttribute("x", "-50%");
-    filter.setAttribute("y", "-50%");
-    filter.setAttribute("width", "200%");
-    filter.setAttribute("height", "200%");
-
-    const dropShadow = document.createElementNS("http://www.w3.org/2000/svg", "feDropShadow");
-    dropShadow.setAttribute("dx", "0");
-    dropShadow.setAttribute("dy", "0.35");
-    dropShadow.setAttribute("stdDeviation", "0.9");
-    dropShadow.setAttribute("flood-color", "#10141b");
-    dropShadow.setAttribute("flood-opacity", "0.45");
-    filter.appendChild(dropShadow);
-
-    const marker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
-    marker.setAttribute("id", "prediction-arrowhead");
-    marker.setAttribute("viewBox", "0 0 10 10");
-    marker.setAttribute("refX", "8.2");
-    marker.setAttribute("refY", "5");
-    marker.setAttribute("markerWidth", "5.2");
-    marker.setAttribute("markerHeight", "5.2");
-    marker.setAttribute("orient", "auto");
-
-    const markerPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    markerPath.setAttribute("d", "M 0 1.25 L 10 5 L 0 8.75 z");
-    markerPath.setAttribute("fill", "#f0c36a");
-    marker.appendChild(markerPath);
-
-    defs.append(filter, marker);
-    svg.appendChild(defs);
-
     const dx = toPos.x - fromPos.x;
     const dy = toPos.y - fromPos.y;
     const length = Math.hypot(dx, dy) || 1;
     const unitX = dx / length;
     const unitY = dy / length;
-    const startInset = Math.min(1.6, length * 0.12);
-    const endInset = Math.min(4.6, Math.max(2.4, length * 0.18));
+    const perpX = -unitY;
+    const perpY = unitX;
+    const startInset = Math.min(2.2, Math.max(1.4, length * 0.12));
+    const ringRadius = 2.35;
+    const headLength = Math.min(4.9, Math.max(3.5, length * 0.24));
+    const headWidth = headLength * 0.72;
+    const shaftEndInset = ringRadius + headLength * 0.74;
     const startX = fromPos.x + unitX * startInset;
     const startY = fromPos.y + unitY * startInset;
-    const endX = toPos.x - unitX * endInset;
-    const endY = toPos.y - unitY * endInset;
+    const endX = toPos.x - unitX * shaftEndInset;
+    const endY = toPos.y - unitY * shaftEndInset;
+    const tipX = toPos.x - unitX * (ringRadius + 0.5);
+    const tipY = toPos.y - unitY * (ringRadius + 0.5);
+    const baseX = tipX - unitX * headLength;
+    const baseY = tipY - unitY * headLength;
+    const leftX = baseX + perpX * (headWidth / 2);
+    const leftY = baseY + perpY * (headWidth / 2);
+    const rightX = baseX - perpX * (headWidth / 2);
+    const rightY = baseY - perpY * (headWidth / 2);
+
+    const shadowLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    shadowLine.setAttribute("x1", startX);
+    shadowLine.setAttribute("y1", startY);
+    shadowLine.setAttribute("x2", endX);
+    shadowLine.setAttribute("y2", endY);
+    shadowLine.setAttribute("stroke", "rgba(11, 14, 20, 0.46)");
+    shadowLine.setAttribute("stroke-width", "3.6");
+    shadowLine.setAttribute("stroke-linecap", "round");
 
     const trail = document.createElementNS("http://www.w3.org/2000/svg", "line");
     trail.setAttribute("x1", startX);
     trail.setAttribute("y1", startY);
     trail.setAttribute("x2", endX);
     trail.setAttribute("y2", endY);
-    trail.setAttribute("stroke", "#f0c36a");
-    trail.setAttribute("stroke-width", "2.2");
+    trail.setAttribute("stroke", "#f1cb74");
+    trail.setAttribute("stroke-width", "2.15");
     trail.setAttribute("stroke-linecap", "round");
-    trail.setAttribute("marker-end", "url(#prediction-arrowhead)");
-    trail.setAttribute("filter", "url(#prediction-shadow)");
+
+    const arrowShadow = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+    arrowShadow.setAttribute("points", `${tipX},${tipY} ${leftX},${leftY} ${rightX},${rightY}`);
+    arrowShadow.setAttribute("fill", "rgba(11, 14, 20, 0.46)");
+
+    const arrowHead = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+    arrowHead.setAttribute("points", `${tipX},${tipY} ${leftX},${leftY} ${rightX},${rightY}`);
+    arrowHead.setAttribute("fill", "#f1cb74");
 
     const startDot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     startDot.setAttribute("cx", fromPos.x);
     startDot.setAttribute("cy", fromPos.y);
-    startDot.setAttribute("r", "1.6");
+    startDot.setAttribute("r", "1.45");
     startDot.setAttribute("fill", "#f4f0e6");
-    startDot.setAttribute("stroke", "#f0c36a");
+    startDot.setAttribute("stroke", "#f1cb74");
     startDot.setAttribute("stroke-width", "0.5");
-    startDot.setAttribute("filter", "url(#prediction-shadow)");
 
-    svg.append(trail, startDot);
+    const targetRingShadow = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    targetRingShadow.setAttribute("cx", toPos.x);
+    targetRingShadow.setAttribute("cy", toPos.y);
+    targetRingShadow.setAttribute("r", ringRadius + 0.35);
+    targetRingShadow.setAttribute("fill", "none");
+    targetRingShadow.setAttribute("stroke", "rgba(11, 14, 20, 0.42)");
+    targetRingShadow.setAttribute("stroke-width", "2.6");
+
+    const targetRing = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    targetRing.setAttribute("cx", toPos.x);
+    targetRing.setAttribute("cy", toPos.y);
+    targetRing.setAttribute("r", ringRadius);
+    targetRing.setAttribute("fill", "rgba(241, 203, 116, 0.16)");
+    targetRing.setAttribute("stroke", "#f1cb74");
+    targetRing.setAttribute("stroke-width", "0.85");
+
+    svg.append(shadowLine, targetRingShadow, trail, arrowShadow, arrowHead, startDot, targetRing);
   }
 
   function notationToPosition(notation, color) {

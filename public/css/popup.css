@@ -96,3 +96,117 @@
 #validateButton:hover {
   filter: brightness(1.06);
 }
+
+.bonus-toast {
+  position: fixed;
+  top: 88px;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: min(340px, calc(100vw - 28px));
+  max-width: calc(100vw - 28px);
+  padding: 14px 18px;
+  border-radius: 20px;
+  background:
+    linear-gradient(135deg, rgba(215, 177, 108, 0.22), rgba(107, 194, 173, 0.14)),
+    rgba(20, 24, 33, 0.96);
+  border: 1px solid rgba(244, 214, 133, 0.34);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.28);
+  color: var(--ink);
+  opacity: 0;
+  transform: translate(-50%, -12px) scale(0.96);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  pointer-events: none;
+  z-index: 32;
+}
+
+.bonus-toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
+.bonus-toast__chip,
+.bonus-toast__spark {
+  flex-shrink: 0;
+}
+
+.bonus-toast__chip {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, rgba(20, 24, 33, 0.98) 0 42%, transparent 43%),
+    repeating-conic-gradient(from 0deg, #f4e2ac 0deg 18deg, #d7b16c 18deg 36deg);
+  box-shadow: inset 0 0 0 2px rgba(17, 20, 27, 0.82);
+}
+
+.bonus-toast__spark {
+  position: relative;
+  width: 18px;
+  height: 18px;
+}
+
+.bonus-toast__spark::before,
+.bonus-toast__spark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: #f4d685;
+}
+
+.bonus-toast__spark::before {
+  transform: rotate(45deg) scaleX(0.22);
+}
+
+.bonus-toast__spark::after {
+  transform: scaleY(0.22);
+}
+
+.bonus-toast__content {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.bonus-toast__kicker {
+  color: #f4d685;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.bonus-toast__content strong {
+  font-size: 1.02rem;
+  line-height: 1.1;
+}
+
+.bonus-toast__content span:last-child {
+  color: var(--ink-soft);
+  font-size: 0.87rem;
+}
+
+@media (max-width: 720px) {
+  .bonus-toast {
+    top: 76px;
+    gap: 10px;
+    min-width: min(304px, calc(100vw - 20px));
+    padding: 12px 14px;
+    border-radius: 18px;
+  }
+
+  .bonus-toast__chip {
+    width: 36px;
+    height: 36px;
+  }
+
+  .bonus-toast__content strong {
+    font-size: 0.95rem;
+  }
+
+  .bonus-toast__content span:last-child {
+    font-size: 0.8rem;
+  }
+}
