@@ -56,7 +56,7 @@ const showBonusToast = () => {
   };
 };
 
-const setPhaseState = ({ active = null, completed = [], showBonus = false }) => {
+const setPhaseState = ({ active = null, completed = [], showBet = true, showBonus = false, showOpponent = true }) => {
   const track = getPhaseTrack();
   const shell = getPhaseTrackShell();
   const cards = getPhaseCards();
@@ -66,8 +66,13 @@ const setPhaseState = ({ active = null, completed = [], showBonus = false }) => 
   shell?.classList.toggle("is-active", isVisible);
   shell?.setAttribute("aria-hidden", String(!isVisible));
   track?.classList.toggle("has-bonus", showBonus);
+  track?.classList.toggle("is-first-turn", isVisible && !showBet && !showBonus && !showOpponent);
+  cards.opponent?.classList.toggle("is-hidden", !showOpponent);
+  cards.opponent?.setAttribute("aria-hidden", String(!showOpponent));
   cards.second?.classList.toggle("is-hidden", !showBonus);
   cards.second?.setAttribute("aria-hidden", String(!showBonus));
+  cards.bet?.classList.toggle("is-hidden", !showBet);
+  cards.bet?.setAttribute("aria-hidden", String(!showBet));
 
   phaseOrder.forEach((phase) => {
     const card = cards[phase];
@@ -94,17 +99,17 @@ const setPhaseState = ({ active = null, completed = [], showBonus = false }) => 
 
 const sayWaitingForMatch = () => {
   hideBonusToast();
-  setPhaseState({ showBonus: false });
+  setPhaseState({ showBet: true, showBonus: false });
 };
 
-const sayYourTurn = () => {
+const sayYourTurn = ({ skipBet = false } = {}) => {
   hideBonusToast();
-  setPhaseState({ active: "move", showBonus: false });
+  setPhaseState({ active: "move", showBet: !skipBet, showBonus: false, showOpponent: !skipBet });
 };
 
 const sayOpponentTurn = () => {
   hideBonusToast();
-  setPhaseState({ active: "opponent", showBonus: false });
+  setPhaseState({ active: "opponent", showBet: true, showBonus: false });
 };
 
 const sayBet = () => {
@@ -113,6 +118,7 @@ const sayBet = () => {
   setPhaseState({
     active: "bet",
     completed: showBonus ? ["move", "second"] : ["move"],
+    showBet: true,
     showBonus
   });
 };
@@ -122,6 +128,7 @@ const sayExtraMove = () => {
   setPhaseState({
     active: "second",
     completed: ["move"],
+    showBet: true,
     showBonus: true
   });
 };
@@ -131,6 +138,7 @@ const sayPredictionPlaced = () => {
   setPhaseState({
     active: "opponent",
     completed: ["move", "bet"],
+    showBet: true,
     showBonus: false
   });
 };
@@ -138,6 +146,7 @@ const sayPredictionPlaced = () => {
 const sayCorrectBet = () => {
   setPhaseState({
     active: "move",
+    showBet: true,
     showBonus: true
   });
   showBonusToast();
@@ -147,23 +156,24 @@ const sayIncorrectBet = () => {
   hideBonusToast();
   setPhaseState({
     active: "move",
+    showBet: true,
     showBonus: false
   });
 };
 
 const sayYouWin = () => {
   hideBonusToast();
-  setPhaseState({ showBonus: false });
+  setPhaseState({ showBet: true, showBonus: false });
 };
 
 const sayYouLose = () => {
   hideBonusToast();
-  setPhaseState({ showBonus: false });
+  setPhaseState({ showBet: true, showBonus: false });
 };
 
 const sayGameDraw = () => {
   hideBonusToast();
-  setPhaseState({ showBonus: false });
+  setPhaseState({ showBet: true, showBonus: false });
 };
 
 export {

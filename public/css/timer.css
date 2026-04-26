@@ -1,4 +1,6 @@
 .timer-card {
+  position: relative;
+  z-index: 3;
   width: min(100%, var(--board-size));
   display: flex;
   align-items: center;
@@ -38,4 +40,39 @@
 
 .timer-card[data-color="black"] .timer-label {
   color: rgba(248, 250, 252, 0.72);
+}
+
+.surrender-button {
+  margin-left: auto;
+  border: 1px solid rgba(205, 119, 87, 0.42);
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: rgba(205, 119, 87, 0.16);
+  color: #ffd8c9;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 800;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.surrender-button:hover {
+  transform: translateY(-1px);
+  background: rgba(205, 119, 87, 0.24);
+}
+
+.surrender-button[hidden] {
+  display: none;
+}
+
+.timer-card[data-color="white"] .surrender-button {
+  background: rgba(205, 119, 87, 0.13);
+  color: #6e2d1d;
+}
+
+@media (max-width: 640px) {
+  .surrender-button {
+    padding: 6px 9px;
+    font-size: 0.72rem;
+  }
 }

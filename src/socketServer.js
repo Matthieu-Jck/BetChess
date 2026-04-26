@@ -274,6 +274,17 @@ const onStartTimer = ({ gameId }) => {
   );
 };
 
+const onSurrender = (socket) => ({ gameId }) => {
+  const username = socket.data.username;
+  const game = getGameById(gameId);
+  if (!username || !game || game.status !== "active" || !isParticipant(game, username)) {
+    return;
+  }
+
+  const opponent = game.white === username ? game.black : game.white;
+  finishGame(game, `${opponent} wins because ${username} surrendered.`);
+};
+
 const onGameResultAcknowledged = (socket) => ({ gameId }) => {
   const username = socket.data.username;
   if (!username || !gameId) {
@@ -305,6 +316,7 @@ const onConnect = (socket) => {
   socket.on("gameResultAcknowledged", onGameResultAcknowledged(socket));
   socket.on("move", onMove);
   socket.on("startTimer", onStartTimer);
+  socket.on("surrender", onSurrender(socket));
   socket.on("userConnected", onUserConnected(socket));
 };
 

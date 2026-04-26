@@ -92,6 +92,7 @@
             <div class="timer-card timer-card--bottom">
               <span class="timer-label" data-i18n="timer.you">You</span>
               <div id="bottom_timer">20:00</div>
+              <button id="surrender-button" class="surrender-button" type="button" data-i18n="game.surrender" hidden>Surrender</button>
             </div>
 
             <div id="phase-track-shell" class="phase-track-shell" aria-hidden="true">
@@ -130,6 +131,7 @@
             <ol class="rules-list">
               <li><strong data-i18n="rules.turnLabel">Your turn:</strong> <span data-i18n="rules.turnText">one standard legal chess move.</span></li>
               <li><strong data-i18n="rules.betLabel">Your bet:</strong> <span data-i18n="rules.betText">drag one of your opponent's pieces to the square you think it will play next.</span></li>
+              <li data-i18n="rules.firstWhiteNoBet">White does not bet on the very first turn, because Black has not moved yet.</li>
             </ol>
           </section>
 

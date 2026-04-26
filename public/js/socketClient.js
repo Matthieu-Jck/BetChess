@@ -13,6 +13,7 @@ import { playChallengeReceived, playChallengeSent, playNotice } from "./sound.js
 
 export const socketClient = (userName) => {
   let callbacks = {
+    onDisconnect: null,
     onGameEnd: null,
     onGameStart: null,
     onMove: null
@@ -22,8 +23,8 @@ export const socketClient = (userName) => {
 
   const emitEvent = (event, data) => socket.emit(event, data);
 
-  const initiate = (onGameStart, onMove, onGameEnd) => {
-    callbacks = { onGameEnd, onGameStart, onMove };
+  const initiate = (onGameStart, onMove, onGameEnd, onDisconnect) => {
+    callbacks = { onDisconnect, onGameEnd, onGameStart, onMove };
   };
 
   socket.on("connect", () => {
@@ -95,11 +96,18 @@ export const socketClient = (userName) => {
     callbacks.onGameEnd?.(result);
   });
 
+  socket.on("disconnect", () => {
+    playerColor = null;
+    clearAllChallenges();
+    callbacks.onDisconnect?.();
+  });
+
   return {
     disconnect: () => socket.disconnect(),
     initiate,
     onGameResultAcknowledged: (data) => emitEvent("gameResultAcknowledged", data),
-    onMoveSent: (data) => emitEvent("move", data)
+    onMoveSent: (data) => emitEvent("move", data),
+    onSurrender: (data) => emitEvent("surrender", data)
   };
 };
 

@@ -37,6 +37,7 @@
   font-family: "Space Grotesk", "Inter", sans-serif;
   font-weight: 700;
   letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
 .game-icon {
@@ -52,36 +53,29 @@
 .header-tools {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
   justify-content: flex-end;
 }
 
 .language-picker {
   position: relative;
-  width: 48px;
-  height: 44px;
+  width: 47px;
+  min-height: 40px;
   flex: 0 0 auto;
   display: inline-grid;
   place-items: center;
-  border: 1px solid rgba(215, 177, 108, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 999px;
-  background:
-    radial-gradient(circle at 30% 24%, rgba(215, 177, 108, 0.28), transparent 38%),
-    linear-gradient(135deg, rgba(107, 194, 173, 0.2), rgba(205, 119, 87, 0.14)),
-    rgba(255, 255, 255, 0.09);
-  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.13);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
-  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .language-picker:hover {
   transform: translateY(-1px);
-  border-color: rgba(107, 194, 173, 0.55);
-  background:
-    radial-gradient(circle at 30% 24%, rgba(215, 177, 108, 0.34), transparent 38%),
-    linear-gradient(135deg, rgba(107, 194, 173, 0.26), rgba(205, 119, 87, 0.18)),
-    rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .language-picker:focus-within {
@@ -171,24 +165,50 @@
   height: 18px;
 }
 
+#toggle-players .header-button__icon {
+  filter: sepia(1) saturate(1.8) hue-rotate(120deg) brightness(1.12);
+}
+
 @media (max-width: 980px) {
   .game-header {
     width: min(100% - 20px, 100%);
     padding-top: 10px;
     flex-direction: row;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
 
   .header-tools {
-    width: 100%;
-    justify-content: space-between;
+    margin-left: auto;
+    justify-content: flex-end;
   }
 }
 
 @media (max-width: 640px) {
+  .game-header {
+    width: calc(100% - 12px);
+    gap: 8px;
+  }
+
+  .brand-block {
+    gap: 8px;
+  }
+
   .brand-kicker {
     display: none;
+  }
+
+  .game-icon {
+    width: 32px;
+    height: 42px;
+  }
+
+  .game-title {
+    font-size: clamp(1.35rem, 8vw, 1.65rem);
+  }
+
+  .header-tools {
+    gap: 6px;
   }
 
   .header-button span {
@@ -196,11 +216,27 @@
   }
 
   .header-button {
-    padding: 11px;
+    width: 40px;
+    min-height: 40px;
+    justify-content: center;
+    padding: 10px;
   }
 
   .language-picker {
-    width: 44px;
+    width: 40px;
     height: 40px;
+    min-height: 40px;
+  }
+
+  .language-picker__icon {
+    width: 21px;
+    height: 21px;
+  }
+
+  .language-picker__chevron {
+    right: 6px;
+    bottom: 7px;
+    width: 5px;
+    height: 5px;
   }
 }

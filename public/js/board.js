@@ -51,6 +51,7 @@ const initBoard = (username) => {
     gameEnded: false,
     isMyTurn: false,
     activeBonusTurn: false,
+    skipPredictionThisTurn: false,
     moveAllowance: 1,
     predictedMove: null,
     resultGameId: null,
@@ -58,6 +59,7 @@ const initBoard = (username) => {
     resultMessage: null,
     queuedBonusTurn: false,
     sendResultAcknowledgement: null,
+    sendSurrender: null,
     sendMove: null,
     stage: MOVE_STAGE,
     turnMoves: []
@@ -97,6 +99,7 @@ const initBoard = (username) => {
   const resetTurnState = () => {
     state.turnMoves = [];
     state.stage = MOVE_STAGE;
+    state.skipPredictionThisTurn = false;
   };
 
   const hideResultPopup = ({ immediate = false } = {}) => {
@@ -175,11 +178,13 @@ const initBoard = (username) => {
     state.activeBonusTurn = false;
     state.queuedBonusTurn = false;
     state.moveAllowance = 1;
+    state.skipPredictionThisTurn = false;
     state.predictedMove = null;
     state.resultGameId = null;
     state.resultMessage = null;
     resetTurnState();
     resetTimers();
+    setSurrenderVisible(false);
     renderBoard({
       draggable: false,
       orientation: "white",
@@ -286,7 +291,17 @@ const initBoard = (username) => {
     return state.engine.load(fenParts.join(" "));
   };
 
-  const beginPlayerTurn = ({ predictionMatched = null } = {}) => {
+  const setSurrenderVisible = (isVisible) => {
+    const button = document.getElementById("surrender-button");
+    if (!button) {
+      return;
+    }
+
+    button.hidden = !isVisible;
+    button.disabled = !isVisible;
+  };
+
+  const beginPlayerTurn = ({ predictionMatched = null, skipPrediction = false } = {}) => {
     hideResultPopup({ immediate: true });
     state.isMyTurn = true;
     state.gameEnded = false;
@@ -294,6 +309,8 @@ const initBoard = (username) => {
     state.queuedBonusTurn = false;
     state.moveAllowance = state.activeBonusTurn ? 2 : 1;
     resetTurnState();
+    state.skipPredictionThisTurn = skipPrediction;
+    setSurrenderVisible(true);
 
     if (predictionMatched === false) {
       sayIncorrectBet();
@@ -309,7 +326,7 @@ const initBoard = (username) => {
       return;
     }
 
-    sayYourTurn();
+    sayYourTurn({ skipBet: skipPrediction });
     updatePieceHighlights();
   };
 
@@ -320,6 +337,7 @@ const initBoard = (username) => {
 
     state.gameEnded = true;
     state.isMyTurn = false;
+    setSurrenderVisible(false);
     state.predictedMove = null;
     state.resultGameId = state.gameData?.gameId ?? null;
     state.resultMessage = result;
@@ -392,6 +410,11 @@ const initBoard = (username) => {
 
     if (result) {
       freezeFinishedGame(result);
+      return;
+    }
+
+    if (state.stage === MOVE_STAGE) {
+      sayOpponentTurn();
     }
   };
 
@@ -455,6 +478,11 @@ const initBoard = (username) => {
       return;
     }
 
+    if (state.skipPredictionThisTurn) {
+      endTurn();
+      return;
+    }
+
     state.stage = PREDICTION_STAGE;
     sayBet();
     updatePieceHighlights();
@@ -486,6 +514,7 @@ const initBoard = (username) => {
     state.queuedBonusTurn = false;
     state.activeBonusTurn = false;
     state.moveAllowance = 1;
+    state.skipPredictionThisTurn = false;
     state.predictedMove = null;
     state.resultGameId = null;
     state.resultMessage = null;
@@ -497,9 +526,10 @@ const initBoard = (username) => {
       position: "start"
     });
     playGameStart();
+    setSurrenderVisible(true);
 
     if (state.gameData.color === "white") {
-      beginPlayerTurn();
+      beginPlayerTurn({ skipPrediction: true });
       return;
     }
 
@@ -542,9 +572,31 @@ const initBoard = (username) => {
     freezeFinishedGame(result);
   };
 
-  const initiate = (onMoveSent, onResultAcknowledged) => {
+  const surrenderGame = () => {
+    if (!state.gameData || state.gameEnded || !state.sendSurrender) {
+      return;
+    }
+
+    setSurrenderVisible(false);
+    state.gameEnded = true;
+    state.isMyTurn = false;
+    updatePieceHighlights();
+    state.sendSurrender({ gameId: state.gameData.gameId });
+  };
+
+  const onConnectionLost = () => {
+    renderIdleBoard();
+    sayWaitingForMatch();
+  };
+
+  const initiate = (onMoveSent, onResultAcknowledged, onSurrender) => {
     state.sendMove = onMoveSent;
     state.sendResultAcknowledgement = onResultAcknowledged;
+    state.sendSurrender = onSurrender;
+    const surrenderButton = document.getElementById("surrender-button");
+    if (surrenderButton) {
+      surrenderButton.onclick = surrenderGame;
+    }
     renderIdleBoard();
     sayWaitingForMatch();
   };
@@ -672,6 +724,7 @@ const initBoard = (username) => {
 
   return {
     initiate,
+    onConnectionLost,
     onGameEnd,
     onMoveReceived,
     startGame

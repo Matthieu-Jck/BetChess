@@ -11,6 +11,10 @@ export const game = (socketClient, board) => {
     board.onGameEnd(result);
   };
 
+  const onConnectionLost = () => {
+    board.onConnectionLost();
+  };
+
   const onMoveSent = (data) => {
     socketClient.onMoveSent(data);
   };
@@ -19,8 +23,12 @@ export const game = (socketClient, board) => {
     socketClient.onGameResultAcknowledged(data);
   };
 
-  socketClient.initiate(onGameStart, onMoveReceived, onGameEnd);
-  board.initiate(onMoveSent, onGameResultAcknowledged);
+  const onSurrender = (data) => {
+    socketClient.onSurrender(data);
+  };
+
+  socketClient.initiate(onGameStart, onMoveReceived, onGameEnd, onConnectionLost);
+  board.initiate(onMoveSent, onGameResultAcknowledged, onSurrender);
 };
 
 export default game;
