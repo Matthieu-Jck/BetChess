@@ -217,14 +217,17 @@ body > img[data-piece] {
 
 @media (min-width: 1180px) and (min-height: 680px) {
   .main-content {
-    width: min(1480px, calc(100% - 24px));
+    width: 100%;
     grid-template-columns: minmax(0, 1fr) clamp(292px, 22vw, 350px);
     grid-template-rows: minmax(0, 1fr);
     align-items: stretch;
+    padding: 10px 0 0 12px;
+    gap: 12px;
   }
 
   .board-area {
     --board-size: min(calc(100dvh - 286px), calc(100vw - 430px), 720px);
+    min-width: 0;
   }
 
   .players.drawer {
@@ -238,11 +241,12 @@ body > img[data-piece] {
     transform: none;
     opacity: 1;
     visibility: visible;
-    padding: 18px;
-    border-radius: 16px;
+    padding: 18px 16px;
+    border-radius: 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
     overflow: auto;
     background: linear-gradient(180deg, rgba(26, 31, 42, 0.92), rgba(13, 16, 23, 0.92));
-    box-shadow: var(--shadow-md);
+    box-shadow: -18px 0 34px rgba(0, 0, 0, 0.18);
     z-index: 4;
   }
 
