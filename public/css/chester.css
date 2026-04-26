@@ -55,15 +55,16 @@
   }
 
   .phase-card {
-    min-height: 62px;
-    padding: 10px 9px;
+    min-height: 52px;
+    padding: 8px 7px;
   }
 
   .phase-card strong {
-    font-size: 0.78rem;
+    font-size: 0.69rem;
+    line-height: 1.15;
   }
 
   .phase-card__eyebrow {
-    font-size: 0.65rem;
+    font-size: 0.58rem;
   }
 }

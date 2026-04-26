@@ -65,6 +65,7 @@ body::before {
 }
 
 .board-area {
+  position: relative;
   height: 100%;
   min-height: 0;
   --board-size: min(calc(100dvh - 210px), calc(100vw - var(--sidebar-size) - 64px), 720px);
@@ -132,6 +133,20 @@ body::before {
   height: 100%;
   position: relative;
   z-index: 1;
+}
+
+.board-b72b1 {
+  border: 0;
+}
+
+#chess-board img[data-piece] {
+  position: relative;
+  z-index: 2;
+}
+
+body > img[data-piece] {
+  z-index: 40 !important;
+  pointer-events: none;
 }
 
 .chessboard-svg-overlay {
@@ -219,18 +234,56 @@ body::before {
 
 @media (max-width: 720px) {
   .main-content {
-    width: min(100% - 20px, 100%);
-    padding-top: 8px;
+    width: 100%;
+    padding: 8px 4px 10px;
   }
 
   .board-area {
-    --sidebar-size: clamp(90px, 25vw, 116px);
-    --board-size: min(calc(100dvh - 250px), calc(100vw - var(--sidebar-size) - 26px), 92vw);
+    --sidebar-size: 0px;
+    --board-size: min(calc(100vw - 8px), calc(100dvh - 214px), 98vw);
   }
 
   .board-stage {
-    gap: 10px;
-    align-items: center;
+    position: relative;
+    display: block;
+  }
+
+  .board-sidebar {
+    position: absolute;
+    inset: 0;
+    display: block;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .phase-track {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: min(76px, 22vw);
+    transform: translateY(-50%);
+    pointer-events: auto;
+  }
+
+  .invite-stack {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: min(calc(100vw - 20px), 320px);
+    max-height: 120px;
+    transform: translateX(-50%);
+    pointer-events: auto;
+  }
+
+  .board-playfield {
+    width: 100%;
+    padding-top: 0;
+  }
+
+  .board-container,
+  #chess-display,
+  .timer-card {
+    width: min(100%, var(--board-size));
   }
 
   .drawer {
