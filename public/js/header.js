@@ -5,13 +5,32 @@ const drawerButtons = [
 
 const initializeDrawers = () => {
   const scrim = document.getElementById("drawer-scrim");
+  const persistentPlayersQuery = window.matchMedia("(min-width: 1180px) and (min-height: 680px)");
   const drawers = drawerButtons.map(({ buttonId, drawerId }) => ({
     button: document.getElementById(buttonId),
     drawer: document.getElementById(drawerId)
   }));
+  const playersDrawer = drawers.find(({ drawer }) => drawer?.id === "players");
+
+  const syncPersistentPlayers = () => {
+    const shouldPersist = persistentPlayersQuery.matches;
+    playersDrawer?.drawer?.setAttribute("aria-hidden", String(!shouldPersist));
+    playersDrawer?.button?.setAttribute("aria-expanded", String(shouldPersist));
+
+    if (shouldPersist) {
+      playersDrawer?.drawer?.classList.remove("is-open");
+    }
+  };
 
   const closeDrawers = () => {
     drawers.forEach(({ button, drawer }) => {
+      if (persistentPlayersQuery.matches && drawer?.id === "players") {
+        button?.setAttribute("aria-expanded", "true");
+        drawer.setAttribute("aria-hidden", "false");
+        drawer.classList.remove("is-open");
+        return;
+      }
+
       button?.setAttribute("aria-expanded", "false");
       drawer?.classList.remove("is-open");
       drawer?.setAttribute("aria-hidden", "true");
@@ -25,6 +44,13 @@ const initializeDrawers = () => {
 
   const openDrawer = (activeDrawerId) => {
     drawers.forEach(({ button, drawer }) => {
+      if (persistentPlayersQuery.matches && drawer?.id === "players") {
+        button?.setAttribute("aria-expanded", "true");
+        drawer.setAttribute("aria-hidden", "false");
+        drawer.classList.remove("is-open");
+        return;
+      }
+
       const isActive = drawer?.id === activeDrawerId;
       button?.setAttribute("aria-expanded", String(isActive));
       drawer?.classList.toggle("is-open", isActive);
@@ -51,6 +77,12 @@ const initializeDrawers = () => {
 
       openDrawer(drawer.id);
     });
+  });
+
+  syncPersistentPlayers();
+  persistentPlayersQuery.addEventListener("change", () => {
+    closeDrawers();
+    syncPersistentPlayers();
   });
 
   scrim?.addEventListener("click", closeDrawers);

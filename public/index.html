@@ -43,7 +43,33 @@
           <span data-i18n="header.players">Players</span>
         </button>
 
-        <div class="language-picker">
+        <div class="language-picker" data-language-menu>
+          <button id="language-button" class="language-picker__button" type="button" data-language-menu-button data-i18n-aria-label="language.label" aria-label="Language" aria-haspopup="listbox" aria-expanded="false">
+            <span class="sr-only" data-i18n="language.label">Language</span>
+            <span class="language-picker__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M4 5h9" />
+                <path d="M9 3v2" />
+                <path d="M6 9c1.6 2.8 4.2 4.7 7 5.7" />
+                <path d="M12 5c-.8 4-3 7.1-7 9" />
+                <path d="M14 21l4-9 4 9" />
+                <path d="M15.4 18h5.2" />
+              </svg>
+            </span>
+            <span class="language-picker__chevron" aria-hidden="true"></span>
+          </button>
+          <div class="language-menu" data-language-menu-list role="listbox" aria-labelledby="language-button" hidden>
+            <button type="button" role="option" data-language-option="en">English</button>
+            <button type="button" role="option" data-language-option="fr">Français</button>
+            <button type="button" role="option" data-language-option="de">Deutsch</button>
+            <button type="button" role="option" data-language-option="es">Español</button>
+            <button type="button" role="option" data-language-option="it">Italiano</button>
+            <button type="button" role="option" data-language-option="zh">中文</button>
+            <button type="button" role="option" data-language-option="ja">日本語</button>
+          </div>
+        </div>
+
+        <div class="language-picker language-picker--fallback">
           <label class="sr-only" for="language-select" data-i18n="language.label">Language</label>
           <span class="language-picker__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false">
