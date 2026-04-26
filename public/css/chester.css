@@ -59,23 +59,32 @@
 
 @media (max-width: 720px) {
   .phase-track {
-    left: 6px;
-    width: var(--phase-width);
-    transform: translateY(-50%);
+    position: static;
+    order: 2;
+    width: min(100%, var(--board-size));
+    transform: none;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
+    margin: 8px auto 0;
+  }
+
+  .phase-track.has-bonus {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .phase-card {
-    min-height: 52px;
-    padding: 8px 7px;
+    min-height: 44px;
+    padding: 7px 6px;
   }
 
   .phase-card strong {
-    font-size: 0.69rem;
+    font-size: 0.62rem;
     line-height: 1.15;
+    text-align: center;
   }
 
   .phase-card__eyebrow {
-    font-size: 0.58rem;
+    font-size: 0.54rem;
+    text-align: center;
   }
 }

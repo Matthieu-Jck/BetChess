@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#13161d" />
-  <link rel="icon" type="image/svg+xml" href="/public/images/icons/betchess-mark.svg" />
+  <link rel="icon" type="image/png" href="/public/images/icons/betchess-logo.png" />
   <title>BetChess</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,7 +24,7 @@
   <div class="app-shell">
     <header class="game-header">
       <div class="brand-block">
-        <img class="game-icon" src="/public/images/icons/betchess-mark.svg" alt="BetChess logo" />
+        <img class="game-icon" src="/public/images/icons/betchess-logo.png" alt="BetChess logo" />
         <div class="brand-copy">
           <p class="brand-kicker">Read the board. Call the reply.</p>
           <h1 class="game-title">BetChess</h1>
@@ -145,6 +145,15 @@
       <span>Bonus turn unlocked</span>
     </div>
     <span class="bonus-toast__spark" aria-hidden="true"></span>
+  </div>
+
+  <div id="game-result-popup" class="result-popup" aria-live="assertive" aria-atomic="true" hidden>
+    <div class="result-popup__card">
+      <span class="result-popup__kicker">Game over</span>
+      <h2 id="game-result-title">Result</h2>
+      <p id="game-result-detail">Tap to continue</p>
+      <span class="result-popup__hint">Tap anywhere to continue</span>
+    </div>
   </div>
 
   <div id="usernamePopup" class="popup" role="dialog" aria-modal="true" aria-labelledby="usernameTitle">

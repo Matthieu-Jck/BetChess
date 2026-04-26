@@ -15,8 +15,12 @@ export const game = (socketClient, board) => {
     socketClient.onMoveSent(data);
   };
 
+  const onGameResultAcknowledged = (data) => {
+    socketClient.onGameResultAcknowledged(data);
+  };
+
   socketClient.initiate(onGameStart, onMoveReceived, onGameEnd);
-  board.initiate(onMoveSent);
+  board.initiate(onMoveSent, onGameResultAcknowledged);
 };
 
 export default game;

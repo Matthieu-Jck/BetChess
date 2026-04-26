@@ -39,6 +39,14 @@ const createMovePayload = (move) => ({
   promotion: move.promotion ?? null
 });
 
+const capitalizeText = (text) => {
+  if (!text) {
+    return "";
+  }
+
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};
+
 const formatPrediction = (move) => `${move.from} to ${move.to}`;
 
 const initBoard = (username) => {
@@ -52,7 +60,11 @@ const initBoard = (username) => {
     activeBonusTurn: false,
     moveAllowance: 1,
     predictedMove: null,
+    resultGameId: null,
+    resultDismissHandler: null,
+    resultMessage: null,
     queuedBonusTurn: false,
+    sendResultAcknowledgement: null,
     sendMove: null,
     stage: MOVE_STAGE,
     turnMoves: []
@@ -94,7 +106,98 @@ const initBoard = (username) => {
     state.stage = MOVE_STAGE;
   };
 
+  const hideResultPopup = ({ immediate = false } = {}) => {
+    const popup = document.getElementById("game-result-popup");
+    if (!popup) {
+      return;
+    }
+
+    if (state.resultDismissHandler) {
+      popup.removeEventListener("pointerdown", state.resultDismissHandler);
+      state.resultDismissHandler = null;
+    }
+
+    popup.classList.remove("is-visible");
+
+    if (immediate) {
+      popup.hidden = true;
+      return;
+    }
+
+    window.setTimeout(() => {
+      if (!popup.classList.contains("is-visible")) {
+        popup.hidden = true;
+      }
+    }, 200);
+  };
+
+  const parseResultPopupContent = (result) => {
+    const trimmedResult = result.trim().replace(/\.$/, "");
+    const drawMatch = trimmedResult.match(/^Draw(?: by)?\s*(.*)$/i);
+    if (drawMatch) {
+      return {
+        detail: drawMatch[1] ? capitalizeText(drawMatch[1]) : "No winner",
+        title: "Draw"
+      };
+    }
+
+    const winByMatch = trimmedResult.match(/^(.+?) wins by (.+)$/i);
+    if (winByMatch) {
+      return {
+        detail: capitalizeText(winByMatch[2]),
+        title: `${winByMatch[1]} wins`
+      };
+    }
+
+    const winBecauseMatch = trimmedResult.match(/^(.+?) wins because (.+)$/i);
+    if (winBecauseMatch) {
+      return {
+        detail: capitalizeText(winBecauseMatch[2]),
+        title: `${winBecauseMatch[1]} wins`
+      };
+    }
+
+    return {
+      detail: "Match complete",
+      title: trimmedResult
+    };
+  };
+
+  const showResultPopup = (result) => {
+    const popup = document.getElementById("game-result-popup");
+    const title = document.getElementById("game-result-title");
+    const detail = document.getElementById("game-result-detail");
+
+    if (!popup || !title || !detail) {
+      return;
+    }
+
+    const content = parseResultPopupContent(result);
+    title.textContent = content.title;
+    detail.textContent = content.detail;
+    popup.hidden = false;
+
+    window.requestAnimationFrame(() => {
+      popup.classList.add("is-visible");
+    });
+
+    const dismissResult = () => {
+      const finishedGameId = state.resultGameId;
+      hideResultPopup();
+      renderIdleBoard();
+      sayWaitingForMatch();
+
+      if (finishedGameId && state.sendResultAcknowledgement) {
+        state.sendResultAcknowledgement({ gameId: finishedGameId });
+      }
+    };
+
+    state.resultDismissHandler = dismissResult;
+    popup.addEventListener("pointerdown", dismissResult, { once: true });
+  };
+
   const renderIdleBoard = () => {
+    hideResultPopup({ immediate: true });
     state.engine.reset();
     state.gameData = null;
     state.gameEnded = false;
@@ -103,6 +206,8 @@ const initBoard = (username) => {
     state.queuedBonusTurn = false;
     state.moveAllowance = 1;
     state.predictedMove = null;
+    state.resultGameId = null;
+    state.resultMessage = null;
     resetTurnState();
     resetTimers();
     renderBoard({
@@ -209,6 +314,7 @@ const initBoard = (username) => {
   };
 
   const beginPlayerTurn = ({ predictionMatched = null } = {}) => {
+    hideResultPopup({ immediate: true });
     state.isMyTurn = true;
     state.gameEnded = false;
     state.activeBonusTurn = state.queuedBonusTurn;
@@ -234,29 +340,37 @@ const initBoard = (username) => {
     updatePieceHighlights();
   };
 
-  const finishLocalGame = (result) => {
+  const freezeFinishedGame = (result) => {
+    if (state.resultMessage) {
+      return;
+    }
+
     state.gameEnded = true;
     state.isMyTurn = false;
     state.predictedMove = null;
+    state.resultGameId = state.gameData?.gameId ?? null;
+    state.resultMessage = result;
+    updatePieceHighlights();
+    removeArrows();
 
     const lowered = result.toLowerCase();
     if (lowered.includes("draw")) {
       sayGameDraw(result);
       playDraw();
-      renderIdleBoard();
+      showResultPopup(result);
       return;
     }
 
     if (lowered.startsWith(`${state.username.toLowerCase()} wins`)) {
       sayYouWin(result);
       playWin();
-      renderIdleBoard();
+      showResultPopup(result);
       return;
     }
 
     sayYouLose(result);
     playLose();
-    renderIdleBoard();
+    showResultPopup(result);
   };
 
   const buildResultMessage = () => {
@@ -303,7 +417,7 @@ const initBoard = (username) => {
     updatePieceHighlights();
 
     if (result) {
-      finishLocalGame(result);
+      freezeFinishedGame(result);
     }
   };
 
@@ -388,6 +502,7 @@ const initBoard = (username) => {
   };
 
   const startGame = (data) => {
+    hideResultPopup({ immediate: true });
     state.engine.reset();
     state.gameEnded = false;
     state.gameData = {
@@ -398,6 +513,8 @@ const initBoard = (username) => {
     state.activeBonusTurn = false;
     state.moveAllowance = 1;
     state.predictedMove = null;
+    state.resultGameId = null;
+    state.resultMessage = null;
     resetTurnState();
 
     renderBoard({
@@ -435,7 +552,7 @@ const initBoard = (username) => {
     playMoveSequence(data.moves);
 
     if (data.result) {
-      finishLocalGame(data.result);
+      freezeFinishedGame(data.result);
       return;
     }
 
@@ -448,13 +565,12 @@ const initBoard = (username) => {
       return;
     }
 
-    removeArrows();
-    updatePieceHighlights();
-    finishLocalGame(result);
+    freezeFinishedGame(result);
   };
 
-  const initiate = (callback) => {
-    state.sendMove = callback;
+  const initiate = (onMoveSent, onResultAcknowledged) => {
+    state.sendMove = onMoveSent;
+    state.sendResultAcknowledgement = onResultAcknowledged;
     renderIdleBoard();
     sayWaitingForMatch();
   };

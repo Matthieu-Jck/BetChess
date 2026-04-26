@@ -9,13 +9,23 @@ const socketToUsername = new Map();
 const gamesById = new Map();
 const invitationsById = new Map();
 
-const getGameByUsername = (username) => {
-  return Array.from(gamesById.values()).find((game) => game.white === username || game.black === username);
+const isParticipant = (game, username) => game.white === username || game.black === username;
+
+const getGameByUsername = (username, predicate = () => true) => {
+  return Array.from(gamesById.values()).find((game) => isParticipant(game, username) && predicate(game));
+};
+
+const getActiveGameByUsername = (username) => getGameByUsername(username, (game) => game.status === "active");
+
+const getFinishedGameByUsername = (username) => getGameByUsername(username, (game) => game.status === "finished");
+
+const isPlayerBusy = (username) => {
+  return Boolean(getGameByUsername(username));
 };
 
 const listPlayers = () =>
   Array.from(playersByUsername.values()).map(({ socketId, username }) => ({
-    inGame: Boolean(getGameByUsername(username)),
+    inGame: isPlayerBusy(username),
     socketId,
     username
   }));
@@ -56,17 +66,48 @@ const cancelInvitationsForPlayer = (username, message, excludedInvitationId = nu
     .forEach((invite) => cancelInvitation(invite.invitationId, message));
 };
 
+const acknowledgeFinishedGame = (game, username) => {
+  if (!game || game.status !== "finished" || !isParticipant(game, username)) {
+    return false;
+  }
+
+  game.acknowledgedUsers ??= new Set();
+  const previousSize = game.acknowledgedUsers.size;
+  game.acknowledgedUsers.add(username);
+  return game.acknowledgedUsers.size !== previousSize;
+};
+
+const shouldRemoveFinishedGame = (game) => {
+  if (!game || game.status !== "finished") {
+    return false;
+  }
+
+  return [game.white, game.black].every(
+    (username) => !playersByUsername.has(username) || game.acknowledgedUsers?.has(username)
+  );
+};
+
 const removeGame = (gameId) => {
   clearPlayerTimers(gameId);
   gamesById.delete(gameId);
   broadcastPlayers();
 };
 
-const emitGameEnd = (game, result) => {
+const finishGame = (game, result) => {
+  if (!game || game.status === "finished") {
+    return;
+  }
+
+  clearPlayerTimers(game.gameId);
+  game.status = "finished";
+  game.result = result;
+  game.acknowledgedUsers = new Set();
+
   [game.white, game.black].forEach((username) => {
-    notifyPlayer(username, "gameEnd", { result });
+    notifyPlayer(username, "gameEnd", { gameId: game.gameId, result });
   });
-  removeGame(game.gameId);
+
+  broadcastPlayers();
 };
 
 const onUserConnected = (socket) => ({ userName }) => {
@@ -96,14 +137,28 @@ const onDisconnect = (socket) => () => {
 
   cancelInvitationsForPlayer(username, `${username} left the lobby.`);
 
-  const activeGame = getGameByUsername(username);
+  const activeGame = getActiveGameByUsername(username);
   if (activeGame) {
     const opponent = activeGame.white === username ? activeGame.black : activeGame.white;
-    emitGameEnd(activeGame, `${opponent} wins because ${username} disconnected.`);
+    finishGame(activeGame, `${opponent} wins because ${username} disconnected.`);
   }
+
+  const finishedGame = getFinishedGameByUsername(username);
+  const acknowledged = acknowledgeFinishedGame(finishedGame, username);
 
   playersByUsername.delete(username);
   socketToUsername.delete(socket.id);
+
+  if (finishedGame && shouldRemoveFinishedGame(finishedGame)) {
+    removeGame(finishedGame.gameId);
+    return;
+  }
+
+  if (acknowledged || activeGame) {
+    broadcastPlayers();
+    return;
+  }
+
   broadcastPlayers();
 };
 
@@ -120,7 +175,7 @@ const onChallenge = ({ from, to }) => {
     return;
   }
 
-  if (getGameByUsername(from) || getGameByUsername(to)) {
+  if (isPlayerBusy(from) || isPlayerBusy(to)) {
     notifyPlayer(from, "challengeFailed", { message: "One of those players is already in a game." });
     return;
   }
@@ -157,7 +212,7 @@ const onChallengeResponse = (socket) => ({ accept, invitationId }) => {
     return;
   }
 
-  if (getGameByUsername(invite.from) || getGameByUsername(invite.to)) {
+  if (isPlayerBusy(invite.from) || isPlayerBusy(invite.to)) {
     notifyPlayer(invite.from, "challengeCancelled", {
       invitationId,
       message: "That invitation expired because one player is already busy."
@@ -171,6 +226,7 @@ const onChallengeResponse = (socket) => ({ accept, invitationId }) => {
 
   const game = {
     gameId: uuidv4(),
+    status: "active",
     white: invite.from,
     black: invite.to
   };
@@ -185,14 +241,14 @@ const onChallengeResponse = (socket) => ({ accept, invitationId }) => {
 
 const onMove = (data) => {
   const game = getGameById(data.gameId);
-  if (!game) {
+  if (!game || game.status !== "active") {
     return;
   }
 
   notifyPlayer(data.to, "move", data);
 
   if (data.result) {
-    emitGameEnd(game, data.result);
+    finishGame(game, data.result);
     return;
   }
 
@@ -200,13 +256,13 @@ const onMove = (data) => {
     game.gameId,
     getSocketByUsername(game.white),
     getSocketByUsername(game.black),
-    (result) => emitGameEnd(game, result)
+    (result) => finishGame(game, result)
   );
 };
 
 const onStartTimer = ({ gameId }) => {
   const game = getGameById(gameId);
-  if (!game) {
+  if (!game || game.status !== "active") {
     return;
   }
 
@@ -214,14 +270,39 @@ const onStartTimer = ({ gameId }) => {
     game.gameId,
     getSocketByUsername(game.white),
     getSocketByUsername(game.black),
-    (result) => emitGameEnd(game, result)
+    (result) => finishGame(game, result)
   );
+};
+
+const onGameResultAcknowledged = (socket) => ({ gameId }) => {
+  const username = socket.data.username;
+  if (!username || !gameId) {
+    return;
+  }
+
+  const game = getGameById(gameId);
+  if (!game || game.status !== "finished") {
+    return;
+  }
+
+  const acknowledged = acknowledgeFinishedGame(game, username);
+  if (!acknowledged) {
+    return;
+  }
+
+  if (shouldRemoveFinishedGame(game)) {
+    removeGame(game.gameId);
+    return;
+  }
+
+  broadcastPlayers();
 };
 
 const onConnect = (socket) => {
   socket.on("challenge", onChallenge);
   socket.on("challengeResponse", onChallengeResponse(socket));
   socket.on("disconnect", onDisconnect(socket));
+  socket.on("gameResultAcknowledged", onGameResultAcknowledged(socket));
   socket.on("move", onMove);
   socket.on("startTimer", onStartTimer);
   socket.on("userConnected", onUserConnected(socket));

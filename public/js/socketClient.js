@@ -98,6 +98,7 @@ export const socketClient = (userName) => {
   return {
     disconnect: () => socket.disconnect(),
     initiate,
+    onGameResultAcknowledged: (data) => emitEvent("gameResultAcknowledged", data),
     onMoveSent: (data) => emitEvent("move", data)
   };
 };
