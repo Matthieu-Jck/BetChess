@@ -6,6 +6,8 @@ const drawerButtons = [
 const initializeDrawers = () => {
   const scrim = document.getElementById("drawer-scrim");
   const persistentPlayersQuery = window.matchMedia("(min-width: 1180px) and (min-height: 680px)");
+  const phoneDrawerQuery = window.matchMedia("(max-width: 720px)");
+  let mobileLobbyTimer = null;
   const drawers = drawerButtons.map(({ buttonId, drawerId }) => ({
     button: document.getElementById(buttonId),
     drawer: document.getElementById(drawerId)
@@ -77,6 +79,21 @@ const initializeDrawers = () => {
 
       openDrawer(drawer.id);
     });
+  });
+
+  document.addEventListener("usernameSet", () => {
+    if (mobileLobbyTimer) {
+      window.clearTimeout(mobileLobbyTimer);
+    }
+
+    mobileLobbyTimer = window.setTimeout(() => {
+      const drawerAlreadyOpen = drawers.some(({ drawer }) => drawer?.classList.contains("is-open"));
+      if (!phoneDrawerQuery.matches || persistentPlayersQuery.matches || drawerAlreadyOpen) {
+        return;
+      }
+
+      openDrawer("players");
+    }, 1800);
   });
 
   syncPersistentPlayers();

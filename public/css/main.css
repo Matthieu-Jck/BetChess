@@ -149,20 +149,33 @@ body > img[data-piece] {
   width: min(360px, calc(100vw - 32px));
   max-height: calc(100dvh - 100px);
   padding: 22px;
-  overflow: auto;
-  border-radius: 18px;
-  background: linear-gradient(180deg, rgba(26, 31, 42, 0.98), rgba(13, 16, 23, 0.98));
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  border: 1px solid rgba(215, 177, 108, 0.3);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(28, 32, 43, 0.98), rgba(13, 16, 23, 0.98)),
+    rgba(17, 20, 28, 0.98);
   color: #f8fafc;
-  box-shadow: 0 28px 48px rgba(15, 23, 42, 0.38);
+  box-shadow: 0 22px 42px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.09);
   transform: translateX(calc(100% + 24px));
   opacity: 0;
   transition: transform 0.25s ease, opacity 0.25s ease;
-  z-index: 15;
+  z-index: 70;
 }
 
-.players.drawer {
-  display: flex;
-  flex-direction: column;
+.drawer::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: 30px;
+  width: 10px;
+  height: 10px;
+  border-left: 1px solid rgba(215, 177, 108, 0.3);
+  border-top: 1px solid rgba(215, 177, 108, 0.3);
+  background: rgba(28, 32, 43, 0.98);
+  transform: rotate(45deg);
 }
 
 .drawer.is-open {
@@ -187,6 +200,11 @@ body > img[data-piece] {
 .drawer__header h2 {
   margin: 0;
   font-size: 1.6rem;
+}
+
+.drawer__content {
+  min-height: 0;
+  overflow: auto;
 }
 
 .drawer-scrim {
@@ -249,10 +267,17 @@ body > img[data-piece] {
     padding: 18px 16px;
     border-radius: 0;
     border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 0;
+    border-right: 0;
+    border-bottom: 0;
     overflow: auto;
     background: linear-gradient(180deg, rgba(26, 31, 42, 0.92), rgba(13, 16, 23, 0.92));
     box-shadow: -18px 0 34px rgba(0, 0, 0, 0.18);
     z-index: 4;
+  }
+
+  .players.drawer::before {
+    display: none;
   }
 
   #toggle-players {
