@@ -1106,58 +1106,9 @@ const initializeLanguage = () => {
     select.addEventListener("change", () => setLanguage(select.value));
   });
 
-  document.querySelectorAll("[data-language-menu]").forEach((menuRoot) => {
-    const button = menuRoot.querySelector("[data-language-menu-button]");
-    const menu = menuRoot.querySelector("[data-language-menu-list]");
-    const options = Array.from(menuRoot.querySelectorAll("[data-language-option]"));
-
-    if (!button || !menu || options.length === 0) {
-      return;
-    }
-
-    const closeMenu = () => {
-      menu.hidden = true;
-      menuRoot.classList.remove("is-open");
-      button.setAttribute("aria-expanded", "false");
-    };
-
-    const openMenu = () => {
-      menu.hidden = false;
-      menuRoot.classList.add("is-open");
-      button.setAttribute("aria-expanded", "true");
-      menu.querySelector(`[data-language-option="${currentLanguage}"]`)?.focus();
-    };
-
-    button.addEventListener("click", (event) => {
-      event.stopPropagation();
-      if (menu.hidden) {
-        openMenu();
-        return;
-      }
-
-      closeMenu();
-    });
-
-    options.forEach((option) => {
-      option.addEventListener("click", (event) => {
-        event.stopPropagation();
-        setLanguage(option.dataset.languageOption);
-        closeMenu();
-        button.focus();
-      });
-    });
-
-    document.addEventListener("click", (event) => {
-      if (!menuRoot.contains(event.target)) {
-        closeMenu();
-      }
-    });
-
-    menuRoot.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        closeMenu();
-        button.focus();
-      }
+  document.querySelectorAll("[data-language-option]").forEach((option) => {
+    option.addEventListener("click", () => {
+      setLanguage(option.dataset.languageOption);
     });
   });
 

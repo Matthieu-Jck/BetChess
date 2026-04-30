@@ -145,51 +145,54 @@ body > img[data-piece] {
 
 .drawer {
   position: fixed;
-  top: 96px;
-  right: 16px;
-  width: min(360px, calc(100vw - 32px));
-  max-height: calc(100dvh - 112px);
+  top: var(--menu-top, 96px);
+  left: var(--menu-left, 10px);
+  right: auto;
+  width: min(360px, calc(100vw - 20px));
+  max-height: var(--menu-max-height, calc(100dvh - 112px));
   padding: 22px;
   display: flex;
   flex-direction: column;
   overflow: visible;
-  border: 1px solid rgba(215, 177, 108, 0.3);
+  border: 1px solid rgba(230, 184, 105, 0.38);
   border-radius: 14px;
   background:
-    linear-gradient(180deg, rgba(28, 32, 43, 0.98), rgba(13, 16, 23, 0.98)),
-    rgba(17, 20, 28, 0.98);
+    linear-gradient(180deg, rgba(43, 40, 48, 0.98), rgba(18, 19, 28, 0.98)),
+    rgba(21, 23, 32, 0.98);
   color: #f8fafc;
-  box-shadow: 0 22px 42px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.09);
-  transform: translateX(calc(100% + 24px));
+  box-shadow: 0 24px 46px rgba(0, 0, 0, 0.44), inset 0 1px 0 rgba(255, 245, 221, 0.11);
+  transform: translateY(-6px);
   opacity: 0;
-  transition: transform 0.25s ease, opacity 0.25s ease;
-  z-index: 110;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+  z-index: 170;
 }
 
 .drawer::before {
   content: "";
   position: absolute;
   top: -6px;
-  right: 118px;
+  left: var(--menu-arrow-x, calc(100% - 24px));
   width: 10px;
   height: 10px;
-  border-left: 1px solid rgba(215, 177, 108, 0.3);
-  border-top: 1px solid rgba(215, 177, 108, 0.3);
-  background: rgba(28, 32, 43, 0.98);
-  transform: rotate(45deg);
+  border-left: 1px solid rgba(230, 184, 105, 0.38);
+  border-top: 1px solid rgba(230, 184, 105, 0.38);
+  background: rgba(43, 40, 48, 0.98);
+  transform: translateX(-50%) rotate(45deg);
 }
 
-#help::before {
-  right: 220px;
-}
-
-#players::before {
-  right: 118px;
-}
-
-.drawer.is-open {
-  transform: translateX(0);
+.drawer.is-open,
+.drawer.is-positioning {
+  transform: translateY(0);
   opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.drawer.is-positioning {
+  pointer-events: none;
+  visibility: hidden;
 }
 
 .drawer__header {
@@ -265,6 +268,7 @@ body > img[data-piece] {
   .players.drawer {
     position: relative;
     top: auto;
+    left: auto;
     right: auto;
     width: 100%;
     max-height: 100%;
@@ -273,6 +277,7 @@ body > img[data-piece] {
     transform: none;
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
     padding: 18px 16px;
     border-radius: 0;
     border-left: 1px solid rgba(255, 255, 255, 0.1);
@@ -314,19 +319,9 @@ body > img[data-piece] {
   }
 
   .drawer {
-    top: 78px;
-    right: 10px;
     width: calc(100vw - 20px);
     max-height: calc(100dvh - 94px);
     padding: 18px;
-  }
-
-  #help::before {
-    right: 122px;
-  }
-
-  #players::before {
-    right: 72px;
   }
 }
 

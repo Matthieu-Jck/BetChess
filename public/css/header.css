@@ -98,7 +98,8 @@
 }
 
 .language-picker__button:hover,
-.language-picker.is-open .language-picker__button {
+.language-picker.is-open .language-picker__button,
+.language-picker__button[aria-expanded="true"] {
   transform: translateY(-1px);
   background: rgba(255, 255, 255, 0.18);
 }
@@ -142,31 +143,53 @@
 }
 
 .language-menu {
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
-  width: 190px;
-  padding: 7px;
-  border: 1px solid rgba(215, 177, 108, 0.3);
+  position: fixed;
+  top: var(--menu-top, 86px);
+  left: var(--menu-left, 10px);
+  right: auto;
+  width: min(220px, calc(100vw - 20px));
+  max-height: var(--menu-max-height, calc(100dvh - 104px));
+  padding: 8px;
+  overflow: visible;
+  border: 1px solid rgba(230, 184, 105, 0.38);
   border-radius: 14px;
   background:
-    linear-gradient(180deg, rgba(28, 32, 43, 0.98), rgba(13, 16, 23, 0.98)),
-    rgba(17, 20, 28, 0.98);
-  box-shadow: 0 22px 42px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.09);
-  z-index: 120;
+    linear-gradient(180deg, rgba(43, 40, 48, 0.98), rgba(18, 19, 28, 0.98)),
+    rgba(21, 23, 32, 0.98);
+  color: var(--ink);
+  box-shadow: 0 24px 46px rgba(0, 0, 0, 0.44), inset 0 1px 0 rgba(255, 245, 221, 0.11);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+  z-index: 170;
 }
 
 .language-menu::before {
   content: "";
   position: absolute;
   top: -6px;
-  right: 16px;
+  left: var(--menu-arrow-x, calc(100% - 24px));
   width: 10px;
   height: 10px;
-  border-left: 1px solid rgba(215, 177, 108, 0.3);
-  border-top: 1px solid rgba(215, 177, 108, 0.3);
-  background: rgba(28, 32, 43, 0.98);
-  transform: rotate(45deg);
+  border-left: 1px solid rgba(230, 184, 105, 0.38);
+  border-top: 1px solid rgba(230, 184, 105, 0.38);
+  background: rgba(43, 40, 48, 0.98);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.language-menu.is-open,
+.language-menu.is-positioning {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.language-menu.is-positioning {
+  pointer-events: none;
+  visibility: hidden;
 }
 
 .language-menu[hidden] {
@@ -258,6 +281,11 @@
   background: rgba(255, 255, 255, 0.18);
 }
 
+.header-button[aria-expanded="true"] {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.18);
+}
+
 .header-button__icon {
   width: 18px;
   height: 18px;
@@ -328,11 +356,6 @@
 
   .language-picker__button {
     min-height: 42px;
-  }
-
-  .language-menu {
-    right: -2px;
-    width: 174px;
   }
 
   .language-picker__icon {
